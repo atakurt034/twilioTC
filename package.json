@@ -1,0 +1,32 @@
+{
+  "name": "capstone",
+  "version": "1.0.0",
+  "description": "Google Hangouts Clone",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run client \" \"nodemon ./backend/index.js\" "
+  },
+  "keywords": [
+    "sms",
+    "call",
+    "message"
+  ],
+  "author": "Kurt",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "concurrently": "^6.0.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.1",
+    "simple-peer": "^9.10.0"
+  },
+  "devDependencies": {
+    "colors": "^1.4.0",
+    "morgan": "^1.10.0"
+  }
+}
