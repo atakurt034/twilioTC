@@ -4,9 +4,9 @@ import { Box, makeStyles, Typography } from '@material-ui/core'
 
 const useStyels = makeStyles((theme) => ({
   container: {
-    height: 100,
+    height: 50,
     marginTop: 'auto',
-    backgroundColor: theme.palette.grey[800],
+    backgroundColor: 'transparent',
     display: 'flex',
     flexDirection: 'column',
   },
