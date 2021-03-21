@@ -17,14 +17,51 @@ import FacebookIcon from '@material-ui/icons/Facebook'
 
 import { useStyles } from './styles'
 
-export const Login = () => {
+import { UA } from '../../actions/index'
+import { ModalLoader } from '../../components/modalloader'
+import { ModalMessage } from '../../components/modalmessage'
+
+import { useSelector, useDispatch } from 'react-redux'
+
+export const Login = ({ history }) => {
   const classes = useStyles()
+  const dispatch = useDispatch()
+
+  const { userInfo, error, loading } = useSelector((state) => state.userLogin)
+
+  const [data, setData] = React.useState({
+    email: '',
+    password: '',
+  })
+
+  React.useEffect(() => {
+    if (userInfo) {
+      history.push('/')
+    }
+  }, [userInfo, history])
+
+  const login = (event) => {
+    event.preventDefault()
+    dispatch(UA.login(data))
+  }
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+
+    setData({ ...data, [name]: value })
+  }
 
   return (
     <Grid container className={classes.container}>
       <Grid item xs={12}>
         <Paper className={classes.paper} elevation={12}>
           <CssBaseline />
+
+          {loading ? (
+            <ModalLoader />
+          ) : (
+            error && <ModalMessage variant='error'>{error}</ModalMessage>
+          )}
 
           <Typography
             className={classes.header}
@@ -61,7 +98,7 @@ export const Login = () => {
           >
             Sign in with facebook
           </Button>
-          <form noValidate>
+          <form onSubmit={login}>
             <TextField
               type='email'
               variant='outlined'
@@ -71,6 +108,7 @@ export const Login = () => {
               label='Email Address'
               name='email'
               autoFocus
+              onChange={handleChange}
             />
             <TextField
               variant='outlined'
@@ -80,6 +118,7 @@ export const Login = () => {
               name='password'
               label='Password'
               type='password'
+              onChange={handleChange}
             />
             <FormControlLabel
               control={<Checkbox value='remember' color='primary' />}
@@ -95,7 +134,7 @@ export const Login = () => {
                 </Link>
               </Grid>
               <Grid item xs={6}>
-                <Link variant='body2'>
+                <Link to='/register' variant='body2'>
                   <Typography variant='caption'>
                     {"Don't have an account? Sign Up"}
                   </Typography>

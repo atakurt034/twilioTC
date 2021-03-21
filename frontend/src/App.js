@@ -22,7 +22,12 @@ export const App = () => {
     <BrowserRouter>
       <Header />
       <Route path='/login' component={screen.Login} />
-      <Route path='/' render={() => <screen.Home socket={socket} />} exact />
+      <Route path='/register' component={screen.Register} />
+      <Route
+        path='/'
+        render={(e) => <screen.Home {...e} socket={socket} />}
+        exact
+      />
       <Footer />
     </BrowserRouter>
   )

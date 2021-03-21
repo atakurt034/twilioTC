@@ -1,58 +1,27 @@
 import React from 'react'
 import Peer from 'simple-peer'
 
-import {
-  Card,
-  CardActions,
-  Divider,
-  Grid,
-  IconButton,
-  Typography,
-} from '@material-ui/core'
+import { IconButton, Grid } from '@material-ui/core'
 import PhoneIcon from '@material-ui/icons/Phone'
 import PeopleIcon from '@material-ui/icons/People'
 import ChatIcon from '@material-ui/icons/Chat'
 import { useStyles } from './styles.js'
-import { AddButton } from '../../components/addbutton'
+
+import { useSelector } from 'react-redux'
+import { Panels } from './panels'
 
 export const Home = ({ socket, history }) => {
   const classes = useStyles()
 
+  const { userInfo } = useSelector((state) => state.userLogin)
+
   const [panel, setPanel] = React.useState('contacts')
 
-  const contacts = (
-    <Card className={classes.paper}>
-      <CardActions className={classes.cardActions}>
-        <AddButton />
-        <Typography style={{ flex: 1 }}>Add Contacts</Typography>
-      </CardActions>
-      <Divider />
-      Hello
-    </Card>
-  )
-  const chat = (
-    <Card className={classes.paper}>
-      <CardActions className={classes.cardActions}>
-        <AddButton />
-        <Typography style={{ flex: 1 }}>New conversation</Typography>
-      </CardActions>
-      <Divider />
-      Hello
-    </Card>
-  )
-  const call = (
-    <Card className={classes.paper}>
-      <CardActions className={classes.cardActions}>
-        <AddButton />
-        <Typography style={{ flex: 1 }}>New call</Typography>
-        <IconButton></IconButton>
-      </CardActions>
-      <Divider />
-      Hello
-    </Card>
-  )
-
-  React.useEffect(() => {}, [])
+  React.useEffect(() => {
+    if (!userInfo) {
+      history.push('/login')
+    }
+  }, [userInfo, history])
 
   return (
     <>
@@ -62,17 +31,21 @@ export const Home = ({ socket, history }) => {
             className={classes.icon}
             onClick={() => setPanel('contacs')}
           >
-            <PeopleIcon closePanel={setPanel} />
+            <PeopleIcon />
           </IconButton>
           <IconButton className={classes.icon} onClick={() => setPanel('chat')}>
-            <ChatIcon closePanel={setPanel} />
+            <ChatIcon />
           </IconButton>
           <IconButton className={classes.icon} onClick={() => setPanel('call')}>
-            <PhoneIcon closePanel={setPanel} />
+            <PhoneIcon />
           </IconButton>
         </Grid>
         <Grid item xs={4} className={classes.sidePanel}>
-          {panel === 'chat' ? chat : panel === 'call' ? call : contacts}
+          {panel === 'chat'
+            ? Panels(classes).chat
+            : panel === 'call'
+            ? Panels(classes).call
+            : Panels(classes, userInfo).contacts}
         </Grid>
       </Grid>
     </>

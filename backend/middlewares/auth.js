@@ -13,6 +13,7 @@ export const loginRequired = asyncHandler(async (req, res, next) => {
         const decodedId = jwt.verify(token, process.env.JWT_SECRET)
         const user = await User.findById(decodedId.id).select('-password')
         if (user) {
+          req.user = user
           next()
         } else {
           res.status(401)

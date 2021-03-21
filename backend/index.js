@@ -4,6 +4,7 @@ import { error } from './middlewares/index.js'
 import { mongoConnect } from './database/mongo.js'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import session from 'express-session'
 
 import morgan from 'morgan'
 import 'colors'
@@ -14,7 +15,7 @@ import userRoute from './routes/userRoute.js'
 config()
 
 // environment variables
-const { PORT, NODE_ENV } = process.env
+const { PORT, NODE_ENV, SESSION_SECRET, MONGO_URI } = process.env
 
 // initialize express
 const app = express()
@@ -24,12 +25,21 @@ app.use(express.urlencoded({ extended: true }))
 // connect mongo
 mongoConnect()
 
+// initialize sessions
+app.use(
+  session({
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+)
+
 if (NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
 
 // API Routes
-app.get('/', (req, res) => res.end('hello'))
+app.get('/', async (req, res) => {})
 app.use('/api/user', userRoute)
 
 // error handlers
@@ -45,22 +55,4 @@ const io = new Server(server, { cors: { origin: '*' } })
 
 // ************* socket.io *****************//
 
-io.on('connection', (socket) => {
-  socket.emit('me', socket.id)
-  console.log(socket.id)
-  socket.on('disconnect', () => {
-    socket.broadcast.emit('callEnded')
-  })
-
-  socket.on('callUser', (data) => {
-    io.to(data.userToCall).emit('callUser', {
-      signal: data.signalData,
-      from: data.from,
-      name: data.name,
-    })
-  })
-
-  socket.on('answerCall', (data) => {
-    io.to(data.to).emit('callAccepted', data.signal)
-  })
-})
+io.on('connection', (socket) => {})
