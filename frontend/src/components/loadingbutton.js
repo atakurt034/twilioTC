@@ -34,17 +34,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const LoadingButton = ({ search, loading, success }) => {
+export const LoadingButton = ({ search, loading, success, addContact }) => {
   const dispatch = useDispatch()
   const classes = useStyles()
+
+  const [isEmpty, setIsEmpty] = React.useState(true)
 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
   })
 
   const handleButtonClick = () => {
-    dispatch(UA.search({ email: search }))
+    if (!isEmpty) {
+      dispatch(UA.search({ email: search }))
+    } else {
+      addContact(false)
+    }
   }
+
+  React.useEffect(() => {
+    if (search.length > 0) {
+      setIsEmpty(false)
+    } else {
+      setIsEmpty(true)
+    }
+  }, [search])
 
   return (
     <div className={classes.root}>
@@ -56,7 +70,7 @@ export const LoadingButton = ({ search, loading, success }) => {
           disabled={loading}
           onClick={handleButtonClick}
         >
-          Search
+          {!isEmpty ? 'Search' : 'Back'}
         </Button>
         {loading && (
           <CircularProgress size={24} className={classes.buttonProgress} />

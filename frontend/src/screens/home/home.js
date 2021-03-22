@@ -29,7 +29,7 @@ export const Home = ({ socket, history }) => {
         <Grid item xs={1} className={classes.sideIcons}>
           <IconButton
             className={classes.icon}
-            onClick={() => setPanel('contacs')}
+            onClick={() => setPanel('contacts')}
           >
             <PeopleIcon />
           </IconButton>
@@ -40,7 +40,7 @@ export const Home = ({ socket, history }) => {
             <PhoneIcon />
           </IconButton>
         </Grid>
-        <Grid item xs={4} className={classes.sidePanel}>
+        <Grid item xs={12} sm={6} lg={4} className={classes.sidePanel}>
           {panel === 'chat'
             ? Panels(classes).chat
             : panel === 'call'

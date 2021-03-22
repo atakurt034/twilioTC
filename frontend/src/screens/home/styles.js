@@ -29,6 +29,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     marginRight: theme.spacing(2),
     marginLeft: 0,
+    flex: 1,
     width: '100%',
   },
   searchIcon: {

@@ -7,6 +7,7 @@ import {
   Typography,
   IconButton,
   InputBase,
+  Button,
 } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
 
@@ -15,8 +16,10 @@ import { LoadingButton } from '../../components/loadingbutton'
 
 import { useSelector } from 'react-redux'
 
-export const Panels = (classes, userInfo) => {
-  const { user, loading: loader } = useSelector((state) => state.userSearch)
+export const Panels = (classes, userInfo, toggleAddContact) => {
+  const { user, loading: loader, error } = useSelector(
+    (state) => state.userSearch
+  )
 
   const [addContact, setAddContact] = React.useState(false)
   const [search, setSearch] = React.useState('')
@@ -33,7 +36,11 @@ export const Panels = (classes, userInfo) => {
       setSuccess(false)
       setLoading(true)
     }
-  }, [user, loader])
+    if (error) {
+      setLoading(false)
+      setSuccess(false)
+    }
+  }, [user, loader, error])
 
   const changeHandler = (event) => {
     setSearch(event.target.value)
@@ -46,19 +53,24 @@ export const Panels = (classes, userInfo) => {
   }
 
   const add_false = (
-    <>
-      <AddButton />
+    <Button
+      size='small'
+      style={{ padding: 0 }}
+      startIcon={<AddButton />}
+      onClick={addContactHandler}
+    >
       <Typography style={{ flex: 1 }}>Add Contacts</Typography>
-    </>
+    </Button>
   )
 
   const add_true = (
     <div
       style={{
-        padding: '10px 0',
+        padding: '4px 0',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        flexGrow: 1,
       }}
     >
       <div className={classes.search}>
@@ -66,6 +78,7 @@ export const Panels = (classes, userInfo) => {
           <SearchIcon />
         </div>
         <InputBase
+          autoFocus
           placeholder='Search…'
           classes={{
             root: classes.inputRoot,
@@ -75,26 +88,40 @@ export const Panels = (classes, userInfo) => {
           onChange={changeHandler}
         />
       </div>
-      <div style={{ marginLeft: 70 }}>
-        <LoadingButton loading={loading} success={success} search={search} />
+      <div style={{}}>
+        <LoadingButton
+          loading={loading}
+          success={success}
+          search={search}
+          addContact={setAddContact}
+        />
       </div>
     </div>
   )
 
   const contacts = (
     <Card className={classes.paper}>
-      <CardActions
-        className={classes.cardActions}
-        onClick={!addContact && addContactHandler}
-      >
+      <CardActions className={classes.cardActions}>
         {addContact ? add_true : add_false}
       </CardActions>
       <Divider />
       {userInfo &&
+        !addContact &&
         userInfo.contacts.map((contact) => {
           return <p key={contact.email}>{contact.name}</p>
         })}
-      {user ? user[0].email : loading ? 'searching..' : ''}
+      {error
+        ? addContact && (
+            <span>
+              No Results Found{' '}
+              <button onClick={() => setAddContact(false)}>Back</button>{' '}
+            </span>
+          )
+        : user
+        ? user[0].email
+        : loading
+        ? 'searching..'
+        : ''}
     </Card>
   )
   const chat = (
