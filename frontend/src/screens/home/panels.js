@@ -11,15 +11,34 @@ import {
 import SearchIcon from '@material-ui/icons/Search'
 
 import { AddButton } from '../../components/addbutton'
+import { LoadingButton } from '../../components/loadingbutton'
 
-import { useDispatch } from 'react-redux'
-
-import { UA } from '../../actions/index'
+import { useSelector } from 'react-redux'
 
 export const Panels = (classes, userInfo) => {
-  const dispatch = useDispatch()
+  const { user, loading: loader } = useSelector((state) => state.userSearch)
 
   const [addContact, setAddContact] = React.useState(false)
+  const [search, setSearch] = React.useState('')
+  const [loading, setLoading] = React.useState(false)
+
+  const [success, setSuccess] = React.useState(false)
+
+  React.useEffect(() => {
+    if (user) {
+      setSuccess(true)
+      setLoading(false)
+    }
+    if (loader) {
+      setSuccess(false)
+      setLoading(true)
+    }
+  }, [user, loader])
+
+  const changeHandler = (event) => {
+    setSearch(event.target.value)
+    setSuccess(false)
+  }
 
   const addContactHandler = () => {
     setAddContact((prev) => !prev)
@@ -53,9 +72,12 @@ export const Panels = (classes, userInfo) => {
             input: classes.inputInput,
           }}
           inputProps={{ 'aria-label': 'search' }}
+          onChange={changeHandler}
         />
       </div>
-      <div style={{ marginLeft: 70 }}>loading...</div>
+      <div style={{ marginLeft: 70 }}>
+        <LoadingButton loading={loading} success={success} search={search} />
+      </div>
     </div>
   )
 
@@ -72,6 +94,7 @@ export const Panels = (classes, userInfo) => {
         userInfo.contacts.map((contact) => {
           return <p key={contact.email}>{contact.name}</p>
         })}
+      {user ? user[0].email : loading ? 'searching..' : ''}
     </Card>
   )
   const chat = (

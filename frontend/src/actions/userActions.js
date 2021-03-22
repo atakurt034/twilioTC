@@ -57,8 +57,10 @@ export const addContact = (email) => async (dispatch, getState) => {
     } = getState()
 
     const config = {
-      headers: { 'Content-Type': 'application/json' },
-      authorization: `Bearer ${userInfo.token}`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
     }
 
     const { data } = await axios.put(`/api/user/${userInfo._id}`, email, config)
@@ -66,6 +68,34 @@ export const addContact = (email) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: USER.ADD_CONTACT_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+
+export const search = (email) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER.SEARCH_REQUEST })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.post('/api/user', email, config)
+    dispatch({ type: USER.SEARCH_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: USER.SEARCH_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message

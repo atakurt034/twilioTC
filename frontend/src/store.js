@@ -13,6 +13,7 @@ const userInfoFromStorage = localStorage.getItem('userInfo')
 const reducers = combineReducers({
   userRegister: user.registerReducer,
   userLogin: user.loginReducer,
+  userSearch: user.searchReducer,
 })
 
 const initialState = {

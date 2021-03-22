@@ -27,3 +27,18 @@ export const loginReducer = (state = {}, action) => {
       return state
   }
 }
+
+export const searchReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER.SEARCH_REQUEST:
+      return { loading: true }
+    case USER.SEARCH_SUCCESS:
+      return { loading: false, user: action.payload }
+    case USER.SEARCH_FAIL:
+      return { loading: false, error: action.payload }
+    case USER.SEARCH_RESET:
+      return {}
+    default:
+      return state
+  }
+}

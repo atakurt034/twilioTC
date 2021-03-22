@@ -12,6 +12,6 @@ router
 router.post('/register', user.register)
 router.post('/login', user.login)
 
-router.route('/').get(auth.loginRequired, user.search)
+router.route('/').post(auth.loginRequired, user.search)
 
 export default router
