@@ -87,6 +87,10 @@ export const getUserDetails = asyncHandler(async (req, res) => {
         path: 'invites',
         populate: { path: '_id', select: 'name email' },
       })
+      .populate({
+        path: 'privaterooms',
+        populate: { path: 'users', select: 'name' },
+      })
     res.status(200).json(user)
   } catch (error) {
     res.status(400)

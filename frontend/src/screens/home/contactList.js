@@ -22,10 +22,9 @@ export const ContactList = ({ contact, history }) => {
   React.useEffect(() => {
     if ((chatroom && id) || error === 'Error: Room already exist') {
       history.push(`/chatroom/${id}`)
-    }
-    return () => {
       dispatch({ type: CHAT.CREATE_PRIVATE_RESET })
     }
+    return () => {}
   }, [chatroom, dispatch, history, id, error])
 
   const clickHandler = (id) => {

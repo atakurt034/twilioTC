@@ -30,7 +30,9 @@ export const App = () => {
 
   return (
     <BrowserRouter>
-      <Appbar />
+      <div>
+        <Appbar />
+      </div>
 
       <Route path='/login' component={screen.Login} exact />
       <Route path='/register' component={screen.Register} exact />
