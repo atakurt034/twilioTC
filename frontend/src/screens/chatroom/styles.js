@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core'
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -26,4 +26,21 @@ export const useStyles = makeStyles(() => ({
   },
   reciever: { textAlign: 'left', float: 'left' },
   text: { margin: '0 10px' },
+  myMessage: {
+    padding: 5,
+    margin: '5px 0',
+    width: '80%',
+    float: 'right',
+    clear: 'both',
+    backgroundColor: theme.palette.primary.light,
+  },
+  userMessage: {
+    padding: 5,
+    margin: '5px 0',
+    textAlign: 'left',
+    float: 'left',
+    clear: 'both',
+    width: '80%',
+    backgroundColor: theme.palette.success.light,
+  },
 }))

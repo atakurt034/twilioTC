@@ -5,7 +5,6 @@ import { mongoConnect } from './database/mongo.js'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import session from 'express-session'
-import jwt from 'jsonwebtoken'
 
 import morgan from 'morgan'
 import 'colors'
@@ -60,11 +59,10 @@ const io = new Server(server, { cors: { origin: '*' } })
 // ************* socket.io *****************//
 io.use(async (socket, next) => {
   try {
-    const token = socket.handshake.query.token
-    const payload = jwt.verify(token, JWT_SECRET)
-    if (payload) {
-      socket.userId = payload.id
-    }
+    const userId = socket.handshake.query.userId
+    const name = socket.handshake.query.name
+    socket.userId = userId
+    socket.name = name
     next()
   } catch (err) {
     next(err)
@@ -74,4 +72,6 @@ io.use(async (socket, next) => {
 io.on('connection', (socket) => {
   socket.on('private', pr.privateJoin(io, socket))
   socket.on('privateInput', pr.privateInput(io, socket))
+  socket.on('privateCall', pr.privateCall(io, socket))
+  socket.on('privateCallAnswer', pr.privateCallAnswer(io, socket))
 })

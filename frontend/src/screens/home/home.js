@@ -1,5 +1,4 @@
 import React from 'react'
-import Peer from 'simple-peer'
 
 import { IconButton, Grid } from '@material-ui/core'
 import PhoneIcon from '@material-ui/icons/Phone'

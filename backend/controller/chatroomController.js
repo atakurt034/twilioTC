@@ -17,18 +17,20 @@ export const createPrivateRoom = asyncHandler(async (req, res) => {
     })
 
     if (userExist) {
-      res.status(404)
-      throw new Error('Room already exist')
-    }
-    const newRoom = await Privateroom.create({ users: [recieverId, senderId] })
-    await User.updateMany(
-      { _id: { $in: [recieverId, senderId] } },
-      { privaterooms: newRoom }
-    )
-
-    if (newRoom) {
-      res.status(200)
-      res.json(newRoom)
+      res.status(201)
+      res.json(userExist)
+    } else {
+      const newRoom = await Privateroom.create({
+        users: [recieverId, senderId],
+      })
+      await User.updateMany(
+        { _id: { $in: [recieverId, senderId] } },
+        { privaterooms: newRoom }
+      )
+      if (newRoom) {
+        res.status(200)
+        res.json(newRoom)
+      }
     }
   } catch (error) {
     res.status(404)

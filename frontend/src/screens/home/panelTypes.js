@@ -1,8 +1,13 @@
+import React from 'react'
+
 import { Button, Card, Divider, Paper, Typography } from '@material-ui/core'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { AddButton } from '../../components/addbutton'
 
+import { Link } from 'react-router-dom'
+
 import { ContactList } from './contactList'
+import { UA } from '../../actions/index'
 
 export const PanelTypes = (
   classes,
@@ -19,7 +24,30 @@ export const PanelTypes = (
   loading,
   history
 ) => {
+  const dispatch = useDispatch()
   const { userDetails } = useSelector((state) => state.userDetails)
+
+  const [rooms, setRooms] = React.useState([])
+
+  React.useEffect(() => {
+    dispatch(UA.getDetails())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  React.useEffect(() => {
+    if (userDetails) {
+      userDetails.privaterooms.map((room) =>
+        room.users.map(
+          (user) =>
+            user._id !== userDetails._id &&
+            setRooms((prev) => [...prev, { name: user.name, id: room._id }])
+        )
+      )
+    }
+    return () => {
+      setRooms([])
+    }
+  }, [userDetails])
 
   const contacts = (
     <Paper className={classes.paper}>
@@ -99,9 +127,14 @@ export const PanelTypes = (
         <Typography style={{ flex: 1 }}>New conversation</Typography>
       </div>
       <Divider />
-      List of Chats
+      {rooms.map((room) => (
+        <Link key={room.id} to={`/chatroom/${room.id}`}>
+          <p>{room.name}</p>
+        </Link>
+      ))}
     </Card>
   )
+
   const call = (
     <Card className={classes.paper}>
       <div className={classes.cardActions}>

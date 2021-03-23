@@ -1,9 +1,11 @@
 import React from 'react'
 import {
+  Avatar,
   Card,
   CardActions,
   CardContent,
   CardHeader,
+  Chip,
   Container,
   Grid,
   IconButton,
@@ -15,6 +17,8 @@ import SendIcon from '@material-ui/icons/Send'
 import { useStyles } from './styles'
 
 import { useSelector } from 'react-redux'
+
+import { Video } from './video'
 
 export const Chatroom = ({ match, socket, history }) => {
   const classes = useStyles()
@@ -38,12 +42,41 @@ export const Chatroom = ({ match, socket, history }) => {
     }
   }, [chatroomId, socket, userInfo, history])
 
+  class Message {
+    constructor(data) {
+      this.message = data.message
+      this.name = data.name
+      this.image = data.image
+      this.chatroomId = data.chatroomId
+      this.userId = data.userId
+    }
+    myMessage(userInfo) {
+      return this.userId === userInfo._id
+    }
+  }
+  console.log(messages)
+
+  const scrollToBottom = () => {
+    if (scrollToView.current) {
+      scrollToView.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      })
+    } else {
+      return
+    }
+  }
+
   React.useEffect(() => {
     if (socket) {
       socket.on('privateOutput', (data) => {
-        setMessages((prev) => [...prev, data])
+        const message = new Message(data, userInfo)
+        setMessages((prev) => [...prev, message])
+
+        scrollToBottom()
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket])
 
   const clickHandler = () => {
@@ -53,6 +86,7 @@ export const Chatroom = ({ match, socket, history }) => {
         name: userInfo.name,
         image: userInfo.image,
         chatroomId,
+        userId: userInfo._id,
       })
       text.current.value = ''
     }
@@ -69,7 +103,7 @@ export const Chatroom = ({ match, socket, history }) => {
     <Container style={{ marginTop: 10 }}>
       <Grid container spacing={2}>
         <Grid item xs={8}>
-          <h1>Video</h1>
+          <Video socket={socket} chatroomId={chatroomId} />
         </Grid>
         <Grid item xs={4}>
           <Card style={{ minHeight: '70vh' }}>
@@ -88,7 +122,39 @@ export const Chatroom = ({ match, socket, history }) => {
                 }}
               >
                 {messages.map((message, index) => {
-                  return <p key={index}>{message.message}</p>
+                  return (
+                    <Paper
+                      key={index}
+                      className={
+                        message.myMessage(userInfo)
+                          ? classes.myMessage
+                          : classes.userMessage
+                      }
+                    >
+                      <div>
+                        {!message.myMessage(userInfo) && (
+                          <>
+                            <Chip
+                              size='small'
+                              style={{ border: 'none', background: 'none' }}
+                              avatar={
+                                <Avatar
+                                  src={message.image}
+                                  alt={message.name}
+                                />
+                              }
+                            />
+                            {message.name}
+                          </>
+                        )}
+                      </div>
+                      <p>{message.message}</p>
+                      <div
+                        ref={scrollToView}
+                        style={{ float: 'right', clear: 'both' }}
+                      ></div>
+                    </Paper>
+                  )
                 })}
               </Paper>
             </CardContent>

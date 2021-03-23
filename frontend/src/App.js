@@ -9,15 +9,17 @@ import { useSelector } from 'react-redux'
 import { io } from 'socket.io-client'
 
 export const App = () => {
-  let token
+  let userId
+  let name
   const userLogin = useSelector((state) => state.userLogin)
 
   if (userLogin.userInfo) {
-    token = userLogin.userInfo.token
+    userId = userLogin.userInfo._id
+    name = userLogin.userInfo.name
   }
 
   const socket = io('http://192.168.254.111:5000', {
-    query: { token: token },
+    query: { userId, name },
   })
   socket.connect()
 

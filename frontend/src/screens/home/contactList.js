@@ -17,19 +17,17 @@ export const ContactList = ({ contact, history }) => {
     (state) => state.chatroomPrivateCreate
   )
 
-  const [id, setId] = React.useState('')
-
   React.useEffect(() => {
-    if ((chatroom && id) || error === 'Error: Room already exist') {
-      history.push(`/chatroom/${id}`)
+    if (chatroom) {
+      history.push(`/chatroom/${chatroom._id}`)
       dispatch({ type: CHAT.CREATE_PRIVATE_RESET })
     }
+
     return () => {}
-  }, [chatroom, dispatch, history, id, error])
+  }, [chatroom, dispatch, history, error])
 
   const clickHandler = (id) => {
     dispatch(CA.createPrivateRoom({ id }))
-    setId(id)
   }
 
   return (
