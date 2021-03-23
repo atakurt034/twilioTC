@@ -63,7 +63,7 @@ export const addContact = (email) => async (dispatch, getState) => {
       },
     }
 
-    const { data } = await axios.put(`/api/user/${userInfo._id}`, email, config)
+    const { data } = await axios.put(`/api/user/invite`, email, config)
     dispatch({ type: USER.ADD_CONTACT_SUCCESS, payload: data })
   } catch (error) {
     dispatch({
@@ -96,6 +96,62 @@ export const search = (email) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: USER.SEARCH_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+
+export const accept = (invite) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER.ACCEPT_REQUEST })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.put('/api/user', invite, config)
+    dispatch({ type: USER.ACCEPT_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: USER.ACCEPT_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+
+export const getDetails = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER.DETAILS_REQUEST })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.get(`/api/user/${userInfo._id}`, config)
+    dispatch({ type: USER.DETAILS_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: USER.DETAILS_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message

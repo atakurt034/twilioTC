@@ -1,31 +1,33 @@
 import React from 'react'
 
-import {
-  Card,
-  CardActions,
-  Divider,
-  Typography,
-  IconButton,
-  InputBase,
-  Button,
-} from '@material-ui/core'
+import { Typography, InputBase, Button } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
 
 import { AddButton } from '../../components/addbutton'
 import { LoadingButton } from '../../components/loadingbutton'
+import { UserList } from './userList'
 
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { USER } from '../../constants/index'
+import { UA } from '../../actions/index'
 
-export const Panels = (classes, userInfo, toggleAddContact) => {
+import { PanelTypes } from './panelTypes'
+
+export const Panels = (classes, userInfo, history) => {
+  const dispatch = useDispatch()
+
   const { user, loading: loader, error } = useSelector(
     (state) => state.userSearch
   )
+  const { status } = useSelector((state) => state.userAddContact)
 
   const [addContact, setAddContact] = React.useState(false)
   const [search, setSearch] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
   const [success, setSuccess] = React.useState(false)
+  const invited =
+    user && user[0].invites.find((invite) => invite._id === userInfo._id)
 
   React.useEffect(() => {
     if (user) {
@@ -40,7 +42,10 @@ export const Panels = (classes, userInfo, toggleAddContact) => {
       setLoading(false)
       setSuccess(false)
     }
-  }, [user, loader, error])
+    if (status) {
+      dispatch({ type: USER.SEARCH_RESET })
+    }
+  }, [user, loader, error, status, dispatch])
 
   const changeHandler = (event) => {
     setSearch(event.target.value)
@@ -49,18 +54,30 @@ export const Panels = (classes, userInfo, toggleAddContact) => {
 
   const addContactHandler = () => {
     setAddContact((prev) => !prev)
-    // dispatch(UA.addContact)
+  }
+
+  const backHandler = () => {
+    setAddContact(false)
+    setSearch('')
+    dispatch({ type: USER.SEARCH_RESET })
+  }
+
+  const acceptHandler = (invite) => {
+    dispatch(UA.accept({ id: invite }))
+    dispatch({ type: USER.ACCEPT_RESET })
   }
 
   const add_false = (
-    <Button
-      size='small'
-      style={{ padding: 0 }}
-      startIcon={<AddButton />}
-      onClick={addContactHandler}
-    >
-      <Typography style={{ flex: 1 }}>Add Contacts</Typography>
-    </Button>
+    <div>
+      <Button
+        size='small'
+        style={{ padding: 0 }}
+        startIcon={<AddButton />}
+        onClick={addContactHandler}
+      >
+        <Typography style={{ flex: 1 }}>Add Contacts</Typography>
+      </Button>
+    </div>
   )
 
   const add_true = (
@@ -88,62 +105,33 @@ export const Panels = (classes, userInfo, toggleAddContact) => {
           onChange={changeHandler}
         />
       </div>
-      <div style={{}}>
+      <div>
         <LoadingButton
+          invited={invited}
           loading={loading}
           success={success}
           search={search}
+          setSuccess={setSuccess}
           addContact={setAddContact}
         />
       </div>
     </div>
   )
+  const { contacts, call, chat } = PanelTypes(
+    classes,
+    addContact,
+    add_true,
+    add_false,
+    userInfo,
+    acceptHandler,
+    error,
+    backHandler,
+    user,
+    invited,
+    UserList,
+    loading,
+    history
+  )
 
-  const contacts = (
-    <Card className={classes.paper}>
-      <CardActions className={classes.cardActions}>
-        {addContact ? add_true : add_false}
-      </CardActions>
-      <Divider />
-      {userInfo &&
-        !addContact &&
-        userInfo.contacts.map((contact) => {
-          return <p key={contact.email}>{contact.name}</p>
-        })}
-      {error
-        ? addContact && (
-            <span>
-              No Results Found{' '}
-              <button onClick={() => setAddContact(false)}>Back</button>{' '}
-            </span>
-          )
-        : user
-        ? user[0].email
-        : loading
-        ? 'searching..'
-        : ''}
-    </Card>
-  )
-  const chat = (
-    <Card className={classes.paper}>
-      <CardActions className={classes.cardActions}>
-        <AddButton />
-        <Typography style={{ flex: 1 }}>New conversation</Typography>
-      </CardActions>
-      <Divider />
-      List of Chats
-    </Card>
-  )
-  const call = (
-    <Card className={classes.paper}>
-      <CardActions className={classes.cardActions}>
-        <AddButton />
-        <Typography style={{ flex: 1 }}>New call</Typography>
-        <IconButton></IconButton>
-      </CardActions>
-      <Divider />
-      List of Calls
-    </Card>
-  )
   return { contacts, call, chat }
 }

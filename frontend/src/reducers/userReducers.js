@@ -42,3 +42,48 @@ export const searchReducer = (state = {}, action) => {
       return state
   }
 }
+
+export const acceptReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER.ACCEPT_REQUEST:
+      return { loading: true }
+    case USER.ACCEPT_SUCCESS:
+      return { loading: false, status: action.payload }
+    case USER.ACCEPT_FAIL:
+      return { loading: false, error: action.payload }
+    case USER.ACCEPT_RESET:
+      return {}
+    default:
+      return state
+  }
+}
+
+export const addContactReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER.ADD_CONTACT_REQUEST:
+      return { loading: true }
+    case USER.ADD_CONTACT_SUCCESS:
+      return { loading: false, status: action.payload }
+    case USER.ADD_CONTACT_FAIL:
+      return { loading: false, error: action.payload }
+    case USER.ADD_CONTACT_RESET:
+      return {}
+    default:
+      return state
+  }
+}
+
+export const detailsReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER.DETAILS_REQUEST:
+      return { loading: true }
+    case USER.DETAILS_SUCCESS:
+      return { loading: false, userDetails: action.payload }
+    case USER.DETAILS_FAIL:
+      return { loading: false, error: action.payload }
+    case USER.DETAILS_RESET:
+      return {}
+    default:
+      return state
+  }
+}

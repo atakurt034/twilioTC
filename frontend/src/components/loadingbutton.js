@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button'
 import { useDispatch } from 'react-redux'
 
 import { UA } from '../actions/index'
+import { USER } from '../constants/index'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,7 +35,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const LoadingButton = ({ search, loading, success, addContact }) => {
+export const LoadingButton = ({
+  search,
+  loading,
+  success,
+  addContact,
+  invited,
+  setSuccess,
+}) => {
   const dispatch = useDispatch()
   const classes = useStyles()
 
@@ -48,6 +56,8 @@ export const LoadingButton = ({ search, loading, success, addContact }) => {
     if (!isEmpty) {
       dispatch(UA.search({ email: search }))
     } else {
+      dispatch({ type: USER.SEARCH_RESET })
+      setSuccess(false)
       addContact(false)
     }
   }
@@ -58,7 +68,10 @@ export const LoadingButton = ({ search, loading, success, addContact }) => {
     } else {
       setIsEmpty(true)
     }
-  }, [search])
+    if (invited && !invited.accept) {
+      setIsEmpty(true)
+    }
+  }, [search, invited, addContact, setSuccess])
 
   return (
     <div className={classes.root}>

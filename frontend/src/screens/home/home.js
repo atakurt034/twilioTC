@@ -7,13 +7,17 @@ import PeopleIcon from '@material-ui/icons/People'
 import ChatIcon from '@material-ui/icons/Chat'
 import { useStyles } from './styles.js'
 
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { UA } from '../../actions/index'
 import { Panels } from './panels'
 
 export const Home = ({ socket, history }) => {
+  const dispatch = useDispatch()
   const classes = useStyles()
 
   const { userInfo } = useSelector((state) => state.userLogin)
+  const { userDetails } = useSelector((state) => state.userDetails)
+  const { status } = useSelector((state) => state.userAccept)
 
   const [panel, setPanel] = React.useState('contacts')
 
@@ -21,7 +25,11 @@ export const Home = ({ socket, history }) => {
     if (!userInfo) {
       history.push('/login')
     }
-  }, [userInfo, history])
+    if (status && status.message === 'updated') {
+      dispatch(UA.getDetails())
+    }
+    dispatch(UA.getDetails())
+  }, [userInfo, history, dispatch, status])
 
   return (
     <>
@@ -45,7 +53,7 @@ export const Home = ({ socket, history }) => {
             ? Panels(classes).chat
             : panel === 'call'
             ? Panels(classes).call
-            : Panels(classes, userInfo).contacts}
+            : Panels(classes, userDetails, history).contacts}
         </Grid>
       </Grid>
     </>

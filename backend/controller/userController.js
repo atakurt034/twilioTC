@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler'
 
-import User from '../models/userModel.js'
+import { User } from '../models/userModel.js'
 import { generateToken } from '../utils/generateToken.js'
 
 /**
@@ -25,6 +25,7 @@ export const register = asyncHandler(async (req, res) => {
         name: newUser.name,
         email: newUser.email,
         contacts: newUser.contacts,
+        invites: newUser.invites,
         token: generateToken(newUser._id),
       }
 
@@ -45,16 +46,19 @@ export const register = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body
-    const user = await User.findOne({ email }).populate(
-      'contacts',
-      'name email'
-    )
+    const user = await User.findOne({ email })
+      .populate('contacts', 'name email')
+      .populate({
+        path: 'invites',
+        populate: { path: '_id', select: 'name email' },
+      })
     if (user && (await user.matchPassword(password))) {
       res.status(200).json({
         _id: user._id,
         name: user.name,
         email: user.email,
         contacts: user.contacts,
+        invites: user.invites,
         token: generateToken(user._id),
       })
     } else {
@@ -76,10 +80,14 @@ export const login = asyncHandler(async (req, res) => {
 export const getUserDetails = asyncHandler(async (req, res) => {
   const id = req.params.id
   try {
-    const user = await User.findById(id).select('-password')
-    if (user) {
-      res.status(200).json(user)
-    }
+    const user = await User.findById(id)
+      .select('-password')
+      .populate('contacts', 'name email')
+      .populate({
+        path: 'invites',
+        populate: { path: '_id', select: 'name email' },
+      })
+    res.status(200).json(user)
   } catch (error) {
     res.status(400)
     throw new Error(error)
@@ -87,26 +95,30 @@ export const getUserDetails = asyncHandler(async (req, res) => {
 })
 
 /**
- * route: /api/user/:id
+ * route: /api/user/invite
  * description: add contacts
  * access: Private
  * method: PUT
  */
-
 export const addContacts = asyncHandler(async (req, res) => {
   try {
-    const id = req.params.id //login user's id
+    const { _id } = req.user //login user's id
     const { email } = req.body //new contact's email
-    const user = await User.findById(id)
+    const user = await User.findById(_id)
     const newContact = await User.findOne({ email })
 
     const contactExist = await user.contacts.includes(newContact._id)
+    const inviteExist = await newContact.invites.find(
+      (invite) => invite._id.toString() === user._id.toString()
+    )
 
     if (contactExist) {
-      throw new Error('Already added')
+      res.status(301).json({ message: 'already added' })
+    } else if (inviteExist) {
+      res.status(303).json({ message: 'pending' })
     } else {
-      user.contacts.push(newContact)
-      await user.save()
+      newContact.invites.push(user)
+      await newContact.save()
     }
     res.status(200)
     res.json({ message: `added ${email}` })
@@ -116,6 +128,12 @@ export const addContacts = asyncHandler(async (req, res) => {
   }
 })
 
+/**
+ * route: /api/user
+ * description: search contacts
+ * access: Private
+ * method: POST
+ */
 export const search = asyncHandler(async (req, res) => {
   try {
     const email = req.body.email
@@ -125,12 +143,48 @@ export const search = asyncHandler(async (req, res) => {
     const newContact = await User.findOne({ email })
 
     if (await user.contacts.includes(newContact._id)) {
-      throw new Error('Email already added to contacts')
+      res.status(301)
+      res.json({ message: 'added' })
     } else {
       const result = await User.find({ email }).select('-password -contacts')
 
       res.status(200).json(result)
     }
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
+})
+
+/**
+ * route: /api/user
+ * description: accept invite
+ * access: Private
+ * method: PUT
+ */
+export const acceptInvite = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user //my id
+    const { id } = req.body //invite id
+    const user = await User.findById(_id)
+    const newContact = await User.findById(id)
+
+    const inviteExist = newContact.invites.find(
+      (invite) => invite._id.toString() === user._id.toString()
+    )
+
+    user.invites.pull({ _id: id })
+    user.contacts.push(newContact)
+    newContact.contacts.push(user)
+
+    if (inviteExist) {
+      newContact.invites.pull({ _id: user._id })
+    }
+
+    await user.save()
+    await newContact.save()
+    res.status(200)
+    res.json({ message: 'updated' })
   } catch (error) {
     res.status(400)
     throw new Error(error)

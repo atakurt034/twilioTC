@@ -15,7 +15,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    privaterooms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chatroom' }],
+    chatrooms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chatroom' }],
     contacts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    invites: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        accept: { type: Boolean, default: false },
+      },
+    ],
   },
   { timestamps: true }
 )
@@ -34,6 +42,4 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt)
 })
 
-const User = mongoose.model('User', userSchema)
-
-export default User
+export const User = mongoose.model('User', userSchema)

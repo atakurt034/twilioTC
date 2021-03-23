@@ -5,17 +5,20 @@ import { mongoConnect } from './database/mongo.js'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import session from 'express-session'
+import jwt from 'jsonwebtoken'
 
 import morgan from 'morgan'
 import 'colors'
 
 import userRoute from './routes/userRoute.js'
+import chatroomRoute from './routes/chatroomRoute.js'
+import { pr } from './socketRoutes/index.js'
 
 // initialize dotenv for environment variables
 config()
 
 // environment variables
-const { PORT, NODE_ENV, SESSION_SECRET, MONGO_URI } = process.env
+const { PORT, NODE_ENV, SESSION_SECRET, MONGO_URI, JWT_SECRET } = process.env
 
 // initialize express
 const app = express()
@@ -41,6 +44,7 @@ if (NODE_ENV === 'development') {
 // API Routes
 app.get('/', async (req, res) => {})
 app.use('/api/user', userRoute)
+app.use('/api/chatroom', chatroomRoute)
 
 // error handlers
 app.use(error.errorHandler)
@@ -54,5 +58,20 @@ const server = createServer(app).listen(
 const io = new Server(server, { cors: { origin: '*' } })
 
 // ************* socket.io *****************//
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.query.token
+    const payload = jwt.verify(token, JWT_SECRET)
+    if (payload) {
+      socket.userId = payload.id
+    }
+    next()
+  } catch (err) {
+    next(err)
+  }
+})
 
-io.on('connection', (socket) => {})
+io.on('connection', (socket) => {
+  socket.on('private', pr.privateJoin(io, socket))
+  socket.on('privateInput', pr.privateInput(io, socket))
+})

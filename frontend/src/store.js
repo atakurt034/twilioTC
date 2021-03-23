@@ -14,6 +14,9 @@ const reducers = combineReducers({
   userRegister: user.registerReducer,
   userLogin: user.loginReducer,
   userSearch: user.searchReducer,
+  userAccept: user.acceptReducer,
+  userDetails: user.detailsReducer,
+  userAddContact: user.addContactReducer,
 })
 
 const initialState = {

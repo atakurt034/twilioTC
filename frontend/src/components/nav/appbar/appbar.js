@@ -10,12 +10,17 @@ import Menu from '@material-ui/core/Menu'
 import MenuIcon from '@material-ui/icons/Menu'
 import AccountCircle from '@material-ui/icons/AccountCircle'
 
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { UA } from '../../../actions/index'
+import { Avatar, Button } from '@material-ui/core'
+import { StyledBadge } from './styles'
 
 export const Appbar = () => {
   const dispatch = useDispatch()
   const classes = useStyles()
+
+  const { userInfo } = useSelector((state) => state.userLogin)
+
   const [anchorEl, setAnchorEl] = React.useState(null)
 
   const isMenuOpen = Boolean(anchorEl)
@@ -50,6 +55,23 @@ export const Appbar = () => {
     </Menu>
   )
 
+  const avatarIcon = (
+    <StyledBadge
+      overlap='circle'
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'right',
+      }}
+      variant={'standard'}
+    >
+      <Avatar
+        src={userInfo ? userInfo.image : ''}
+        alt={userInfo ? userInfo.name : ''}
+        className={classes.avatar}
+      />
+    </StyledBadge>
+  )
+
   return (
     <div className={classes.grow}>
       <AppBar className={classes.appbar} position='static' elevation={0}>
@@ -67,18 +89,21 @@ export const Appbar = () => {
           </Typography>
 
           <div className={classes.grow} />
-          <div>
-            <IconButton
-              edge='end'
-              aria-label='account of current user'
-              aria-controls={menuId}
-              aria-haspopup='true'
-              onClick={handleProfileMenuOpen}
-              color='inherit'
-            >
-              <AccountCircle />
-            </IconButton>
-          </div>
+          {userInfo && (
+            <div>
+              <Button
+                edge='end'
+                aria-label='account of current user'
+                aria-controls={menuId}
+                aria-haspopup='true'
+                onClick={handleProfileMenuOpen}
+                color='inherit'
+                startIcon={userInfo ? avatarIcon : <AccountCircle />}
+              >
+                <Typography>{userInfo && userInfo.name}</Typography>
+              </Button>
+            </div>
+          )}
         </Toolbar>
       </AppBar>
       {renderMenu}
