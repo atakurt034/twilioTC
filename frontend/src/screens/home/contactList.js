@@ -1,19 +1,36 @@
 import React from 'react'
 
-import { Avatar, Button, Grid, IconButton, Typography } from '@material-ui/core'
+import { Avatar, Grid, IconButton, Typography } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { UA } from '../../actions/index'
-import { USER } from '../../constants/index'
+import { CA } from '../../actions/index'
+import { CHAT } from '../../constants/index'
 
 import PhoneIcon from '@material-ui/icons/Phone'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import ChatIcon from '@material-ui/icons/Chat'
+import { ModalLoader } from '../../components/modalloader'
+import { ModalMessage } from '../../components/modalmessage'
 
 export const ContactList = ({ contact, history }) => {
   const dispatch = useDispatch()
+  const { chatroom, loading, error } = useSelector(
+    (state) => state.chatroomPrivateCreate
+  )
+
+  const [id, setId] = React.useState('')
+
+  React.useEffect(() => {
+    if ((chatroom && id) || error === 'Error: Room already exist') {
+      history.push(`/chatroom/${id}`)
+    }
+    return () => {
+      dispatch({ type: CHAT.CREATE_PRIVATE_RESET })
+    }
+  }, [chatroom, dispatch, history, id, error])
 
   const clickHandler = (id) => {
-    history.push(`/chatroom/${id}`)
+    dispatch(CA.createPrivateRoom({ id }))
+    setId(id)
   }
 
   return (
@@ -26,6 +43,14 @@ export const ContactList = ({ contact, history }) => {
         padding: 5,
       }}
     >
+      {loading ? (
+        <ModalLoader />
+      ) : (
+        error &&
+        error !== 'Error: Room already exist' && (
+          <ModalMessage variant='error'>{error}</ModalMessage>
+        )
+      )}
       <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
         <Avatar src={contact.image} alt={contact.name} />
         <Typography style={{ textAlign: 'left', padding: 5 }}>

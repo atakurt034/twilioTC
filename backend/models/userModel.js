@@ -15,7 +15,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    privaterooms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chatroom' }],
+    privaterooms: [
+      { type: mongoose.Schema.Types.ObjectId, ref: 'Privateroom' },
+    ],
     chatrooms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chatroom' }],
     contacts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     invites: [

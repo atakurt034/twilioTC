@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { screen } from './screens/index'
-import { Header } from './components/header'
+import { Appbar } from './components/nav/appbar/appbar'
 import { Footer } from './components/footer'
 import { BrowserRouter, Route } from 'react-router-dom'
 import { useSelector } from 'react-redux'
@@ -30,13 +30,13 @@ export const App = () => {
 
   return (
     <BrowserRouter>
-      <Header />
-      <Route path='/login' component={screen.Login} />
-      <Route path='/register' component={screen.Register} />
+      <Appbar />
+
+      <Route path='/login' component={screen.Login} exact />
+      <Route path='/register' component={screen.Register} exact />
       <Route
         path='/chatroom/:id'
         render={(e) => <screen.Chatroom {...e} socket={socket} />}
-        exact
       />
       <Route
         path='/'

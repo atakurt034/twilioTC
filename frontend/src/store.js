@@ -2,7 +2,7 @@ import { combineReducers, createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
-import { user } from './reducers/index'
+import { user, chatroom } from './reducers/index'
 
 const middleware = [thunk]
 
@@ -17,6 +17,7 @@ const reducers = combineReducers({
   userAccept: user.acceptReducer,
   userDetails: user.detailsReducer,
   userAddContact: user.addContactReducer,
+  chatroomPrivateCreate: chatroom.privateCreateReducer,
 })
 
 const initialState = {

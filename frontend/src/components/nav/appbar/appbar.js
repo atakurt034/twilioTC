@@ -3,11 +3,10 @@ import { useStyles } from './styles'
 
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
-import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import MenuItem from '@material-ui/core/MenuItem'
 import Menu from '@material-ui/core/Menu'
-import MenuIcon from '@material-ui/icons/Menu'
+
 import AccountCircle from '@material-ui/icons/AccountCircle'
 
 import { useDispatch, useSelector } from 'react-redux'
@@ -15,7 +14,10 @@ import { UA } from '../../../actions/index'
 import { Avatar, Button } from '@material-ui/core'
 import { StyledBadge } from './styles'
 
-export const Appbar = () => {
+import { Sidebar } from '../sidebar/sidebar'
+import { withRouter } from 'react-router'
+
+const App = () => {
   const dispatch = useDispatch()
   const classes = useStyles()
 
@@ -76,14 +78,7 @@ export const Appbar = () => {
     <div className={classes.grow}>
       <AppBar className={classes.appbar} position='static' elevation={0}>
         <Toolbar>
-          <IconButton
-            edge='start'
-            className={classes.menuButton}
-            color='inherit'
-            aria-label='open drawer'
-          >
-            <MenuIcon />
-          </IconButton>
+          <Sidebar />
           <Typography className={classes.title} variant='h6' noWrap>
             FoneAPI Hangout
           </Typography>
@@ -110,3 +105,5 @@ export const Appbar = () => {
     </div>
   )
 }
+
+export const Appbar = withRouter(App)
