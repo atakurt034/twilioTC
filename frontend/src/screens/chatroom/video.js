@@ -44,7 +44,6 @@ export const Video = ({ socket, chatroomId }) => {
         )
       )
     }
-    return () => {}
   }, [userDetails])
 
   const getStreams = (streams) => {
@@ -64,7 +63,8 @@ export const Video = ({ socket, chatroomId }) => {
         .catch(console.log)
     }
     return () => {
-      streamTrack.current.getTracks().forEach((track) => track.stop())
+      navigator.mediaDevices &&
+        streamTrack.current.getTracks().forEach((track) => track.stop())
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -147,7 +147,7 @@ export const Video = ({ socket, chatroomId }) => {
   }
 
   return (
-    <Grid container>
+    <Grid container style={{ alignItems: 'center', height: '100%' }}>
       {!callAnswerd ? (
         calling ? (
           caller === userDetails.name ? (

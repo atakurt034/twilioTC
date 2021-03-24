@@ -40,7 +40,7 @@ export const App = () => {
       <Route path='/register' component={screen.Register} exact />
       <Route
         path='/chatroom/:id'
-        render={(e) => <screen.Chatroom {...e} socket={socket} />}
+        render={(e) => <screen.Chatroom {...e} socket={socket} exact />}
       />
       <Route
         path='/'

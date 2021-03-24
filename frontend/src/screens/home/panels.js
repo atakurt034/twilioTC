@@ -3,9 +3,10 @@ import React from 'react'
 import { Typography, InputBase, Button } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search'
 
-import { AddButton } from '../../components/addbutton'
 import { LoadingButton } from '../../components/loadingbutton'
 import { UserList } from './userList'
+
+import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { USER } from '../../constants/index'
@@ -67,12 +68,12 @@ export const Panels = (classes, userInfo, history) => {
     dispatch({ type: USER.ACCEPT_RESET })
   }
 
+  const createGroupHandler = (name) => {}
+
   const add_false = (
     <div>
       <Button
-        size='small'
-        style={{ padding: 0 }}
-        startIcon={<AddButton />}
+        startIcon={<AddCircleIcon style={{ color: 'green', fontSize: 40 }} />}
         onClick={addContactHandler}
       >
         <Typography style={{ flex: 1 }}>Add Contacts</Typography>
@@ -130,7 +131,8 @@ export const Panels = (classes, userInfo, history) => {
     invited,
     UserList,
     loading,
-    history
+    history,
+    createGroupHandler
   )
 
   return { contacts, call, chat }

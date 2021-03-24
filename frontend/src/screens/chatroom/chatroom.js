@@ -16,19 +16,56 @@ import SendIcon from '@material-ui/icons/Send'
 
 import { useStyles } from './styles'
 
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { CA } from '../../actions/index'
+import { Skeletons } from '../../components/skeletons'
+import { Message, OldMessage } from './classHelpers'
 
 import { Video } from './video'
 
 export const Chatroom = ({ match, socket, history }) => {
+  const dispatch = useDispatch()
   const classes = useStyles()
   const chatroomId = match.params.id
   const text = React.useRef()
   const scrollToView = React.useRef()
 
   const { userInfo } = useSelector((state) => state.userLogin)
+  const { msg, loading, error } = useSelector(
+    (state) => state.getPrivateMessage
+  )
 
   const [messages, setMessages] = React.useState([])
+
+  const scrollToBottom = () => {
+    if (scrollToView.current) {
+      scrollToView.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      })
+    } else {
+      return
+    }
+  }
+
+  React.useEffect(() => {
+    dispatch(CA.getPrivateMessages(chatroomId))
+    return () => {
+      setMessages([])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  React.useEffect(() => {
+    if (msg) {
+      const message = msg.messages.map((message) => {
+        return new OldMessage(message, msg)
+      })
+      setMessages(message)
+    }
+    if (!loading) {
+      setTimeout(() => scrollToBottom(), 2000)
+    }
+  }, [msg, loading])
 
   React.useEffect(() => {
     if (!userInfo) {
@@ -41,30 +78,6 @@ export const Chatroom = ({ match, socket, history }) => {
       })
     }
   }, [chatroomId, socket, userInfo, history])
-
-  class Message {
-    constructor(data) {
-      this.message = data.message
-      this.name = data.name
-      this.image = data.image
-      this.chatroomId = data.chatroomId
-      this.userId = data.userId
-    }
-    myMessage(userInfo) {
-      return this.userId === userInfo._id
-    }
-  }
-
-  const scrollToBottom = () => {
-    if (scrollToView.current) {
-      scrollToView.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'end',
-      })
-    } else {
-      return
-    }
-  }
 
   React.useEffect(() => {
     if (socket) {
@@ -120,6 +133,9 @@ export const Chatroom = ({ match, socket, history }) => {
                   textAlign: 'right',
                 }}
               >
+                {loading && (
+                  <Skeletons variant='text' height='90px' width='90%' />
+                )}
                 {messages.map((message, index) => {
                   return (
                     <Paper

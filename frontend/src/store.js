@@ -18,6 +18,7 @@ const reducers = combineReducers({
   userDetails: user.detailsReducer,
   userAddContact: user.addContactReducer,
   chatroomPrivateCreate: chatroom.privateCreateReducer,
+  getPrivateMessage: chatroom.privateGetMessagesReducer,
 })
 
 const initialState = {

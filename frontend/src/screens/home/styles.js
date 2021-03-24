@@ -18,7 +18,8 @@ export const useStyles = makeStyles((theme) => ({
   },
   cardActions: {
     display: 'flex',
-    justifyContent: 'space-between',
+    padding: 5,
+    alignItems: 'center',
   },
   search: {
     position: 'relative',

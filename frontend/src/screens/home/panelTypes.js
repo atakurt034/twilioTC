@@ -1,12 +1,19 @@
 import React from 'react'
 
-import { Button, Card, Divider, Paper, Typography } from '@material-ui/core'
+import {
+  Button,
+  Card,
+  Divider,
+  IconButton,
+  InputBase,
+  Paper,
+  Typography,
+} from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { AddButton } from '../../components/addbutton'
-
-import { Link } from 'react-router-dom'
+import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 import { ContactList } from './contactList'
+import { ChatList } from './chatList'
 import { UA } from '../../actions/index'
 
 export const PanelTypes = (
@@ -22,8 +29,10 @@ export const PanelTypes = (
   invited,
   UserList,
   loading,
-  history
+  history,
+  createGroupHandler
 ) => {
+  const createGroupRef = React.useRef()
   const dispatch = useDispatch()
   const { userDetails } = useSelector((state) => state.userDetails)
 
@@ -40,7 +49,7 @@ export const PanelTypes = (
         room.users.map(
           (user) =>
             user._id !== userDetails._id &&
-            setRooms((prev) => [...prev, { name: user.name, id: room._id }])
+            setRooms((prev) => [...prev, { name: user.name, _id: room._id }])
         )
       )
     }
@@ -48,6 +57,10 @@ export const PanelTypes = (
       setRooms([])
     }
   }, [userDetails])
+
+  const createGroupChatHandler = () => {
+    console.log(createGroupRef.current.value)
+  }
 
   const contacts = (
     <Paper className={classes.paper}>
@@ -121,24 +134,35 @@ export const PanelTypes = (
   )
 
   const chat = (
-    <Card className={classes.paper}>
+    <Paper className={classes.paper}>
       <div className={classes.cardActions}>
-        <AddButton />
-        <Typography style={{ flex: 1 }}>New conversation</Typography>
+        <IconButton style={{ padding: 5 }} onClick={createGroupChatHandler}>
+          <AddCircleIcon style={{ color: 'green', fontSize: 40 }} />
+        </IconButton>
+
+        <InputBase
+          onKeyUp={createGroupChatHandler}
+          inputRef={createGroupRef}
+          style={{ padding: 5 }}
+          placeholder='Create Group Chat'
+        />
       </div>
       <Divider />
       {rooms.map((room) => (
-        <Link key={room.id} to={`/chatroom/${room.id}`}>
-          <p>{room.name}</p>
-        </Link>
+        <ChatList
+          key={room._id}
+          id={room._id}
+          name={room.name}
+          history={history}
+        />
       ))}
-    </Card>
+    </Paper>
   )
 
   const call = (
     <Card className={classes.paper}>
       <div className={classes.cardActions}>
-        <AddButton />
+        <AddCircleIcon style={{ color: 'green', fontSize: 40 }} />
         <Typography style={{ flex: 1 }}>New call</Typography>
       </div>
       <Divider />

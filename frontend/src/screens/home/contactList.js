@@ -1,6 +1,12 @@
 import React from 'react'
 
-import { Avatar, Grid, IconButton, Typography } from '@material-ui/core'
+import {
+  Avatar,
+  Container,
+  IconButton,
+  Paper,
+  Typography,
+} from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import { CA } from '../../actions/index'
 import { CHAT } from '../../constants/index'
@@ -31,8 +37,7 @@ export const ContactList = ({ contact, history }) => {
   }
 
   return (
-    <Grid
-      container
+    <Container
       style={{
         justifyContent: 'center',
         alignItems: 'center',
@@ -48,26 +53,37 @@ export const ContactList = ({ contact, history }) => {
           <ModalMessage variant='error'>{error}</ModalMessage>
         )
       )}
-      <Grid item xs={8} style={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar src={contact.image} alt={contact.name} />
-        <Typography style={{ textAlign: 'left', padding: 5 }}>
-          {contact.name}
-        </Typography>
-      </Grid>
-      <Grid item xs={4}>
-        <IconButton
-          variant='outlined'
-          onClick={() => clickHandler(contact._id)}
-        >
-          <ChatIcon color='primary' fontSize='small' />
-        </IconButton>
-        <IconButton variant='outlined'>
-          <PhoneIcon style={{ color: 'green' }} fontSize='small' />
-        </IconButton>
-        <IconButton variant='outlined'>
-          <DeleteForeverIcon color='secondary' fontSize='small' />
-        </IconButton>
-      </Grid>
-    </Grid>
+      <Paper
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+        }}
+        elevation={12}
+      >
+        <div style={{ display: 'flex', padding: 5 }}>
+          <Avatar src={contact.image} alt={contact.name} />
+          <Typography style={{ textAlign: 'left', padding: 5 }}>
+            {contact.name}
+          </Typography>
+        </div>
+
+        <div>
+          <IconButton
+            variant='outlined'
+            onClick={() => clickHandler(contact._id)}
+          >
+            <ChatIcon color='primary' fontSize='small' />
+          </IconButton>
+          <IconButton variant='outlined'>
+            <PhoneIcon style={{ color: 'green' }} fontSize='small' />
+          </IconButton>
+          <IconButton variant='outlined'>
+            <DeleteForeverIcon color='secondary' fontSize='small' />
+          </IconButton>
+        </div>
+      </Paper>
+    </Container>
   )
 }

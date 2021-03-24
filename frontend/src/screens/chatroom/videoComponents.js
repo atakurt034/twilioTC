@@ -9,6 +9,7 @@ import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled'
 
 import { Button, Grid, IconButton, Typography } from '@material-ui/core'
 import PhoneIcon from '@material-ui/icons/Phone'
+import './styles.scss'
 
 export const CallUser = ({ callUser, calling, userName }) => {
   return (
@@ -18,9 +19,7 @@ export const CallUser = ({ callUser, calling, userName }) => {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
       }}
     >
       <IconButton
@@ -46,7 +45,6 @@ export const MeCalling = ({ userName, cancelCall }) => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
       }}
     >
       <Button
@@ -60,6 +58,11 @@ export const MeCalling = ({ userName, cancelCall }) => {
       <Typography style={{ textAlign: 'center', padding: 5 }} variant='h6'>
         {`calling ${userName}`}
       </Typography>
+      <div class='snippet' data-title='.dot-pulse'>
+        <div class='stage'>
+          <div class='dot-pulse'></div>
+        </div>
+      </div>
     </Grid>
   )
 }
@@ -74,21 +77,29 @@ export const UserHasCall = ({ answerCall, caller }) => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
       }}
     >
       <Button
         variant='contained'
-        color='primary'
+        style={{ backgroundColor: 'green', color: '#fff' }}
         onClick={answerCall}
         startIcon={<PhoneIcon />}
       >
         Answer Call
       </Button>
 
-      <Typography style={{ textAlign: 'center', padding: 5 }} variant='h6'>
+      <Typography
+        component='span'
+        style={{ textAlign: 'center', padding: 5 }}
+        variant='h6'
+      >
         {`${caller} is calling...`}
       </Typography>
+      <div class='snippet' data-title='.dot-pulse'>
+        <div class='stage'>
+          <div class='dot-pulse'></div>
+        </div>
+      </div>
     </Grid>
   )
 }

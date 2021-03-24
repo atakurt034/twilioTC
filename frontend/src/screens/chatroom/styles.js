@@ -27,7 +27,7 @@ export const useStyles = makeStyles((theme) => ({
   reciever: { textAlign: 'left', float: 'left' },
   text: { margin: '0 10px' },
   myMessage: {
-    padding: 5,
+    padding: 15,
     margin: '5px 0',
     width: '80%',
     float: 'right',
@@ -44,9 +44,9 @@ export const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.success.light,
   },
   show: {
-    visibility: 'visible',
+    display: 'block',
   },
   hidden: {
-    visibility: 'hidden',
+    display: 'none',
   },
 }))
