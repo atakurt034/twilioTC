@@ -54,7 +54,9 @@ const server = createServer(app).listen(
   console.log(`Server running at PORT: ${PORT}`.yellow.bold)
 )
 
-const io = new Server(server, { cors: { origin: '*' } })
+const io = new Server(server, {
+  cors: { origin: '*', methods: ['GET', 'POST'] },
+})
 
 // ************* socket.io *****************//
 io.use(async (socket, next) => {
@@ -74,4 +76,6 @@ io.on('connection', (socket) => {
   socket.on('privateInput', pr.privateInput(io, socket))
   socket.on('privateCall', pr.privateCall(io, socket))
   socket.on('privateCallAnswer', pr.privateCallAnswer(io, socket))
+  socket.on('privateCancelCall', pr.privateCancelCall(io, socket))
+  socket.on('callEnd', pr.callEnd(io, socket))
 })

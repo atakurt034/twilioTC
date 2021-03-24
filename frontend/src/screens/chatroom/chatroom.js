@@ -37,7 +37,7 @@ export const Chatroom = ({ match, socket, history }) => {
     if (socket) {
       socket.emit('private', { chatroomId })
       socket.on('privateJoin', (data) => {
-        console.log(data)
+        // console.log(data)
       })
     }
   }, [chatroomId, socket, userInfo, history])
@@ -54,7 +54,6 @@ export const Chatroom = ({ match, socket, history }) => {
       return this.userId === userInfo._id
     }
   }
-  console.log(messages)
 
   const scrollToBottom = () => {
     if (scrollToView.current) {

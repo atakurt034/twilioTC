@@ -43,4 +43,10 @@ export const useStyles = makeStyles((theme) => ({
     width: '80%',
     backgroundColor: theme.palette.success.light,
   },
+  show: {
+    visibility: 'visible',
+  },
+  hidden: {
+    visibility: 'hidden',
+  },
 }))
