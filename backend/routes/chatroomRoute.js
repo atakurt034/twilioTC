@@ -6,4 +6,8 @@ const router = Router()
 
 router.route('/private').post(auth.loginRequired, chatroom.createPrivateRoom)
 
+router
+  .route('/private/:id')
+  .get(auth.loginRequired, chatroom.getPrivateMessages)
+
 export default router

@@ -1,3 +1,6 @@
+import { PrivateMessage } from '../models/privateMessageModel.js'
+import { Privateroom } from '../models/privateroomModel.js'
+
 export const privateJoin = (io, socket) => async ({ chatroomId }) => {
   socket.join(chatroomId)
   io.to(chatroomId).emit('privateJoin', { userId: socket.userId })
@@ -8,13 +11,25 @@ export const privateInput = (io, socket) => async ({
   name,
   image,
   chatroomId,
+  userId,
 }) => {
+  const newMessage = await PrivateMessage.create({
+    message,
+    user: userId,
+    chatroom: chatroomId,
+  })
+
+  await Privateroom.updateOne(
+    { _id: chatroomId },
+    { $push: { messages: newMessage } }
+  )
+
   io.to(chatroomId).emit('privateOutput', {
     message,
     name,
     image,
     chatroomId,
-    userId: socket.userId,
+    userId,
   })
 }
 
