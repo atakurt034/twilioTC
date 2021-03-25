@@ -18,6 +18,7 @@ export const Video = ({ socket, chatroomId }) => {
   const dispatch = useDispatch()
   const classes = useStyles()
   const { userDetails } = useSelector((state) => state.userDetails)
+
   const myVideo = React.useRef()
   const userVideo = React.useRef()
   const streamTrack = React.useRef()
@@ -30,6 +31,8 @@ export const Video = ({ socket, chatroomId }) => {
 
   const [callAnswerd, setCallAnswered] = React.useState(false)
   const [stream, setStream] = React.useState()
+  const [mute, setMute] = React.useState(true)
+  const [shareScreen, setShareScreen] = React.useState(false)
 
   React.useEffect(() => {
     dispatch(UA.getDetails())
@@ -53,7 +56,18 @@ export const Video = ({ socket, chatroomId }) => {
   }
 
   React.useEffect(() => {
-    if (navigator.mediaDevices) {
+    if (shareScreen) {
+      navigator.mediaDevices.getDisplayMedia().then((streams) => {
+        socket.emit('shareScreen', { chatroomId, streams })
+        getStreams(streams)
+      })
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shareScreen, socket])
+
+  React.useEffect(() => {
+    if (navigator.mediaDevices && !shareScreen) {
       navigator.mediaDevices
         .getUserMedia({
           video: true,
@@ -84,7 +98,12 @@ export const Video = ({ socket, chatroomId }) => {
         setCallAnswered(false)
         setCalling(false)
       })
+      socket.on('sharingSreen', () => {
+        setCallAnswered(false)
+        setTimeout(() => setCallAnswered(true), 1000)
+      })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, userDetails])
 
   const callUser = async () => {
@@ -98,8 +117,8 @@ export const Video = ({ socket, chatroomId }) => {
         socket.emit('privateCall', {
           chatroomId,
           signal,
-          caller: userDetails.name,
-          callerId: userDetails._id,
+          caller: userDetails && userDetails.name,
+          callerId: userDetails && userDetails._id,
         })
       })
       peer1.on('stream', (str) => {
@@ -133,7 +152,10 @@ export const Video = ({ socket, chatroomId }) => {
   const cancelCall = () => {
     setCalling(false)
     if (socket) {
-      socket.emit('privateCancelCall', { chatroomId, id: userDetails._id })
+      socket.emit('privateCancelCall', {
+        chatroomId,
+        id: userDetails && userDetails._id,
+      })
     }
   }
 
@@ -183,12 +205,18 @@ export const Video = ({ socket, chatroomId }) => {
               zIndex: 10,
             }}
           >
-            <video ref={myVideo} playsInline autoPlay muted width='100%' />
+            <video
+              ref={myVideo}
+              playsInline
+              autoPlay
+              muted={mute}
+              width='100%'
+            />
           </div>
           <video
             playsInline
             autoPlay
-            muted={!callAnswerd}
+            muted={mute}
             ref={userVideo}
             width='100%'
             height='100%'
@@ -202,7 +230,13 @@ export const Video = ({ socket, chatroomId }) => {
             textAlign: 'center',
           }}
         >
-          <VideoControls endCall={endCall} />
+          <VideoControls
+            endCall={endCall}
+            mute={mute}
+            setMute={setMute}
+            shareScreen={shareScreen}
+            setShareScreen={setShareScreen}
+          />
         </div>
       </div>
     </Grid>

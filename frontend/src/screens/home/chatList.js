@@ -1,36 +1,46 @@
-import { Button, IconButton, Paper, Typography } from '@material-ui/core'
+import { Button, Grid, IconButton, Paper, Typography } from '@material-ui/core'
 import React from 'react'
 
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import ChatIcon from '@material-ui/icons/Chat'
 import { withRouter } from 'react-router-dom'
 
-const List = ({ id, name, history }) => {
+const List = ({ id, name, history, type }) => {
   const clickHandler = (id) => {
-    history.push(`/chatroom/${id}`)
+    if (type === 'Public') {
+      history.push(`/public/${id}`)
+    } else {
+      history.push(`/chatroom/${id}`)
+    }
   }
 
   return (
-    <Paper
-      style={{
-        display: 'flex',
-        padding: 5,
-        margin: 5,
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}
-      key={id}
-      elevation={12}
-    >
-      <Button
-        startIcon={<ChatIcon fontSize='small' />}
-        onClick={() => clickHandler(id)}
+    <Paper elevation={12}>
+      <Grid
+        container
+        key={id}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
       >
-        <Typography style={{ marginLeft: 5 }}>{name}</Typography>
-      </Button>
-      <IconButton>
-        <DeleteForeverIcon color='secondary' fontSize='small' />
-      </IconButton>
+        <Grid item xs={6}>
+          <Button
+            startIcon={<ChatIcon fontSize='small' />}
+            onClick={() => clickHandler(id, type)}
+          >
+            <Typography>{name}</Typography>
+          </Button>
+        </Grid>
+        <Grid item xs={4}>
+          <Typography>{type}</Typography>
+        </Grid>
+        <Grid item xs={2}>
+          <IconButton>
+            <DeleteForeverIcon color='secondary' fontSize='small' />
+          </IconButton>
+        </Grid>
+      </Grid>
     </Paper>
   )
 }

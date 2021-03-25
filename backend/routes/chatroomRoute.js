@@ -10,4 +10,9 @@ router
   .route('/private/:id')
   .get(auth.loginRequired, chatroom.getPrivateMessages)
 
+// public routes
+
+router.route('/').post(auth.loginRequired, chatroom.createPublicRoom)
+router.route('/:id').get(auth.loginRequired, chatroom.getPublicMessages)
+
 export default router

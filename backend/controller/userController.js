@@ -91,6 +91,10 @@ export const getUserDetails = asyncHandler(async (req, res) => {
         path: 'privaterooms',
         populate: { path: 'users', select: 'name' },
       })
+      .populate({
+        path: 'chatrooms',
+        populate: { path: 'users', select: 'name' },
+      })
     res.status(200).json(user)
   } catch (error) {
     res.status(400)

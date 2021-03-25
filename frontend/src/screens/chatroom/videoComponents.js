@@ -4,8 +4,13 @@ import { makeStyles } from '@material-ui/core/styles'
 import BottomNavigation from '@material-ui/core/BottomNavigation'
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
 import RestoreIcon from '@material-ui/icons/Restore'
-import LocationOnIcon from '@material-ui/icons/LocationOn'
 import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled'
+import MicOffIcon from '@material-ui/icons/MicOff'
+import VideocamOffIcon from '@material-ui/icons/VideocamOff'
+import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows'
+import DesktopAccessDisabledIcon from '@material-ui/icons/DesktopAccessDisabled'
+import MicIcon from '@material-ui/icons/Mic'
+import VideocamIcon from '@material-ui/icons/Videocam'
 
 import { Button, Grid, IconButton, Typography } from '@material-ui/core'
 import PhoneIcon from '@material-ui/icons/Phone'
@@ -112,15 +117,29 @@ const useStyles = makeStyles({
   endCall: {
     color: 'red',
   },
+  muted: { color: 'blue' },
+  unmuted: { color: 'grey' },
 })
 
-export const VideoControls = ({ endCall }) => {
+export const VideoControls = ({
+  endCall,
+  mute,
+  setMute,
+  shareScreen,
+  setShareScreen,
+}) => {
   const classess = useStyles()
 
   const changeHandler = (event, value) => {
     switch (value) {
       case 'end':
         endCall()
+        break
+      case 'mute':
+        setMute((prev) => !prev)
+        break
+      case 'screen':
+        setShareScreen((prev) => !prev)
         break
 
       default:
@@ -134,14 +153,88 @@ export const VideoControls = ({ endCall }) => {
       showLabels
       className={classess.root}
     >
-      <BottomNavigationAction label='Recents' icon={<RestoreIcon />} />
+      <BottomNavigationAction
+        value='screen'
+        label='Share Screen'
+        className={shareScreen ? classess.muted : classess.unmuted}
+        icon={<RestoreIcon />}
+      />
       <BottomNavigationAction
         value='end'
         label='End Call'
         className={classess.endCall}
         icon={<PhoneDisabledIcon />}
       />
-      <BottomNavigationAction label='Nearby' icon={<LocationOnIcon />} />
+      <BottomNavigationAction
+        className={mute ? classess.muted : classess.unmuted}
+        value='mute'
+        label='Mute'
+        icon={mute ? <MicIcon /> : <MicOffIcon />}
+      />
+    </BottomNavigation>
+  )
+}
+
+export const PublicVideoControls = ({
+  setMute,
+  setShareScreen,
+  setOffScreen,
+  type,
+}) => {
+  const classess = useStyles()
+  const [mute, setMute1] = React.useState(false)
+  const [shareScreen, setShareScreen1] = React.useState(false)
+  const [offScreen, setOffScreen1] = React.useState(false)
+
+  const changeHandler = (event, value) => {
+    if (type === 'myVideo') {
+      switch (value) {
+        case 'offScreen':
+          setOffScreen1((prev) => !prev)
+          setOffScreen(offScreen)
+          break
+        case 'mute':
+          setMute1((prev) => !prev)
+          setMute((prev) => !prev)
+          break
+        case 'screen':
+          setShareScreen1((prev) => !prev)
+          setShareScreen(shareScreen)
+          break
+        default:
+          break
+      }
+    }
+  }
+
+  return (
+    <BottomNavigation
+      onChange={changeHandler}
+      showLabels
+      className={classess.root}
+    >
+      <BottomNavigationAction
+        value='screen'
+        label={shareScreen ? 'unshare' : 'share Screen'}
+        className={shareScreen ? classess.muted : classess.unmuted}
+        icon={
+          shareScreen ? <DesktopAccessDisabledIcon /> : <DesktopWindowsIcon />
+        }
+      />
+
+      <BottomNavigationAction
+        value='offScreen'
+        label={offScreen ? 'turn on Video' : 'turn off Video'}
+        className={offScreen ? classess.muted : classess.unmuted}
+        icon={offScreen ? <VideocamOffIcon /> : <VideocamIcon />}
+      />
+
+      <BottomNavigationAction
+        className={mute ? classess.muted : classess.unmuted}
+        value='mute'
+        label={mute ? 'unmute' : 'Mute'}
+        icon={mute ? <MicOffIcon /> : <MicIcon />}
+      />
     </BottomNavigation>
   )
 }

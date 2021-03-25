@@ -10,7 +10,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { USER } from '../../constants/index'
-import { UA } from '../../actions/index'
+import { UA, CA } from '../../actions/index'
 
 import { PanelTypes } from './panelTypes'
 
@@ -68,7 +68,21 @@ export const Panels = (classes, userInfo, history) => {
     dispatch({ type: USER.ACCEPT_RESET })
   }
 
-  const createGroupHandler = (name) => {}
+  const createGroupHandler = (event, ref) => {
+    const { key, keyCode } = event
+    if (key === 'Enter' || keyCode === 'Enter' || keyCode === 13) {
+      const answer = window.confirm(`Create ${ref.current.value} Group?`)
+      if (answer) {
+        dispatch(CA.createPublicRoom({ name: ref.current.value }))
+      }
+    } else if (event._reactName === 'onClick') {
+      console.log(event._reactName)
+      const answer = window.confirm(`Create ${ref.current.value} Group?`)
+      if (answer) {
+        dispatch(CA.createPublicRoom({ name: ref.current.value }))
+      }
+    }
+  }
 
   const add_false = (
     <div>

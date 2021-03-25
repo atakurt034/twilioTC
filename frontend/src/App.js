@@ -35,13 +35,18 @@ export const App = () => {
       <div>
         <Appbar />
       </div>
+      <Route
+        path='/chatroom/:id'
+        render={(e) => <screen.Chatroom {...e} socket={socket} />}
+      />
+      <Route
+        path='/public/:id'
+        render={(e) => <screen.PublicChatroom {...e} socket={socket} exact />}
+      />
 
       <Route path='/login' component={screen.Login} exact />
       <Route path='/register' component={screen.Register} exact />
-      <Route
-        path='/chatroom/:id'
-        render={(e) => <screen.Chatroom {...e} socket={socket} exact />}
-      />
+
       <Route
         path='/'
         render={(e) => <screen.Home {...e} socket={socket} />}

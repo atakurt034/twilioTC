@@ -15,6 +15,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle'
 import { ContactList } from './contactList'
 import { ChatList } from './chatList'
 import { UA } from '../../actions/index'
+import { ModalMessage } from '../../components/modalmessage'
 
 export const PanelTypes = (
   classes,
@@ -35,13 +36,16 @@ export const PanelTypes = (
   const createGroupRef = React.useRef()
   const dispatch = useDispatch()
   const { userDetails } = useSelector((state) => state.userDetails)
+  const { chatroom, error: errorPublic } = useSelector(
+    (state) => state.chatroomPublicCreate
+  )
 
   const [rooms, setRooms] = React.useState([])
 
   React.useEffect(() => {
     dispatch(UA.getDetails())
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [chatroom])
 
   React.useEffect(() => {
     if (userDetails) {
@@ -49,7 +53,20 @@ export const PanelTypes = (
         room.users.map(
           (user) =>
             user._id !== userDetails._id &&
-            setRooms((prev) => [...prev, { name: user.name, _id: room._id }])
+            setRooms((prev) => [
+              ...prev,
+              { name: user.name, _id: room._id, type: 'Private' },
+            ])
+        )
+      )
+      userDetails.chatrooms.map((room) =>
+        room.users.map(
+          (user) =>
+            user._id === userDetails._id &&
+            setRooms((prev) => [
+              ...prev,
+              { name: room.name, _id: room._id, type: 'Public' },
+            ])
         )
       )
     }
@@ -57,10 +74,6 @@ export const PanelTypes = (
       setRooms([])
     }
   }, [userDetails])
-
-  const createGroupChatHandler = () => {
-    console.log(createGroupRef.current.value)
-  }
 
   const contacts = (
     <Paper className={classes.paper}>
@@ -135,13 +148,19 @@ export const PanelTypes = (
 
   const chat = (
     <Paper className={classes.paper}>
+      {errorPublic && (
+        <ModalMessage variant='error'>{errorPublic}</ModalMessage>
+      )}
       <div className={classes.cardActions}>
-        <IconButton style={{ padding: 5 }} onClick={createGroupChatHandler}>
+        <IconButton
+          style={{ padding: 5 }}
+          onClick={(e) => createGroupHandler(e, createGroupRef)}
+        >
           <AddCircleIcon style={{ color: 'green', fontSize: 40 }} />
         </IconButton>
 
         <InputBase
-          onKeyUp={createGroupChatHandler}
+          onKeyUp={(e) => createGroupHandler(e, createGroupRef)}
           inputRef={createGroupRef}
           style={{ padding: 5 }}
           placeholder='Create Group Chat'
@@ -153,6 +172,7 @@ export const PanelTypes = (
           key={room._id}
           id={room._id}
           name={room.name}
+          type={room.type}
           history={history}
         />
       ))}

@@ -19,7 +19,7 @@ import { useStyles } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { CA } from '../../actions/index'
 import { Skeletons } from '../../components/skeletons'
-import { Message, OldMessage } from './classHelpers'
+import { Message, OldMessage, SendMessage } from './classHelpers'
 
 import { Video } from './video'
 
@@ -31,9 +31,7 @@ export const Chatroom = ({ match, socket, history }) => {
   const scrollToView = React.useRef()
 
   const { userInfo } = useSelector((state) => state.userLogin)
-  const { msg, loading, error } = useSelector(
-    (state) => state.getPrivateMessage
-  )
+  const { msg, loading } = useSelector((state) => state.getPrivateMessage)
 
   const [messages, setMessages] = React.useState([])
 
@@ -58,14 +56,14 @@ export const Chatroom = ({ match, socket, history }) => {
   React.useEffect(() => {
     if (msg) {
       const message = msg.messages.map((message) => {
-        return new OldMessage(message, msg)
+        return new OldMessage(message, userInfo)
       })
       setMessages(message)
     }
     if (!loading) {
       setTimeout(() => scrollToBottom(), 2000)
     }
-  }, [msg, loading])
+  }, [msg, loading, userInfo])
 
   React.useEffect(() => {
     if (!userInfo) {
@@ -81,7 +79,7 @@ export const Chatroom = ({ match, socket, history }) => {
 
   React.useEffect(() => {
     if (socket) {
-      socket.on('privateOutput', (data) => {
+      socket.on('messageOutput', (data) => {
         const message = new Message(data, userInfo)
         setMessages((prev) => [...prev, message])
 
@@ -92,16 +90,15 @@ export const Chatroom = ({ match, socket, history }) => {
   }, [socket])
 
   const clickHandler = () => {
-    if (socket) {
-      socket.emit('privateInput', {
-        message: text.current.value,
-        name: userInfo.name,
-        image: userInfo.image,
-        chatroomId,
-        userId: userInfo._id,
-      })
-      text.current.value = ''
-    }
+    const newMessage = new SendMessage(
+      text.current.value,
+      chatroomId,
+      userInfo,
+      socket,
+      'private'
+    )
+    newMessage.send()
+    text.current.value = ''
   }
 
   const changeHandler = (event) => {
@@ -141,13 +138,13 @@ export const Chatroom = ({ match, socket, history }) => {
                     <Paper
                       key={index}
                       className={
-                        message.myMessage(userInfo)
+                        message.myMessage()
                           ? classes.myMessage
                           : classes.userMessage
                       }
                     >
                       <div>
-                        {!message.myMessage(userInfo) && (
+                        {!message.myMessage() && (
                           <>
                             <Chip
                               size='small'
