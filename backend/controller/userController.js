@@ -198,3 +198,83 @@ export const acceptInvite = asyncHandler(async (req, res) => {
     throw new Error(error)
   }
 })
+
+/**
+ * route: /api/user/invite
+ * description: search users
+ * access: Private
+ * method: POST
+ */
+export const userSearch = asyncHandler(async (req, res) => {
+  const key1 = (keyword) => {
+    return keyword
+      ? {
+          name: {
+            $regex: keyword,
+            $options: 'i',
+          },
+        }
+      : {}
+  }
+
+  const key2 = (keyword) => {
+    return keyword
+      ? {
+          email: {
+            $regex: keyword,
+            $options: 'i',
+          },
+        }
+      : {}
+  }
+  const Query = (keywords) => {
+    return [{ ...key1(keywords) }, { ...key2(keywords) }]
+  }
+
+  try {
+    const query = req.body.query
+
+    const user = await User.find({
+      $or: [...Query(query)],
+    }).select('-password -contacts -chatrooms -privaterooms')
+
+    res.status(200).json(user)
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
+})
+
+/**
+ * route: /api/user/invite
+ * description: add contacts
+ * access: Private
+ * method: PUT
+ */
+export const sendInvite = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user //login user's id
+    const userId = req.body.id //new contact's email
+    const { chatroomId } = req.body //new contact's email
+    const user = await User.findById(_id)
+    const contacts = await User.findById(userId).select(
+      '-password -privaterooms'
+    )
+
+    const alreadyInvited = await contacts.chatrooms.find(
+      (chatroom) => chatroom.toString() === chatroomId.toString()
+    )
+
+    if (alreadyInvited) {
+      throw new Error('Already Invited')
+    }
+
+    if (contacts) {
+      res.status(200)
+      res.json(contacts)
+    }
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
+})

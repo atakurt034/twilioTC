@@ -14,6 +14,11 @@ router
   .post(auth.loginRequired, user.search)
   .put(auth.loginRequired, user.acceptInvite)
 
-router.route('/invite').put(auth.loginRequired, user.addContacts)
+router
+  .route('/invite')
+  .put(auth.loginRequired, user.addContacts)
+  .post(auth.loginRequired, user.userSearch)
+
+router.route('/invites').post(auth.loginRequired, user.sendInvite)
 
 export default router

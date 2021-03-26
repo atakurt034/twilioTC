@@ -36,5 +36,5 @@ export const callEnd = (io, socket) => async ({ chatroomId, id }) => {
   io.to(chatroomId).emit('callEnded')
 }
 export const shareScreen = (io, socket) => async ({ chatroomId, streams }) => {
-  io.to(chatroomId).emit('sharingSreen', streams)
+  io.to(chatroomId).emit('sharingSreen', { streams })
 }

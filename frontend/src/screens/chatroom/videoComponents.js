@@ -3,7 +3,6 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import BottomNavigation from '@material-ui/core/BottomNavigation'
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
-import RestoreIcon from '@material-ui/icons/Restore'
 import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled'
 import MicOffIcon from '@material-ui/icons/MicOff'
 import VideocamOffIcon from '@material-ui/icons/VideocamOff'
@@ -63,9 +62,9 @@ export const MeCalling = ({ userName, cancelCall }) => {
       <Typography style={{ textAlign: 'center', padding: 5 }} variant='h6'>
         {`calling ${userName}`}
       </Typography>
-      <div class='snippet' data-title='.dot-pulse'>
-        <div class='stage'>
-          <div class='dot-pulse'></div>
+      <div className='snippet' data-title='.dot-pulse'>
+        <div className='stage'>
+          <div className='dot-pulse'></div>
         </div>
       </div>
     </Grid>
@@ -100,9 +99,9 @@ export const UserHasCall = ({ answerCall, caller }) => {
       >
         {`${caller} is calling...`}
       </Typography>
-      <div class='snippet' data-title='.dot-pulse'>
-        <div class='stage'>
-          <div class='dot-pulse'></div>
+      <div className='snippet' data-title='.dot-pulse'>
+        <div className='stage'>
+          <div className='dot-pulse'></div>
         </div>
       </div>
     </Grid>
@@ -121,27 +120,26 @@ const useStyles = makeStyles({
   unmuted: { color: 'grey' },
 })
 
-export const VideoControls = ({
-  endCall,
-  mute,
-  setMute,
-  shareScreen,
-  setShareScreen,
-}) => {
+export const VideoControls = ({ endCall, setMute, setOffScreen }) => {
   const classess = useStyles()
+
+  const [mute, setMute1] = React.useState(false)
+  const [offScreen, setOffScreen1] = React.useState(false)
 
   const changeHandler = (event, value) => {
     switch (value) {
+      case 'offScreen':
+        setOffScreen1((prev) => !prev)
+        setOffScreen()
+        break
+      case 'mute':
+        setMute1((prev) => !prev)
+        setMute()
+        break
+
       case 'end':
         endCall()
         break
-      case 'mute':
-        setMute((prev) => !prev)
-        break
-      case 'screen':
-        setShareScreen((prev) => !prev)
-        break
-
       default:
         break
     }
@@ -154,12 +152,6 @@ export const VideoControls = ({
       className={classess.root}
     >
       <BottomNavigationAction
-        value='screen'
-        label='Share Screen'
-        className={shareScreen ? classess.muted : classess.unmuted}
-        icon={<RestoreIcon />}
-      />
-      <BottomNavigationAction
         value='end'
         label='End Call'
         className={classess.endCall}
@@ -169,7 +161,13 @@ export const VideoControls = ({
         className={mute ? classess.muted : classess.unmuted}
         value='mute'
         label='Mute'
-        icon={mute ? <MicIcon /> : <MicOffIcon />}
+        icon={mute ? <MicOffIcon /> : <MicIcon />}
+      />
+      <BottomNavigationAction
+        value='offScreen'
+        label={offScreen ? 'turn on Video' : 'turn off Video'}
+        className={offScreen ? classess.muted : classess.unmuted}
+        icon={offScreen ? <VideocamOffIcon /> : <VideocamIcon />}
       />
     </BottomNavigation>
   )
@@ -179,7 +177,6 @@ export const PublicVideoControls = ({
   setMute,
   setShareScreen,
   setOffScreen,
-  type,
 }) => {
   const classess = useStyles()
   const [mute, setMute1] = React.useState(false)
@@ -187,23 +184,21 @@ export const PublicVideoControls = ({
   const [offScreen, setOffScreen1] = React.useState(false)
 
   const changeHandler = (event, value) => {
-    if (type === 'myVideo') {
-      switch (value) {
-        case 'offScreen':
-          setOffScreen1((prev) => !prev)
-          setOffScreen(offScreen)
-          break
-        case 'mute':
-          setMute1((prev) => !prev)
-          setMute((prev) => !prev)
-          break
-        case 'screen':
-          setShareScreen1((prev) => !prev)
-          setShareScreen(shareScreen)
-          break
-        default:
-          break
-      }
+    switch (value) {
+      case 'offScreen':
+        setOffScreen1((prev) => !prev)
+        setOffScreen()
+        break
+      case 'mute':
+        setMute1((prev) => !prev)
+        setMute()
+        break
+      case 'screen':
+        setShareScreen1((prev) => !prev)
+        setShareScreen(shareScreen)
+        break
+      default:
+        break
     }
   }
 

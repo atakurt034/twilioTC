@@ -180,7 +180,10 @@ export const Chatroom = ({ match, socket, history }) => {
                   type='text'
                   onKeyUp={changeHandler}
                 />
-                <IconButton className={classes.iconButton}>
+                <IconButton
+                  className={classes.iconButton}
+                  onClick={clickHandler}
+                >
                   <SendIcon />
                 </IconButton>
               </Paper>

@@ -6,10 +6,11 @@ import ChatIcon from '@material-ui/icons/Chat'
 import { withRouter } from 'react-router-dom'
 
 const List = ({ id, name, history, type }) => {
-  const clickHandler = (id) => {
+  const clickHandler = () => {
     if (type === 'Public') {
-      history.push(`/public/${id}`)
+      history.push(`/public/${id}?name=${name}`)
     } else {
+      console.log(name)
       history.push(`/chatroom/${id}`)
     }
   }
@@ -27,7 +28,7 @@ const List = ({ id, name, history, type }) => {
         <Grid item xs={6}>
           <Button
             startIcon={<ChatIcon fontSize='small' />}
-            onClick={() => clickHandler(id, type)}
+            onClick={clickHandler}
           >
             <Typography>{name}</Typography>
           </Button>

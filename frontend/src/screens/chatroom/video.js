@@ -23,6 +23,8 @@ export const Video = ({ socket, chatroomId }) => {
   const userVideo = React.useRef()
   const streamTrack = React.useRef()
   const connectionRef = React.useRef()
+  const myMicFeed = React.useRef()
+  const myVideoFeed = React.useRef()
 
   const [userName, setUserName] = React.useState('')
   const [calling, setCalling] = React.useState(false)
@@ -31,8 +33,6 @@ export const Video = ({ socket, chatroomId }) => {
 
   const [callAnswerd, setCallAnswered] = React.useState(false)
   const [stream, setStream] = React.useState()
-  const [mute, setMute] = React.useState(true)
-  const [shareScreen, setShareScreen] = React.useState(false)
 
   React.useEffect(() => {
     dispatch(UA.getDetails())
@@ -53,21 +53,12 @@ export const Video = ({ socket, chatroomId }) => {
     setStream(streams)
     myVideo.current.srcObject = streams
     streamTrack.current = streams
+    myVideoFeed.current = streams.getVideoTracks()[0]
+    myMicFeed.current = streams.getAudioTracks()[0]
   }
 
   React.useEffect(() => {
-    if (shareScreen) {
-      navigator.mediaDevices.getDisplayMedia().then((streams) => {
-        socket.emit('shareScreen', { chatroomId, streams })
-        getStreams(streams)
-      })
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shareScreen, socket])
-
-  React.useEffect(() => {
-    if (navigator.mediaDevices && !shareScreen) {
+    if (navigator.mediaDevices) {
       navigator.mediaDevices
         .getUserMedia({
           video: true,
@@ -97,10 +88,8 @@ export const Video = ({ socket, chatroomId }) => {
       socket.on('callEnded', () => {
         setCallAnswered(false)
         setCalling(false)
-      })
-      socket.on('sharingSreen', () => {
-        setCallAnswered(false)
-        setTimeout(() => setCallAnswered(true), 1000)
+        setCallerSignal()
+        connectionRef.current.destroy()
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,6 +103,7 @@ export const Video = ({ socket, chatroomId }) => {
         trickle: false,
       })
       peer1.on('signal', (signal) => {
+        console.log(signal)
         socket.emit('privateCall', {
           chatroomId,
           signal,
@@ -139,8 +129,8 @@ export const Video = ({ socket, chatroomId }) => {
       trickle: false,
       stream: stream,
     })
-    peer2.on('signal', (data) => {
-      socket.emit('privateCallAnswer', { chatroomId, signal: data })
+    peer2.on('signal', (signal) => {
+      socket.emit('privateCallAnswer', { chatroomId, signal })
     })
     peer2.on('stream', (stream) => {
       userVideo.current.srcObject = stream
@@ -165,7 +155,10 @@ export const Video = ({ socket, chatroomId }) => {
     if (socket) {
       socket.emit('callEnd', { chatroomId })
     }
-    // connectionRef.current.destroy()
+  }
+
+  const trackHandler = (track) => {
+    track.current.enabled = !track.current.enabled
   }
 
   return (
@@ -205,18 +198,11 @@ export const Video = ({ socket, chatroomId }) => {
               zIndex: 10,
             }}
           >
-            <video
-              ref={myVideo}
-              playsInline
-              autoPlay
-              muted={mute}
-              width='100%'
-            />
+            <video ref={myVideo} playsInline autoPlay muted width='100%' />
           </div>
           <video
             playsInline
             autoPlay
-            muted={mute}
             ref={userVideo}
             width='100%'
             height='100%'
@@ -232,10 +218,8 @@ export const Video = ({ socket, chatroomId }) => {
         >
           <VideoControls
             endCall={endCall}
-            mute={mute}
-            setMute={setMute}
-            shareScreen={shareScreen}
-            setShareScreen={setShareScreen}
+            setMute={() => trackHandler(myMicFeed)}
+            setOffScreen={() => trackHandler(myVideoFeed)}
           />
         </div>
       </div>

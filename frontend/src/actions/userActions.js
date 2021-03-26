@@ -159,3 +159,59 @@ export const getDetails = () => async (dispatch, getState) => {
     })
   }
 }
+
+export const searchALL = (query) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER.USER_SEARCH_REQUEST })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.post('/api/user/invite', query, config)
+    dispatch({ type: USER.USER_SEARCH_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: USER.ADD_CONTACT_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+
+export const sendInvite = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER.INVITE_PUBLIC_REQUEST })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.post(`/api/user/invites`, id, config)
+    dispatch({ type: USER.INVITE_PUBLIC_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: USER.INVITE_PUBLIC_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}

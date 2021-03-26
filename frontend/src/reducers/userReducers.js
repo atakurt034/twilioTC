@@ -87,3 +87,33 @@ export const detailsReducer = (state = {}, action) => {
       return state
   }
 }
+
+export const userSearchReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER.USER_SEARCH_REQUEST:
+      return { loading: true }
+    case USER.USER_SEARCH_SUCCESS:
+      return { loading: false, user: action.payload }
+    case USER.USER_SEARCH_FAIL:
+      return { loading: false, error: action.payload }
+    case USER.USER_SEARCH_RESET:
+      return {}
+    default:
+      return state
+  }
+}
+
+export const invteUserReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER.INVITE_PUBLIC_REQUEST:
+      return { loading: true }
+    case USER.INVITE_PUBLIC_SUCCESS:
+      return { loading: false, status: action.payload }
+    case USER.INVITE_PUBLIC_FAIL:
+      return { loading: false, error: action.payload }
+    case USER.INVITE_PUBLIC_RESET:
+      return {}
+    default:
+      return state
+  }
+}

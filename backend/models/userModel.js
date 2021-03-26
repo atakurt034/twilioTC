@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema(
     invites: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        chatroom: { type: mongoose.Schema.Types.ObjectId, ref: 'Chatroom' },
         accept: { type: Boolean, default: false },
       },
     ],

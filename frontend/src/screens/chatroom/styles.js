@@ -29,7 +29,7 @@ export const useStyles = makeStyles((theme) => ({
   myMessage: {
     padding: 15,
     margin: '5px 0',
-    width: '80%',
+    width: '60%',
     float: 'right',
     clear: 'both',
     backgroundColor: theme.palette.primary.light,
@@ -40,7 +40,7 @@ export const useStyles = makeStyles((theme) => ({
     textAlign: 'left',
     float: 'left',
     clear: 'both',
-    width: '80%',
+    width: '60%',
     backgroundColor: theme.palette.success.light,
   },
   show: {
