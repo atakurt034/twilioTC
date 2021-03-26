@@ -17,6 +17,7 @@ export const Home = ({ socket, history }) => {
   const { userInfo } = useSelector((state) => state.userLogin)
   const { userDetails } = useSelector((state) => state.userDetails)
   const { status } = useSelector((state) => state.userAccept)
+  const { status: statusDelete } = useSelector((state) => state.deleteAny)
 
   const [panel, setPanel] = React.useState('contacts')
 
@@ -24,11 +25,11 @@ export const Home = ({ socket, history }) => {
     if (!userInfo) {
       history.push('/login')
     }
-    if (status && status.message === 'updated') {
+    if ((status && status.message === 'updated') || statusDelete) {
       dispatch(UA.getDetails())
     }
     dispatch(UA.getDetails())
-  }, [userInfo, history, dispatch, status])
+  }, [userInfo, history, dispatch, status, statusDelete])
 
   const panelHandler = (type) => {
     setPanel(type)

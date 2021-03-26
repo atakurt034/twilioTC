@@ -43,9 +43,6 @@ export const Panels = (classes, userInfo, history) => {
       setLoading(false)
       setSuccess(false)
     }
-    if (status) {
-      dispatch({ type: USER.SEARCH_RESET })
-    }
   }, [user, loader, error, status, dispatch])
 
   const changeHandler = (event) => {

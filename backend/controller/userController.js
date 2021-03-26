@@ -186,13 +186,21 @@ export const acceptInvite = asyncHandler(async (req, res) => {
 
     if (type === 'user') {
       const newContact = await User.findById(userId)
+
       const inviteExist = newContact.invites.find(
         (invite) => invite._id.toString() === user._id.toString()
       )
+
+      const userContactExist = user.contacts.includes(userId)
+
       if (inviteExist) {
         newContact.invites.pull({ _id: inviteId })
       }
-      user.contacts.push(newContact)
+
+      if (!userContactExist) {
+        user.contacts.push(newContact)
+      }
+
       newContact.contacts.push(user)
       user.invites.pull({ _id: inviteId })
       await newContact.save()
@@ -263,6 +271,33 @@ export const sendInvite = asyncHandler(async (req, res) => {
     contacts.invites.push({ chatroom })
     const inviteSent = await contacts.save()
     res.status(200).json(inviteSent)
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
+})
+
+/**
+ * route: /api/user/:id
+ * description: delete contact / group
+ * access: Private
+ * method: DELETE
+ */
+export const deleteContactOrGroup = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user._id
+    const { type, deleteId } = req.body
+    const user = await User.findById(userId)
+
+    if (type === 'contacts') {
+      user.contacts.pull(deleteId)
+    } else if (type === 'chatroom') {
+      user.chatrooms.pull(deleteId)
+    } else if (type === 'privateroom') {
+      user.privaterooms.pull(deleteId)
+    }
+    await user.save()
+    res.status(200).json({ message: 'deleted' })
   } catch (error) {
     res.status(400)
     throw new Error(error)

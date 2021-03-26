@@ -24,6 +24,20 @@ export const createPrivateRoom = asyncHandler(async (req, res) => {
       ],
     })
 
+    const senderExist =
+      userExist &&
+      (await User.findOne({
+        $and: [{ _id: senderId }, { privaterooms: { $in: [userExist._id] } }],
+      }))
+
+    if (!senderExist) {
+      await User.updateOne(
+        { _id: senderId },
+        { $push: { privaterooms: userExist._id } }
+      )
+      res.status(200).json(userExist)
+    }
+
     if (userExist) {
       res.status(201)
       res.json(userExist)

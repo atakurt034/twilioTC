@@ -117,3 +117,18 @@ export const invteUserReducer = (state = {}, action) => {
       return state
   }
 }
+
+export const deleteReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER.DELETE_REQUEST:
+      return { loading: true }
+    case USER.DELETE_SUCCESS:
+      return { loading: false, status: action.payload }
+    case USER.DELETE_FAIL:
+      return { loading: false, error: action.payload }
+    case USER.DELETE_RESET:
+      return {}
+    default:
+      return state
+  }
+}

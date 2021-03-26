@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { CA } from '../../actions/index'
+import { CA, UA } from '../../actions/index'
 import { CHAT } from '../../constants/index'
 
 import PhoneIcon from '@material-ui/icons/Phone'
@@ -34,6 +34,13 @@ export const ContactList = ({ contact, history }) => {
 
   const clickHandler = (id) => {
     dispatch(CA.createPrivateRoom({ id }))
+  }
+
+  const deleteHandler = () => {
+    if (window.confirm(`Are you sure you want to delet ${contact.name}?`))
+      dispatch(
+        UA.deleteContactOrGroup({ type: 'contacts', deleteId: contact._id })
+      )
   }
 
   return (
@@ -79,7 +86,7 @@ export const ContactList = ({ contact, history }) => {
           <IconButton variant='outlined'>
             <PhoneIcon style={{ color: 'green' }} fontSize='small' />
           </IconButton>
-          <IconButton variant='outlined'>
+          <IconButton variant='outlined' onClick={deleteHandler}>
             <DeleteForeverIcon color='secondary' fontSize='small' />
           </IconButton>
         </div>

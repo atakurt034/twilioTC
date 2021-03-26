@@ -215,3 +215,32 @@ export const sendInvite = (id) => async (dispatch, getState) => {
     })
   }
 }
+
+export const deleteContactOrGroup = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER.DELETE_REQUEST })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+      data: id,
+    }
+
+    const { data } = await axios.delete(`/api/user/${userInfo._id}`, config)
+    dispatch({ type: USER.DELETE_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: USER.DELETE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}

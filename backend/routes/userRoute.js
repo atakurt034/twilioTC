@@ -4,7 +4,10 @@ import { auth } from '../middlewares/index.js'
 
 const router = Router()
 
-router.route('/:id').get(auth.loginRequired, user.getUserDetails)
+router
+  .route('/:id')
+  .get(auth.loginRequired, user.getUserDetails)
+  .delete(auth.loginRequired, user.deleteContactOrGroup)
 
 router.post('/register', user.register)
 router.post('/login', user.login)
