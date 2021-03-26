@@ -30,20 +30,31 @@ export const Home = ({ socket, history }) => {
     dispatch(UA.getDetails())
   }, [userInfo, history, dispatch, status])
 
+  const panelHandler = (type) => {
+    setPanel(type)
+    dispatch(UA.getDetails())
+  }
+
   return (
     <>
       <Grid container>
         <Grid item xs={1} className={classes.sideIcons}>
           <IconButton
             className={classes.icon}
-            onClick={() => setPanel('contacts')}
+            onClick={() => panelHandler('contacts')}
           >
             <PeopleIcon />
           </IconButton>
-          <IconButton className={classes.icon} onClick={() => setPanel('chat')}>
+          <IconButton
+            className={classes.icon}
+            onClick={() => panelHandler('chat')}
+          >
             <ChatIcon />
           </IconButton>
-          <IconButton className={classes.icon} onClick={() => setPanel('call')}>
+          <IconButton
+            className={classes.icon}
+            onClick={() => panelHandler('call')}
+          >
             <PhoneIcon />
           </IconButton>
         </Grid>

@@ -59,6 +59,7 @@ export const AddUsers = (props) => {
 
   const handleClose = () => {
     setOpen(false)
+    setUsers([])
   }
 
   const clickHandler = () => {

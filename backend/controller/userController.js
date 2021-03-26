@@ -1,7 +1,10 @@
 import asyncHandler from 'express-async-handler'
 
 import { User } from '../models/userModel.js'
+import { Chatroom } from '../models/chatroomModel.js'
 import { generateToken } from '../utils/generateToken.js'
+
+import { Query } from './queryUsers.js'
 
 /**
  * route: /api/user/register
@@ -85,7 +88,10 @@ export const getUserDetails = asyncHandler(async (req, res) => {
       .populate('contacts', 'name email')
       .populate({
         path: 'invites',
-        populate: { path: '_id', select: 'name email' },
+        populate: [
+          { path: 'user', select: 'name email' },
+          { path: 'chatroom', select: 'name _id' },
+        ],
       })
       .populate({
         path: 'privaterooms',
@@ -95,6 +101,7 @@ export const getUserDetails = asyncHandler(async (req, res) => {
         path: 'chatrooms',
         populate: { path: 'users', select: 'name' },
       })
+
     res.status(200).json(user)
   } catch (error) {
     res.status(400)
@@ -125,7 +132,7 @@ export const addContacts = asyncHandler(async (req, res) => {
     } else if (inviteExist) {
       res.status(303).json({ message: 'pending' })
     } else {
-      newContact.invites.push(user)
+      newContact.invites.push({ user })
       await newContact.save()
     }
     res.status(200)
@@ -148,15 +155,15 @@ export const search = asyncHandler(async (req, res) => {
     const userId = req.user._id
 
     const user = await User.findById(userId)
-    const newContact = await User.findOne({ email })
+    const newContact = await User.find({
+      $or: [...Query(email)],
+    }).select('-password -contacts -chatrooms -privaterooms')
 
     if (await user.contacts.includes(newContact._id)) {
       res.status(301)
       res.json({ message: 'added' })
     } else {
-      const result = await User.find({ email }).select('-password -contacts')
-
-      res.status(200).json(result)
+      res.status(200).json(newContact)
     }
   } catch (error) {
     res.status(400)
@@ -173,24 +180,31 @@ export const search = asyncHandler(async (req, res) => {
 export const acceptInvite = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user //my id
-    const { id } = req.body //invite id
+    const { userId, inviteId, chatroomId, type } = req.body //invite id
     const user = await User.findById(_id)
-    const newContact = await User.findById(id)
+    console.log(userId, inviteId, chatroomId, type)
 
-    const inviteExist = newContact.invites.find(
-      (invite) => invite._id.toString() === user._id.toString()
-    )
+    if (type === 'user') {
+      const newContact = await User.findById(userId)
+      const inviteExist = newContact.invites.find(
+        (invite) => invite._id.toString() === user._id.toString()
+      )
+      if (inviteExist) {
+        newContact.invites.pull({ _id: inviteId })
+      }
+      user.contacts.push(newContact)
+      newContact.contacts.push(user)
+      user.invites.pull({ _id: inviteId })
+      await newContact.save()
+      await user.save()
+    } else if (type === 'chatroom') {
+      const chatroom = await Chatroom.findById(chatroomId)
 
-    user.invites.pull({ _id: id })
-    user.contacts.push(newContact)
-    newContact.contacts.push(user)
-
-    if (inviteExist) {
-      newContact.invites.pull({ _id: user._id })
+      user.chatrooms.push(chatroom)
+      user.invites.pull({ _id: inviteId })
+      await user.save()
     }
 
-    await user.save()
-    await newContact.save()
     res.status(200)
     res.json({ message: 'updated' })
   } catch (error) {
@@ -206,31 +220,6 @@ export const acceptInvite = asyncHandler(async (req, res) => {
  * method: POST
  */
 export const userSearch = asyncHandler(async (req, res) => {
-  const key1 = (keyword) => {
-    return keyword
-      ? {
-          name: {
-            $regex: keyword,
-            $options: 'i',
-          },
-        }
-      : {}
-  }
-
-  const key2 = (keyword) => {
-    return keyword
-      ? {
-          email: {
-            $regex: keyword,
-            $options: 'i',
-          },
-        }
-      : {}
-  }
-  const Query = (keywords) => {
-    return [{ ...key1(keywords) }, { ...key2(keywords) }]
-  }
-
   try {
     const query = req.body.query
 
@@ -253,26 +242,27 @@ export const userSearch = asyncHandler(async (req, res) => {
  */
 export const sendInvite = asyncHandler(async (req, res) => {
   try {
-    const { _id } = req.user //login user's id
-    const userId = req.body.id //new contact's email
-    const { chatroomId } = req.body //new contact's email
-    const user = await User.findById(_id)
-    const contacts = await User.findById(userId).select(
-      '-password -privaterooms'
-    )
+    const { id, chatroomId } = req.body //new contact's email
+    const contacts = await User.findById(id).select('-password -privaterooms')
 
-    const alreadyInvited = await contacts.chatrooms.find(
+    const alreadyInTheRoom = await contacts.chatrooms.find(
       (chatroom) => chatroom.toString() === chatroomId.toString()
     )
 
-    if (alreadyInvited) {
-      throw new Error('Already Invited')
+    const pendingInvite = await contacts.invites.find(
+      (invite) => invite.chatroom.toString() === chatroomId.toString()
+    )
+    if (alreadyInTheRoom) {
+      throw new Error('Already Added to the Room')
     }
+    if (pendingInvite) {
+      throw new Error('Pending invite')
+    }
+    const chatroom = await Chatroom.findById(chatroomId)
 
-    if (contacts) {
-      res.status(200)
-      res.json(contacts)
-    }
+    contacts.invites.push({ chatroom })
+    const inviteSent = await contacts.save()
+    res.status(200).json(inviteSent)
   } catch (error) {
     res.status(400)
     throw new Error(error)

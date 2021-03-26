@@ -64,7 +64,12 @@ export const Panels = (classes, userInfo, history) => {
   }
 
   const acceptHandler = (invite) => {
-    dispatch(UA.accept({ id: invite }))
+    const type = invite.user ? 'user' : invite.chatroom && 'chatroom'
+    const userId = invite.user && invite.user._id
+    const chatroomId = invite.chatroom && invite.chatroom._id
+    const inviteId = invite._id
+
+    dispatch(UA.accept({ userId, inviteId, chatroomId, type }))
     dispatch({ type: USER.ACCEPT_RESET })
   }
 
@@ -111,7 +116,7 @@ export const Panels = (classes, userInfo, history) => {
         </div>
         <InputBase
           autoFocus
-          placeholder='Search…'
+          placeholder='Input email or name'
           classes={{
             root: classes.inputRoot,
             input: classes.inputInput,

@@ -49,4 +49,13 @@ export const useStyles = makeStyles((theme) => ({
   hidden: {
     display: 'none',
   },
+  rootBottomNav: {
+    width: '100%',
+    backgroundColor: 'transparent',
+  },
+  endCall: {
+    color: 'red',
+  },
+  muted: { color: 'blue' },
+  unmuted: { color: 'grey' },
 }))

@@ -16,7 +16,7 @@ export const joinRoom = (io, socket) => async ({ roomID, name }) => {
   socketToRoom[socket.id] = roomID
   const usersInThisRoom = users[roomID].filter((id) => id !== socket.id)
 
-  socket.emit('all users', { id: usersInThisRoom, name })
+  socket.emit('all users', { id: usersInThisRoom })
 }
 
 export const sendingSignal = (io, socket) => async (payload) => {

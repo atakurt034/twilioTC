@@ -60,14 +60,10 @@ export const PanelTypes = (
         )
       )
       userDetails.chatrooms.map((room) =>
-        room.users.map(
-          (user) =>
-            user._id === userDetails._id &&
-            setRooms((prev) => [
-              ...prev,
-              { name: room.name, _id: room._id, type: 'Public' },
-            ])
-        )
+        setRooms((prev) => [
+          ...prev,
+          { name: room.name, _id: room._id, type: 'Public' },
+        ])
       )
     }
     return () => {
@@ -81,9 +77,9 @@ export const PanelTypes = (
         {addContact ? add_true : add_false}
       </div>
       <Divider />
-      {userInfo &&
+      {userDetails &&
         !addContact &&
-        userInfo.invites.map((invite) => {
+        userDetails.invites.map((invite) => {
           return (
             <div
               key={invite._id}
@@ -94,13 +90,12 @@ export const PanelTypes = (
                 padding: 5,
               }}
             >
-              <Typography>
-                {invite._id.name} {invite._id.email}
+              <Typography variant='h6' style={{ padding: 3 }}>
+                {invite.user
+                  ? invite.user.email
+                  : invite.chatroom && invite.chatroom.name}
               </Typography>
-              <Button
-                variant='outlined'
-                onClick={() => acceptHandler(invite._id)}
-              >
+              <Button variant='outlined' onClick={() => acceptHandler(invite)}>
                 Accept
               </Button>
             </div>

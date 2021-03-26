@@ -20,10 +20,13 @@ export const UserList = ({ user, chatroomId }) => {
 
   React.useEffect(() => {
     if (userInfo) {
-      const invited = user.invites.find((invite) => invite._id === userInfo._id)
+      const invited = user.invites.find(
+        (invite) => invite.chatroom === chatroomId
+      )
       setInvite(invited)
     }
-  }, [user, userInfo])
+    return () => setInvite('')
+  }, [chatroomId, user, userInfo])
 
   return (
     <Grid
@@ -42,7 +45,7 @@ export const UserList = ({ user, chatroomId }) => {
       </Grid>
       <Grid item xs={4}>
         <Button variant='outlined' onClick={inviteHandler} disabled={invite}>
-          {invite ? 'sent' : 'invite'}
+          {invite ? 'pending' : 'invite'}
         </Button>
       </Grid>
     </Grid>
