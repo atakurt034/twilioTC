@@ -47,3 +47,32 @@ export class SendMessage {
     })
   }
 }
+
+export class GetPermission {
+  streams = {}
+  constructor(myMicFeed, myVideoFeed, myVideoRef, setStream) {
+    this.navigator = navigator.mediaDevices
+    this.myMicFeed = myMicFeed
+    this.myVideoFeed = myVideoFeed
+    this.myVideoRef = myVideoRef
+    this.setStream = setStream
+  }
+  getStreams = async () => {
+    const stream = await this.navigator.getUserMedia({
+      video: true,
+      audio: true,
+    })
+
+    this.streams = stream
+    this.setStream(stream)
+    if (this.myVideoRef.current) {
+      this.myVideoRef.current.srcObject = stream
+    }
+    this.myVideoFeed.current = stream.getVideoTracks()[0]
+    this.myMicFeed.current = stream.getAudioTracks()[0]
+  }
+
+  closeStreams = () => {
+    this.streams.getTracks().forEach((track) => track.stop())
+  }
+}

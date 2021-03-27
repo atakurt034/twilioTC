@@ -21,7 +21,7 @@ export const App = () => {
   const socket = io('http://192.168.254.111:5000', {
     query: { userId, name },
   })
-  socket.connect()
+  // socket.connect()
 
   React.useEffect(() => {
     return () => {

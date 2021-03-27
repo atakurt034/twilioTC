@@ -14,28 +14,43 @@ import {
 
 import { useStyles } from './styles'
 
+import { GetPermission } from './classHelpers'
+import { ModalLoader } from '../../components/modalloader'
+
 export const Video = ({ socket, chatroomId }) => {
   const dispatch = useDispatch()
   const classes = useStyles()
-  const { userDetails } = useSelector((state) => state.userDetails)
 
-  const myVideo = React.useRef()
-  const userVideo = React.useRef()
-  const streamTrack = React.useRef()
-  const connectionRef = React.useRef()
   const myMicFeed = React.useRef()
   const myVideoFeed = React.useRef()
+  const myVideoRef = React.useRef()
+  const userVideoRef = React.useRef()
+  const connectionRef = React.useRef()
 
-  const [userName, setUserName] = React.useState('')
-  const [calling, setCalling] = React.useState(false)
-  const [caller, setCaller] = React.useState('')
-  const [callerSignal, setCallerSignal] = React.useState()
+  const { userDetails, loading } = useSelector((state) => state.userDetails)
 
-  const [callAnswerd, setCallAnswered] = React.useState(false)
   const [stream, setStream] = React.useState()
 
+  const [callerSignal, setCallerSignal] = React.useState()
+
+  const [userName, setUserName] = React.useState()
+  const [callAnswered, setCallAnswered] = React.useState(false)
+  const [calling, setCalling] = React.useState(false)
+  const [caller, setCaller] = React.useState('')
+
+  const permission = new GetPermission(
+    myMicFeed,
+    myVideoFeed,
+    myVideoRef,
+    setStream
+  )
   React.useEffect(() => {
     dispatch(UA.getDetails())
+    permission.getStreams()
+    return () => {
+      permission.closeStreams()
+      endCall()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -49,121 +64,87 @@ export const Video = ({ socket, chatroomId }) => {
     }
   }, [userDetails])
 
-  const getStreams = (streams) => {
-    setStream(streams)
-    myVideo.current.srcObject = streams
-    streamTrack.current = streams
-    myVideoFeed.current = streams.getVideoTracks()[0]
-    myMicFeed.current = streams.getAudioTracks()[0]
-  }
-
-  React.useEffect(() => {
-    if (navigator.mediaDevices) {
-      navigator.mediaDevices
-        .getUserMedia({
-          video: true,
-          audio: true,
-        })
-        .then((streams) => getStreams(streams))
-        .catch(console.log)
-    }
-    return () => {
-      navigator.mediaDevices &&
-        streamTrack.current.getTracks().forEach((track) => track.stop())
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   React.useEffect(() => {
     if (socket) {
-      socket.on('privateCalling', ({ chatroomId, signal, caller }) => {
+      socket.on('privateCalling', ({ signal, chatroomId, caller }) => {
         setCalling(true)
         setCaller(caller)
         setCallerSignal(signal)
       })
-      socket.on('privateCallCancelled', ({ chatroomId, id }) => {
+      socket.on('privateCallCancelled', () => {
         setCalling(false)
       })
       socket.on('callEnded', () => {
-        setCallAnswered(false)
         setCalling(false)
-        setCallerSignal()
-        connectionRef.current.destroy()
+        setCallAnswered(false)
+        permission.closeStreams()
+        window.location.reload()
+        if (connectionRef.current) {
+          connectionRef.current.destroy()
+        }
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket, userDetails])
 
-  const callUser = async () => {
-    if (socket) {
-      const peer1 = new Peer({
-        initiator: true,
-        stream: stream,
-        trickle: false,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket])
+
+  const callUser = () => {
+    const peer = new Peer({ initiator: true, trickle: false, stream })
+
+    peer.on('signal', (signal) => {
+      socket.emit('privateCall', {
+        signal,
+        chatroomId,
+        caller: userDetails.name,
       })
-      peer1.on('signal', (signal) => {
-        console.log(signal)
-        socket.emit('privateCall', {
-          chatroomId,
-          signal,
-          caller: userDetails && userDetails.name,
-          callerId: userDetails && userDetails._id,
-        })
-      })
-      peer1.on('stream', (str) => {
-        userVideo.current.srcObject = str
-      })
-      socket.on('privateCallAnswered', ({ signal }) => {
-        setCallAnswered(true)
-        peer1.signal(signal)
-      })
-      connectionRef.current = peer1
-    }
+    })
+    peer.on('stream', (stream) => {
+      if (userVideoRef.current) {
+        userVideoRef.current.srcObject = stream
+      }
+    })
+    socket.on('privateCallAnswered', ({ signal }) => {
+      peer.signal(signal)
+      setCallAnswered(true)
+      setCalling(false)
+    })
+
+    connectionRef.current = peer
   }
 
   const answerCall = () => {
-    setCallAnswered(true)
-    const peer2 = new Peer({
-      initiator: false,
-      trickle: false,
-      stream: stream,
+    const peer = new Peer({ initiator: false, trickle: false, stream })
+    peer.on('signal', (signal) => {
+      socket.emit('privateCallAnswer', { signal, chatroomId })
     })
-    peer2.on('signal', (signal) => {
-      socket.emit('privateCallAnswer', { chatroomId, signal })
+    peer.on('stream', (stream) => {
+      if (userVideoRef.current) {
+        userVideoRef.current.srcObject = stream
+      }
+      setCallAnswered(true)
+      setCalling(false)
     })
-    peer2.on('stream', (stream) => {
-      userVideo.current.srcObject = stream
-    })
-    peer2.signal(callerSignal)
-    connectionRef.current = peer2
+    peer.signal(callerSignal)
+    connectionRef.current = peer
   }
 
   const cancelCall = () => {
-    setCalling(false)
-    if (socket) {
-      socket.emit('privateCancelCall', {
-        chatroomId,
-        id: userDetails && userDetails._id,
-      })
-    }
+    socket.emit('privateCancelCall', { chatroomId })
   }
 
   const endCall = () => {
-    setCalling(false)
-    setCallAnswered(false)
-    if (socket) {
-      socket.emit('callEnd', { chatroomId })
-    }
+    socket.emit('callEnd', { chatroomId })
   }
 
   const trackHandler = (track) => {
     track.current.enabled = !track.current.enabled
   }
 
-  return (
+  return loading ? (
+    <ModalLoader />
+  ) : (
     <Grid container style={{ alignItems: 'center', height: '100%' }}>
-      {!callAnswerd ? (
+      {!callAnswered ? (
         calling ? (
           caller === userDetails.name ? (
             <MeCalling cancelCall={cancelCall} userName={userName} />
@@ -179,7 +160,7 @@ export const Video = ({ socket, chatroomId }) => {
 
       <div
         style={{ position: 'relative', width: '100%', height: '100%' }}
-        className={callAnswerd ? classes.show : classes.hidden}
+        className={callAnswered ? classes.show : classes.hidden}
       >
         <div
           style={{
@@ -198,12 +179,12 @@ export const Video = ({ socket, chatroomId }) => {
               zIndex: 10,
             }}
           >
-            <video ref={myVideo} playsInline autoPlay muted width='100%' />
+            <video ref={myVideoRef} playsInline autoPlay muted width='100%' />
           </div>
           <video
             playsInline
             autoPlay
-            ref={userVideo}
+            ref={userVideoRef}
             width='100%'
             height='100%'
           />

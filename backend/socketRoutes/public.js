@@ -32,11 +32,12 @@ export const returningSignal = (io, socket) => async (payload) => {
     id: socket.id,
   })
 }
-export const disconnect = (io, socket) => async () => {
+export const disconnect = (io, socket) => async ({ peerId }) => {
   const roomID = socketToRoom[socket.id]
   let room = users[roomID]
   if (room) {
     room = room.filter((id) => id !== socket.id)
     users[roomID] = room
   }
+  socket.emit('left', { peerId })
 }

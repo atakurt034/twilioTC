@@ -37,7 +37,7 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
     if (!userInfo) {
       history.push('/login')
     }
-  }, [userInfo, history])
+  }, [userInfo, history, socket])
 
   // eslint-disable-next-line no-unused-vars
 
@@ -61,16 +61,14 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
           })
 
           socket.on('all users', ({ id }) => {
-            const peers = []
             id.forEach((userID) => {
               const peer = createPeer(userID, socket.id, stream)
               peersRef.current.push({
                 peerID: userID,
                 peer,
               })
-              peers.push(peer)
+              setPeers((prev) => [...prev, peer])
             })
-            setPeers(peers)
           })
 
           socket.on('user joined', (payload) => {
@@ -79,7 +77,6 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
               peerID: payload.callerID,
               peer,
             })
-
             setPeers((users) => [...users, peer])
           })
 
@@ -89,6 +86,7 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
           })
           return stream
         })
+
         .then((stream) => {
           stream.getTracks().forEach((track) => (streamTrack.current = track))
           myVideoFeed.current = stream.getVideoTracks()[0]
@@ -96,12 +94,12 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
         })
 
     return () => {
-      setPeers([])
       navigator.mediaDevices &&
         streamRef.current
           .getTracks()
           .forEach((track) => track === streamTrack.current && track.stop())
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

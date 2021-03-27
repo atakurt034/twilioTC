@@ -70,10 +70,7 @@ export const Chatroom = ({ match, socket, history }) => {
       history.push('/login')
     }
     if (socket) {
-      socket.emit('private', { chatroomId })
-      socket.on('privateJoin', (data) => {
-        // console.log(data)
-      })
+      socket.emit('privateJoin', { chatroomId })
     }
   }, [chatroomId, socket, userInfo, history])
 

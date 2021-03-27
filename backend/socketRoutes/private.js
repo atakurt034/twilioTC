@@ -1,35 +1,37 @@
+let users = {}
+
 export const privateJoin = (io, socket) => async ({ chatroomId }) => {
+  users[socket.userId] = chatroomId
   socket.join(chatroomId)
-  io.to(chatroomId).emit('privateJoin', { userId: socket.userId })
+  io.to(chatroomId).emit('privateJoined', { chatroomId })
 }
 
 export const privateCall = (io, socket) => async ({
-  chatroomId,
   signal,
+  chatroomId,
   caller,
-  callerId,
 }) => {
+  users[socket.userId] = chatroomId
+
   io.to(chatroomId).emit('privateCalling', {
-    chatroomId,
     signal,
+    chatroomId,
     caller,
-    callerId,
   })
 }
 
 export const privateCallAnswer = (io, socket) => async ({
-  chatroomId,
   signal,
+  chatroomId,
 }) => {
   io.to(chatroomId).emit('privateCallAnswered', {
     signal,
   })
 }
 
-export const privateCancelCall = (io, socket) => async ({ chatroomId, id }) => {
+export const privateCancelCall = (io, socket) => async ({ chatroomId }) => {
   io.to(chatroomId).emit('privateCallCancelled', {
     chatroomId,
-    id,
   })
 }
 export const callEnd = (io, socket) => async ({ chatroomId, id }) => {

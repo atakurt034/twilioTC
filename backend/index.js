@@ -72,9 +72,9 @@ io.use(async (socket, next) => {
 })
 
 io.on('connection', (socket) => {
-  socket.on('private', pr.privateJoin(io, socket))
-  socket.on('messageInput', msg.messageInput(io, socket))
+  socket.on('privateJoin', pr.privateJoin(io, socket))
   socket.on('privateCall', pr.privateCall(io, socket))
+  socket.on('messageInput', msg.messageInput(io, socket))
   socket.on('privateCallAnswer', pr.privateCallAnswer(io, socket))
   socket.on('privateCancelCall', pr.privateCancelCall(io, socket))
   socket.on('callEnd', pr.callEnd(io, socket))
@@ -82,5 +82,5 @@ io.on('connection', (socket) => {
   socket.on('join room', pub.joinRoom(io, socket))
   socket.on('sending signal', pub.sendingSignal(io, socket))
   socket.on('returning signal', pub.returningSignal(io, socket))
-  socket.on('disconnect', pub.disconnect(io, socket))
+  socket.on('leftRoom', pub.disconnect(io, socket))
 })
