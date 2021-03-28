@@ -57,5 +57,5 @@ export const useStyles = makeStyles((theme) => ({
     color: 'red',
   },
   muted: { color: 'blue' },
-  unmuted: { color: 'grey' },
+  unmuted: { color: 'rgba(10,101,110,0.8)' },
 }))

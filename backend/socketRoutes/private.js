@@ -40,3 +40,9 @@ export const callEnd = (io, socket) => async ({ chatroomId, id }) => {
 export const shareScreen = (io, socket) => async ({ chatroomId, streams }) => {
   io.to(chatroomId).emit('sharingSreen', { streams })
 }
+
+export const disconnect = (io, socket) => async () => {
+  const roomId = users[socket.userId]
+  io.to(roomId).emit('callEnded')
+  delete users[socket.userId]
+}

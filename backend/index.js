@@ -73,6 +73,7 @@ io.use(async (socket, next) => {
 
 io.on('connection', (socket) => {
   socket.on('privateJoin', pr.privateJoin(io, socket))
+  socket.on('disconnect', pr.disconnect(io, socket))
   socket.on('privateCall', pr.privateCall(io, socket))
   socket.on('messageInput', msg.messageInput(io, socket))
   socket.on('privateCallAnswer', pr.privateCallAnswer(io, socket))

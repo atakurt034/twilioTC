@@ -46,7 +46,7 @@ export const Video = ({ socket, chatroomId }) => {
   )
   React.useEffect(() => {
     dispatch(UA.getDetails())
-    permission.getStreams()
+    navigator.mediaDevices && permission.getStreams()
     return () => {
       permission.closeStreams()
       endCall()
@@ -152,7 +152,12 @@ export const Video = ({ socket, chatroomId }) => {
             <UserHasCall answerCall={answerCall} caller={caller} />
           )
         ) : (
-          <CallUser callUser={callUser} calling={calling} userName={userName} />
+          <CallUser
+            callUser={callUser}
+            calling={calling}
+            userName={userName}
+            stream={stream}
+          />
         )
       ) : (
         ''
@@ -164,24 +169,25 @@ export const Video = ({ socket, chatroomId }) => {
       >
         <div
           style={{
+            position: 'relative',
             width: '100%',
-            minHeight: '100%',
           }}
         >
           <div
             style={{
-              position: 'absolute',
               width: '20%',
               height: '20%',
-              right: 10,
-              bottom: 10,
               padding: 5,
               zIndex: 10,
+              position: 'absolute',
+              right: 0,
+              bottom: 10,
             }}
           >
             <video ref={myVideoRef} playsInline autoPlay muted width='100%' />
           </div>
           <video
+            style={{ zIndex: 0 }}
             playsInline
             autoPlay
             ref={userVideoRef}
@@ -191,13 +197,20 @@ export const Video = ({ socket, chatroomId }) => {
         </div>
         <div
           style={{
-            position: 'absolute',
+            position: 'relative',
             margin: 'auto',
             bottom: 0,
             textAlign: 'center',
           }}
         >
           <VideoControls
+            style={{
+              width: '50%',
+              position: 'absolute',
+              bottom: 10,
+              left: '20%',
+              backgroundColor: 'transparent',
+            }}
             endCall={endCall}
             setMute={() => trackHandler(myMicFeed)}
             setOffScreen={() => trackHandler(myVideoFeed)}

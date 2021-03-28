@@ -37,7 +37,7 @@ import {
 import PhoneIcon from '@material-ui/icons/Phone'
 import './styles.scss'
 
-export const CallUser = ({ callUser, calling, userName }) => {
+export const CallUser = ({ callUser, calling, userName, stream }) => {
   return (
     <Grid
       item
@@ -49,6 +49,7 @@ export const CallUser = ({ callUser, calling, userName }) => {
       }}
     >
       <IconButton
+        disabled={!stream}
         style={{ border: '1px solid green', color: 'green' }}
         onClick={callUser}
       >
@@ -130,7 +131,8 @@ export const UserHasCall = ({ answerCall, caller }) => {
   )
 }
 
-export const VideoControls = ({ endCall, setMute, setOffScreen }) => {
+export const VideoControls = (props) => {
+  const { endCall, setMute, setOffScreen } = props
   const classess = useStyles()
 
   const [mute, setMute1] = React.useState(false)
@@ -157,6 +159,7 @@ export const VideoControls = ({ endCall, setMute, setOffScreen }) => {
 
   return (
     <BottomNavigation
+      {...props}
       onChange={changeHandler}
       showLabels
       className={classess.root}
@@ -170,7 +173,7 @@ export const VideoControls = ({ endCall, setMute, setOffScreen }) => {
       <BottomNavigationAction
         className={mute ? classess.muted : classess.unmuted}
         value='mute'
-        label='Mute'
+        label={mute ? 'unmute' : 'mute'}
         icon={mute ? <MicOffIcon /> : <MicIcon />}
       />
       <BottomNavigationAction
