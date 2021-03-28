@@ -31,7 +31,7 @@ const List = ({ id, name, history, type }) => {
   }
 
   return (
-    <Paper elevation={12}>
+    <Paper elevation={12} style={{ margin: 5 }}>
       <Grid
         container
         key={id}

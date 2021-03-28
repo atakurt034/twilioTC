@@ -3,6 +3,7 @@ import React from 'react'
 import {
   Button,
   Card,
+  Container,
   Divider,
   IconButton,
   InputBase,
@@ -12,10 +13,15 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 
+import PhoneInput from 'react-phone-input-2'
+
+import 'react-phone-input-2/lib/high-res.css'
+
 import { ContactList } from './contactList'
 import { ChatList } from './chatList'
 import { UA } from '../../actions/index'
 import { ModalMessage } from '../../components/modalmessage'
+import { TextForm } from './textForm'
 
 export const PanelTypes = (
   classes,
@@ -187,11 +193,28 @@ export const PanelTypes = (
   const text = (
     <Card className={classes.paper}>
       <div className={classes.cardActions}>
-        <AddCircleIcon style={{ color: 'green', fontSize: 40 }} />
-        <Typography style={{ flex: 1 }}>Text message</Typography>
+        <IconButton style={{ padding: 5 }}>
+          <AddCircleIcon style={{ color: 'green', fontSize: 40 }} />
+        </IconButton>
+        <PhoneInput
+          placeholder='input mobile number'
+          inputStyle={{ width: '88%' }}
+          containerStyle={{
+            margin: '2% 0 2% 1%',
+          }}
+        />
       </div>
       <Divider />
-      List of Calls
+      <Container
+        maxWidth='xs'
+        style={{
+          marginTop: '3%',
+          maxHeight: '50%',
+        }}
+      >
+        <Paper style={{ padding: 10, minHeight: '25vh' }}>Previous text</Paper>
+      </Container>
+      <TextForm />
     </Card>
   )
   return { contacts, chat, call, text }
