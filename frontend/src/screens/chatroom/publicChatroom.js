@@ -2,30 +2,17 @@ import React from 'react'
 import Peer from 'simple-peer'
 
 import { Container, Grid, Paper } from '@material-ui/core'
-import { PublicVideoControls } from './videoComponents'
+import { PublicVideoControls, Video } from './videoComponents'
 
 import { useSelector } from 'react-redux'
 
 import { AddUsers } from '../../components/floatingMenu'
 
-const Video = (props) => {
-  const ref = React.useRef()
-
-  React.useEffect(() => {
-    props.peer.on('stream', (stream) => {
-      ref.current.srcObject = stream
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  return <video playsInline autoPlay ref={ref} width='100%' height='100%' />
-}
+import { GetPermission } from './classHelpers'
 
 export const PublicChatroom = ({ match, location, socket, history }) => {
-  const userVideo = React.useRef()
+  const myVideoRef = React.useRef()
   const peersRef = React.useRef([])
-  const streamTrack = React.useRef()
-  const streamRef = React.useRef()
   const myMicFeed = React.useRef()
   const myVideoFeed = React.useRef()
 
@@ -48,56 +35,63 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
     .toUpperCase()
 
   React.useEffect(() => {
+    const permission = new GetPermission(myMicFeed, myVideoFeed, myVideoRef)
+
     navigator.mediaDevices &&
       userInfo &&
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((stream) => {
-          userVideo.current.srcObject = stream
-          streamRef.current = stream
-          socket.emit('join room', {
-            roomID,
-            name: userInfo.name,
-          })
+      permission.getStreams().then((stream) => {
+        if (myVideoRef.current) {
+          myVideoRef.current.srcObject = stream
+        }
+        socket.emit('join room', {
+          roomID,
+          name: userInfo.name,
+        })
 
-          socket.on('all users', ({ id }) => {
-            id.forEach((userID) => {
-              const peer = createPeer(userID, socket.id, stream)
-              peersRef.current.push({
-                peerID: userID,
-                peer,
-              })
-              setPeers((prev) => [...prev, peer])
-            })
-          })
-
-          socket.on('user joined', (payload) => {
-            const peer = addPeer(payload.signal, payload.callerID, stream)
+        socket.on('all users', ({ id }) => {
+          const peersArray = []
+          id.forEach((userID) => {
+            const peer = createPeer(userID, socket.id, stream)
             peersRef.current.push({
-              peerID: payload.callerID,
+              peerID: userID,
               peer,
             })
-            setPeers((users) => [...users, peer])
+            peersArray.push({ peerID: socket.id, peer })
           })
-
-          socket.on('receiving returned signal', (payload) => {
-            const item = peersRef.current.find((p) => p.peerID === payload.id)
-            item.peer.signal(payload.signal)
-          })
-          return stream
+          setPeers(peersArray)
         })
 
-        .then((stream) => {
-          stream.getTracks().forEach((track) => (streamTrack.current = track))
-          myVideoFeed.current = stream.getVideoTracks()[0]
-          myMicFeed.current = stream.getAudioTracks()[0]
+        socket.on('user joined', (payload) => {
+          const peer = addPeer(payload.signal, payload.callerID, stream)
+          peersRef.current.push({
+            peerID: payload.callerID,
+            peer,
+          })
+          const peerObj = { peerID: payload.callerID, peer }
+          setPeers((users) => [...users, peerObj])
         })
+
+        socket.on('receiving returned signal', (payload) => {
+          const item = peersRef.current.find((p) => p.peerID === payload.id)
+          item.peer.signal(payload.signal)
+        })
+
+        socket.on('left', (id) => {
+          const peerObj = peersRef.current.find((p) => p.peerID === id)
+          if (peerObj) {
+            peerObj.peer.destroy()
+          }
+          const peers = peersRef.current.filter((p) => p.peerID !== id)
+          setPeers(peers)
+        })
+      })
 
     return () => {
-      navigator.mediaDevices &&
-        streamRef.current
-          .getTracks()
-          .forEach((track) => track === streamTrack.current && track.stop())
+      socket.emit('leftRoom', { chatroomId: roomID })
+      permission.closeStreams()
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -170,7 +164,7 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
             >
               <video
                 muted
-                ref={userVideo}
+                ref={myVideoRef}
                 autoPlay
                 playsInline
                 height='100%'
@@ -178,9 +172,9 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
               />
             </div>
           </Grid>
-          {peers.map((peer, index) => {
+          {peers.map((peer) => {
             return (
-              <Grid item xs={3} key={index}>
+              <Grid item xs={3} key={peer.peerID}>
                 <div
                   style={{
                     display: 'flex',
@@ -189,7 +183,7 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
                     alignItems: 'center',
                   }}
                 >
-                  <Video peer={peer} />
+                  <Video peer={peer.peer} />
                 </div>
               </Grid>
             )

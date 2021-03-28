@@ -64,12 +64,15 @@ export class GetPermission {
     })
 
     this.streams = stream
-    this.setStream(stream)
+    if (this.setStream) {
+      this.setStream(stream)
+    }
     if (this.myVideoRef.current) {
       this.myVideoRef.current.srcObject = stream
     }
     this.myVideoFeed.current = stream.getVideoTracks()[0]
     this.myMicFeed.current = stream.getAudioTracks()[0]
+    return this.streams
   }
 
   closeStreams = () => {

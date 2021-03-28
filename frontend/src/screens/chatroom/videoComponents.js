@@ -9,7 +9,6 @@ import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows'
 import DesktopAccessDisabledIcon from '@material-ui/icons/DesktopAccessDisabled'
 import MicIcon from '@material-ui/icons/Mic'
 import VideocamIcon from '@material-ui/icons/Videocam'
-import SpeakerNotesOffIcon from '@material-ui/icons/SpeakerNotesOff'
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes'
 import { Skeletons } from '../../components/skeletons'
 import SendIcon from '@material-ui/icons/Send'
@@ -26,6 +25,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardMedia,
   Chip,
   Grid,
   IconButton,
@@ -201,6 +201,17 @@ export const PublicVideoControls = ({
   const [chat, setChat1] = React.useState(false)
   const [count, setCount] = React.useState(0)
 
+  const scrollToBottom = () => {
+    if (scrollToView.current) {
+      scrollToView.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      })
+    } else {
+      return
+    }
+  }
+
   const switchHandler = (event, value) => {
     switch (value) {
       case 'offScreen':
@@ -219,6 +230,9 @@ export const PublicVideoControls = ({
         setChat1((prev) => !prev)
         handleOpen()
         setCount(0)
+        setTimeout(() => {
+          scrollToBottom()
+        }, 1000)
         break
       default:
         break
@@ -237,17 +251,6 @@ export const PublicVideoControls = ({
 
   const [open, setOpen] = React.useState(false)
   const [messages, setMessages] = React.useState([])
-
-  const scrollToBottom = () => {
-    if (scrollToView.current) {
-      scrollToView.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'end',
-      })
-    } else {
-      return
-    }
-  }
 
   React.useEffect(() => {
     if (publicMsgs) {
@@ -433,3 +436,28 @@ export const PublicVideoControls = ({
 }
 
 export const ChatModal = ({ chatroomId, socket, userInfo }) => {}
+
+export const Video = (props) => {
+  const ref = React.useRef()
+
+  React.useEffect(() => {
+    props.peer.on('stream', (stream) => {
+      if (ref.current) {
+        ref.current.srcObject = stream
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return (
+    <CardMedia
+      key={props.key}
+      component='video'
+      playsInline
+      autoPlay
+      ref={ref}
+      width='100%'
+      height='100%'
+    />
+  )
+}
