@@ -11,6 +11,7 @@ import 'colors'
 
 import userRoute from './routes/userRoute.js'
 import chatroomRoute from './routes/chatroomRoute.js'
+import twilioRoute from './routes/twilio.js'
 import { pr, pub, msg } from './socketRoutes/index.js'
 
 // initialize dotenv for environment variables
@@ -44,17 +45,18 @@ if (NODE_ENV === 'development') {
 app.get('/', async (req, res) => {})
 app.use('/api/user', userRoute)
 app.use('/api/chatroom', chatroomRoute)
+app.use('/api/twilio', twilioRoute)
 
 // error handlers
 app.use(error.errorHandler)
 app.use(error.notFound)
 
-const server = createServer(app).listen(
+export const server = createServer(app).listen(
   PORT,
   console.log(`Server running at PORT: ${PORT}`.yellow.bold)
 )
 
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: { origin: '*', methods: ['GET', 'POST'] },
 })
 
@@ -83,5 +85,5 @@ io.on('connection', (socket) => {
   socket.on('join room', pub.joinRoom(io, socket))
   socket.on('sending signal', pub.sendingSignal(io, socket))
   socket.on('returning signal', pub.returningSignal(io, socket))
-  socket.on('leftRoom', pub.disconnect(io, socket))
+  socket.on('leftRoom', pub.leftRoom(io, socket))
 })

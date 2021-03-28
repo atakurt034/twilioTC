@@ -184,5 +184,15 @@ export const PanelTypes = (
       List of Calls
     </Card>
   )
-  return { contacts, chat, call }
+  const text = (
+    <Card className={classes.paper}>
+      <div className={classes.cardActions}>
+        <AddCircleIcon style={{ color: 'green', fontSize: 40 }} />
+        <Typography style={{ flex: 1 }}>Text message</Typography>
+      </div>
+      <Divider />
+      List of Calls
+    </Card>
+  )
+  return { contacts, chat, call, text }
 }

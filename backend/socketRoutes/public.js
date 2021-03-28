@@ -1,5 +1,5 @@
 const users = {}
-const socketToRoom = {}
+export const socketToRoom = {}
 
 export const joinRoom = (io, socket) => async ({ roomID, name }) => {
   socket.join(roomID)
@@ -32,7 +32,7 @@ export const returningSignal = (io, socket) => async (payload) => {
     id: socket.id,
   })
 }
-export const disconnect = (io, socket) => async ({ chatroomId }) => {
+export const leftRoom = (io, socket) => async ({ chatroomId }) => {
   const roomID = socketToRoom[socket.id]
   let room = users[roomID]
   if (room) {

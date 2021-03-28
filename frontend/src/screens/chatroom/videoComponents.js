@@ -5,8 +5,6 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
 import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled'
 import MicOffIcon from '@material-ui/icons/MicOff'
 import VideocamOffIcon from '@material-ui/icons/VideocamOff'
-import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows'
-import DesktopAccessDisabledIcon from '@material-ui/icons/DesktopAccessDisabled'
 import MicIcon from '@material-ui/icons/Mic'
 import VideocamIcon from '@material-ui/icons/Videocam'
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes'
@@ -196,7 +194,6 @@ export const PublicVideoControls = ({
 }) => {
   const classess = useStyles()
   const [mute, setMute1] = React.useState(false)
-  const [shareScreen, setShareScreen1] = React.useState(false)
   const [offScreen, setOffScreen1] = React.useState(false)
   const [chat, setChat1] = React.useState(false)
   const [count, setCount] = React.useState(0)
@@ -222,10 +219,7 @@ export const PublicVideoControls = ({
         setMute1((prev) => !prev)
         setMute()
         break
-      case 'screen':
-        setShareScreen1((prev) => !prev)
-        setShareScreen()
-        break
+
       case 'chat':
         setChat1((prev) => !prev)
         handleOpen()
@@ -387,15 +381,6 @@ export const PublicVideoControls = ({
         showLabels
         className={classess.rootBottomNav}
       >
-        <BottomNavigationAction
-          value='screen'
-          label={shareScreen ? 'unshare' : 'share Screen'}
-          className={shareScreen ? classess.muted : classess.unmuted}
-          icon={
-            shareScreen ? <DesktopAccessDisabledIcon /> : <DesktopWindowsIcon />
-          }
-        />
-
         <BottomNavigationAction
           value='offScreen'
           label={offScreen ? 'turn on Video' : 'turn off Video'}

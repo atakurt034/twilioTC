@@ -13,6 +13,7 @@ import { CHAT } from '../../constants/index'
 
 import PhoneIcon from '@material-ui/icons/Phone'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
+import PermPhoneMsgIcon from '@material-ui/icons/PermPhoneMsg'
 import ChatIcon from '@material-ui/icons/Chat'
 import { ModalLoader } from '../../components/modalloader'
 import { ModalMessage } from '../../components/modalmessage'
@@ -83,8 +84,11 @@ export const ContactList = ({ contact, history }) => {
           >
             <ChatIcon color='primary' fontSize='small' />
           </IconButton>
-          <IconButton variant='outlined'>
-            <PhoneIcon style={{ color: 'green' }} fontSize='small' />
+          <IconButton variant='outlined' disabled={true}>
+            <PhoneIcon style={{ color: 'grey' }} fontSize='small' />
+          </IconButton>
+          <IconButton variant='outlined' disabled={true}>
+            <PermPhoneMsgIcon style={{ color: 'grey' }} fontSize='small' />
           </IconButton>
           <IconButton variant='outlined' onClick={deleteHandler}>
             <DeleteForeverIcon color='secondary' fontSize='small' />

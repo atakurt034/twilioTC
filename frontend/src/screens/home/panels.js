@@ -134,7 +134,7 @@ export const Panels = (classes, userInfo, history) => {
       </div>
     </div>
   )
-  const { contacts, call, chat } = PanelTypes(
+  const { contacts, call, chat, text } = PanelTypes(
     classes,
     addContact,
     add_true,
@@ -151,5 +151,5 @@ export const Panels = (classes, userInfo, history) => {
     createGroupHandler
   )
 
-  return { contacts, call, chat }
+  return { contacts, call, chat, text }
 }

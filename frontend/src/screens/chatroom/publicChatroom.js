@@ -16,23 +16,29 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
   const myMicFeed = React.useRef()
   const myVideoFeed = React.useRef()
 
-  const [peers, setPeers] = React.useState([])
-
-  const { userInfo } = useSelector((state) => state.userLogin)
-
-  React.useEffect(() => {
-    if (!userInfo) {
-      history.push('/login')
-    }
-  }, [userInfo, history, socket])
-
-  // eslint-disable-next-line no-unused-vars
-
   const roomID = match.params.id
   const roomName = location.search
     .split('=')[1]
     .replace(/%20/g, ' ')
     .toUpperCase()
+
+  const [peers, setPeers] = React.useState([])
+
+  const { userInfo } = useSelector((state) => state.userLogin)
+
+  const listener = (eventName, ...args) => {
+    console.log(eventName, args)
+  }
+
+  socket.onAny(listener)
+
+  React.useEffect(() => {
+    if (!userInfo) {
+      history.push('/login')
+    }
+  }, [userInfo, history, socket, roomID])
+
+  // eslint-disable-next-line no-unused-vars
 
   React.useEffect(() => {
     const permission = new GetPermission(myMicFeed, myVideoFeed, myVideoRef)
@@ -139,8 +145,6 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
     track.current.enabled = !track.current.enabled
   }
 
-  const shareScreenHandler = (params) => {}
-
   return (
     <Container>
       <Paper elevation={12} style={{ minHeight: '80vh' }}>
@@ -193,7 +197,6 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
           <PublicVideoControls
             setMute={() => trackHandler(myMicFeed)}
             setOffScreen={() => trackHandler(myVideoFeed)}
-            setShareScreen={shareScreenHandler}
             socket={socket}
             userInfo={userInfo}
             chatroomId={roomID}

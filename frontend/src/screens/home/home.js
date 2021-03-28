@@ -4,6 +4,7 @@ import { IconButton, Grid } from '@material-ui/core'
 import PhoneIcon from '@material-ui/icons/Phone'
 import PeopleIcon from '@material-ui/icons/People'
 import ChatIcon from '@material-ui/icons/Chat'
+import PermPhoneMsgIcon from '@material-ui/icons/PermPhoneMsg'
 import { useStyles } from './styles.js'
 
 import { useDispatch, useSelector } from 'react-redux'
@@ -58,13 +59,21 @@ export const Home = ({ socket, history }) => {
           >
             <PhoneIcon />
           </IconButton>
+          <IconButton
+            className={classes.icon}
+            onClick={() => panelHandler('text')}
+          >
+            <PermPhoneMsgIcon />
+          </IconButton>
         </Grid>
         <Grid item xs={12} sm={6} lg={4} className={classes.sidePanel}>
           {panel === 'chat'
             ? Panels(classes).chat
             : panel === 'call'
             ? Panels(classes).call
-            : Panels(classes, userDetails, history).contacts}
+            : panel === 'contacts'
+            ? Panels(classes, userDetails, history).contacts
+            : Panels(classes).text}
         </Grid>
       </Grid>
     </>

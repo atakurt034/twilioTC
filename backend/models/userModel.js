@@ -15,6 +15,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    mobile: {
+      type: String,
+    },
     privaterooms: [
       { type: mongoose.Schema.Types.ObjectId, ref: 'Privateroom' },
     ],
