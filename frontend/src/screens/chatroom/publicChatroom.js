@@ -95,9 +95,7 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
     return () => {
       socket.emit('leftRoom', { chatroomId: roomID })
       permission.closeStreams()
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
+      window.location.reload()
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -6,6 +6,7 @@ import {
   IconButton,
   Paper,
   TextField,
+  Typography,
 } from '@material-ui/core'
 
 import SendIcon from '@material-ui/icons/Send'
@@ -50,6 +51,7 @@ export const TextForm = () => {
             <AddCircleIcon style={{ color: 'green', fontSize: 40 }} />
           </IconButton>
           <PhoneInput
+            enableSearch='true'
             onChange={(e) => setMobileNum(e)}
             defaultErrorMessage='input only numbers'
             placeholder='input mobile number'
@@ -61,21 +63,72 @@ export const TextForm = () => {
         </div>
         <Divider />
 
-        <Paper style={{ padding: 10, minHeight: '35vh', margin: 10 }}>
+        <Paper
+          style={{
+            padding: 10,
+            height: '40vh',
+            margin: 10,
+            overflow: 'auto',
+          }}
+        >
           {loading
-            ? 'loading...'
+            ? 'sending...'
             : error
-            ? sentMsg.map((msg) => <p key={msg}>{msg} - not delivered</p>)
+            ? sentMsg.map((msg) => (
+                <Paper
+                  key={msg}
+                  style={{
+                    maxHeight: '100%',
+                    padding: 5,
+                    margin: 5,
+                    width: '70%',
+                    border: '2px solid red',
+                    float: 'right',
+                    clear: 'both',
+                    textAlign: 'right',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    overflow: 'auto',
+                  }}
+                  elevation={12}
+                >
+                  <Typography style={{ color: 'red', lineHeight: '2' }}>
+                    {msg}
+                  </Typography>
+                  <Typography
+                    color='secondary'
+                    variant='caption'
+                    style={{ lineHeight: '1' }}
+                  >
+                    {mobileNum} - not delivered
+                  </Typography>
+                </Paper>
+              ))
             : success
-            ? sentMsg.map((msg) => <p key={msg}>{msg} - delivered</p>)
+            ? sentMsg.map((msg) => (
+                <Paper
+                  key={msg}
+                  style={{
+                    padding: 5,
+                    margin: 5,
+                    width: '70%',
+                    border: '2px solid green',
+                    float: 'right',
+                    clear: 'both',
+                    textAlign: 'right',
+                  }}
+                  elevation={12}
+                >
+                  <p>{msg} </p>
+                  <Typography variant='caption' style={{ color: 'green' }}>
+                    {mobileNum} - delivered
+                  </Typography>
+                </Paper>
+              ))
             : ''}
         </Paper>
-        <form
-          onSubmit={handleSubmit(submitHandler)}
-          method='POST'
-          encType='multipart/form-data'
-          style={{ margin: 10 }}
-        >
+        <form onSubmit={handleSubmit(submitHandler)} style={{ margin: 10 }}>
           <TextField
             inputRef={register({
               required: true,
@@ -101,6 +154,7 @@ export const TextForm = () => {
             color='primary'
             size='large'
             startIcon={<SendIcon />}
+            disabled={!mobileNum}
           >
             Send
           </Button>
