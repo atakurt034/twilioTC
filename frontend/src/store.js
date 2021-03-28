@@ -2,7 +2,7 @@ import { combineReducers, createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
-import { user, chatroom } from './reducers/index'
+import { user, chatroom, twilio } from './reducers/index'
 
 const middleware = [thunk]
 
@@ -24,6 +24,7 @@ const reducers = combineReducers({
   getPrivateMessage: chatroom.privateGetMessagesReducer,
   chatroomPublicCreate: chatroom.publicCreateReducer,
   getPublicMessage: chatroom.publicGetMessagesReducer,
+  sendText: twilio.sendTextReducer,
 })
 
 const initialState = {

@@ -14,16 +14,16 @@ const from = process.env.TWILIO_NUMBER
  */
 export const sendText = asyncHandler(async (req, res) => {
   const client = new Twilio(SID, TOKEN, { logLevel: 'debug' })
-  const { text, to } = req.body
+  const { message, to } = req.body
 
   try {
-    const message = await client.messages.create({
-      body: text,
+    const result = await client.messages.create({
+      body: message,
       from: from,
       to: to,
     })
 
-    res.status(200).json(message)
+    res.status(200).json(result)
   } catch (error) {
     res.status(401)
     throw new Error(error)
