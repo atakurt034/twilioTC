@@ -132,3 +132,18 @@ export const deleteReducer = (state = {}, action) => {
       return state
   }
 }
+
+export const updateProfileReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER.UPATE_PROFILE_REQUEST:
+      return { loading: true }
+    case USER.UPATE_PROFILE_SUCCESS:
+      return { loading: false, status: action.payload }
+    case USER.UPATE_PROFILE_FAIL:
+      return { loading: false, error: action.payload }
+    case USER.UPATE_PROFILE_RESET:
+      return {}
+    default:
+      return state
+  }
+}

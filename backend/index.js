@@ -8,6 +8,7 @@ import session from 'express-session'
 
 import morgan from 'morgan'
 import 'colors'
+import ngrok from 'ngrok'
 
 import userRoute from './routes/userRoute.js'
 import chatroomRoute from './routes/chatroomRoute.js'
@@ -39,10 +40,20 @@ app.use(
 
 if (NODE_ENV === 'development') {
   app.use(morgan('dev'))
+  await ngrok
+    .connect(5000)
+    .then((res) => {
+      console.log(res.red.bold)
+      const apiUrl = ngrok.getUrl()
+      console.log(apiUrl.green.bold)
+    })
+    .catch(console.log)
 }
 
 // API Routes
-app.get('/', async (req, res) => {})
+app.get('/', async (req, res) => {
+  res.send('connected')
+})
 app.use('/api/user', userRoute)
 app.use('/api/chatroom', chatroomRoute)
 app.use('/api/twilio', twilioRoute)

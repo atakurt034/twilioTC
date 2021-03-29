@@ -53,6 +53,7 @@ export const App = () => {
 
       <Route path='/login' component={screen.Login} exact />
       <Route path='/register' component={screen.Register} exact />
+      <Route path='/profile' component={screen.Profile} exact />
 
       <Route
         path='/'

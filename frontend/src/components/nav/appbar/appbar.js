@@ -17,15 +17,21 @@ import { StyledBadge } from './styles'
 import { Sidebar } from '../sidebar/sidebar'
 import { withRouter } from 'react-router'
 
-const App = () => {
+const App = ({ history }) => {
   const dispatch = useDispatch()
   const classes = useStyles()
 
   const { userInfo } = useSelector((state) => state.userLogin)
+  const { userDetails } = useSelector((state) => state.userDetails)
 
   const [anchorEl, setAnchorEl] = React.useState(null)
 
   const isMenuOpen = Boolean(anchorEl)
+
+  React.useEffect(() => {
+    dispatch(UA.getDetails())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -40,6 +46,11 @@ const App = () => {
     handleMenuClose()
   }
 
+  const profileHandler = () => {
+    history.push('/profile')
+    handleMenuClose()
+  }
+
   const menuId = 'primary-search-account-menu'
   const renderMenu = (
     <Menu
@@ -51,7 +62,7 @@ const App = () => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={profileHandler}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
       <MenuItem onClick={logout}>Logout</MenuItem>
     </Menu>
@@ -67,8 +78,8 @@ const App = () => {
       variant={'standard'}
     >
       <Avatar
-        src={userInfo ? userInfo.image : ''}
-        alt={userInfo ? userInfo.name : ''}
+        src={userDetails && userDetails.image}
+        alt={userInfo && userInfo.name}
         className={classes.avatar}
       />
     </StyledBadge>
@@ -93,7 +104,13 @@ const App = () => {
                 aria-haspopup='true'
                 onClick={handleProfileMenuOpen}
                 color='inherit'
-                startIcon={userInfo ? avatarIcon : <AccountCircle />}
+                startIcon={
+                  userDetails && userDetails.image ? (
+                    avatarIcon
+                  ) : (
+                    <AccountCircle />
+                  )
+                }
               >
                 <Typography>{userInfo && userInfo.name}</Typography>
               </Button>

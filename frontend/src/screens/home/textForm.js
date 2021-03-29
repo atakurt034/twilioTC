@@ -31,7 +31,7 @@ export const TextForm = () => {
   const [sentMsg, setSentMsg] = React.useState([])
 
   const submitHandler = ({ message }, event) => {
-    setSentMsg((prev) => [...prev, message])
+    setSentMsg((prev) => [...prev, { message, mobileNum }])
     const to = '+' + mobileNum
     dispactch(TA.sendTextMsg({ to, message }))
     event.target.reset()
@@ -94,14 +94,14 @@ export const TextForm = () => {
                   elevation={12}
                 >
                   <Typography style={{ color: 'red', lineHeight: '2' }}>
-                    {msg}
+                    {msg.message}
                   </Typography>
                   <Typography
                     color='secondary'
                     variant='caption'
                     style={{ lineHeight: '1' }}
                   >
-                    {mobileNum} - not delivered
+                    {msg.mobileNum} - not delivered
                   </Typography>
                 </Paper>
               ))
@@ -120,9 +120,9 @@ export const TextForm = () => {
                   }}
                   elevation={12}
                 >
-                  <p>{msg} </p>
+                  <p>{msg.message} </p>
                   <Typography variant='caption' style={{ color: 'green' }}>
-                    {mobileNum} - delivered
+                    {msg.mobileNum} - delivered
                   </Typography>
                 </Paper>
               ))

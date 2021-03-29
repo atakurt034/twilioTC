@@ -20,6 +20,7 @@ const reducers = combineReducers({
   userAddContact: user.addContactReducer,
   inviteUser: user.invteUserReducer,
   deleteAny: user.deleteReducer,
+  updateProfile: user.updateProfileReducer,
   chatroomPrivateCreate: chatroom.privateCreateReducer,
   getPrivateMessage: chatroom.privateGetMessagesReducer,
   chatroomPublicCreate: chatroom.publicCreateReducer,

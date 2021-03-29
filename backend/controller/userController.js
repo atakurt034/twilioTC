@@ -1,7 +1,16 @@
 import asyncHandler from 'express-async-handler'
+import ngrok from 'ngrok'
+
+import slugify from 'slugify'
+import formidable from 'formidable'
+import path from 'path'
+import fs from 'fs'
 
 import { User } from '../models/userModel.js'
 import { Chatroom } from '../models/chatroomModel.js'
+// import { Sms } from '../models/smsModel.js'
+let Sms = {}
+
 import { generateToken } from '../utils/generateToken.js'
 
 import { Query } from './queryUsers.js'
@@ -302,4 +311,107 @@ export const deleteContactOrGroup = asyncHandler(async (req, res) => {
     res.status(400)
     throw new Error(error)
   }
+})
+
+/**
+ * route: /api/user/logout
+ * description: logout user
+ * access: Private
+ * method: POST
+ */
+export const logout = asyncHandler(async (req, res) => {
+  try {
+    const disconnected = await ngrok.disconnect() // stops all
+
+    res.status(200).json(disconnected)
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
+})
+
+/**
+ * route: /api/user/sms
+ * description: get users sms
+ * access: Private
+ * method: GET
+ */
+export const getSms = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user._id
+    const user = await User.findById(userId)
+
+    const msgs = await Sms.find({ from: user.mobile })
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
+})
+
+/**
+ * route: /api/user/:id
+ * description: update user profile
+ * access: Private
+ * method: PUT
+ */
+export const updateProfile = asyncHandler(async (req, res) => {
+  const { name, email, image, password, mobile } = req.body
+
+  try {
+    const user = await User.findById(req.user._id)
+    user.name = name
+    user.image = image
+    user.email = email
+    if (password) {
+      user.password = password
+    }
+    if (mobile) {
+      user.mobile = mobile
+    }
+    await user.save()
+    res.json({ status: 200 })
+  } catch (error) {
+    res.status(404)
+    throw new Error(error)
+  }
+})
+
+/**
+ * route: /api/user/uploads/avatar
+ * description: update user profile image
+ * access: Private
+ * method: POST
+ */
+export const updateAvatar = asyncHandler(async (req, res) => {
+  const timestamp = new Date().toISOString().slice(0, 10)
+  const __dirname = path.resolve()
+  const uploadFolder = path.join(
+    __dirname,
+    'frontend',
+    'public',
+    'uploads',
+    'avatar_images',
+    timestamp
+  )
+
+  fs.mkdirSync(uploadFolder, { recursive: true }, function (err) {
+    return console.log('dir ' + err)
+  })
+
+  const form = new formidable.IncomingForm()
+  form.multiples = false
+  form.maxFileSize = 30 * 1024 * 1024
+  form.uploadDir = uploadFolder
+  form.keepExtensions = true
+  form.on('fileBegin', (name, file) => {
+    file.path = path.join(uploadFolder, slugify(file.name + Date.now()))
+  })
+
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      console.log(err)
+    } else {
+      res.json(files)
+    }
+  })
 })

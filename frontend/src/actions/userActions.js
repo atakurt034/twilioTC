@@ -44,8 +44,17 @@ export const login = (body) => async (dispatch) => {
 }
 
 export const logout = () => async (dispatch) => {
-  dispatch({ type: USER.LOGOUT })
-  localStorage.removeItem('userInfo')
+  try {
+    dispatch({ type: USER.LOGOUT })
+    localStorage.removeItem('userInfo')
+
+    const config = { headers: { 'Content-Type': 'application/json' } }
+
+    const { data } = await axios.post('/api/user/logout', config)
+    console.log(data)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export const addContact = (email) => async (dispatch, getState) => {
@@ -237,6 +246,38 @@ export const deleteContactOrGroup = (id) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: USER.DELETE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+
+export const updateProfile = (update) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER.UPATE_PROFILE_REQUEST })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.put(
+      `/api/user/${userInfo._id}`,
+      update,
+      config
+    )
+    dispatch({ type: USER.UPATE_PROFILE_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: USER.UPATE_PROFILE_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message
