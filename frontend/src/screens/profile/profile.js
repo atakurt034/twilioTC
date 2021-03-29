@@ -169,7 +169,6 @@ export const Profile = ({ history }) => {
               fullWidth
               label='Email Address'
               name='email'
-              autoFocus
             />
             {errors.email && (
               <Message variant='error'>{errors.email.message}</Message>

@@ -94,7 +94,7 @@ export const getUserDetails = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(id)
       .select('-password')
-      .populate('contacts', 'name email')
+      .populate('contacts', 'name email image mobile')
       .populate({
         path: 'invites',
         populate: [
