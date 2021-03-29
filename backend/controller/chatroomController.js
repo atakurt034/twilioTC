@@ -4,8 +4,6 @@ import { Privateroom } from '../models/privateroomModel.js'
 import { User } from '../models/userModel.js'
 import { Message } from '../models/messageModel.js'
 
-import mongoose from 'mongoose'
-
 /**
  * route: /api/chatroom/private
  * description: create Private Room
@@ -14,6 +12,8 @@ import mongoose from 'mongoose'
  */
 export const createPrivateRoom = asyncHandler(async (req, res) => {
   try {
+    let senderExist
+
     const senderId = req.user._id
     const { id: recieverId } = req.body
 
@@ -24,30 +24,27 @@ export const createPrivateRoom = asyncHandler(async (req, res) => {
       ],
     })
 
-    const senderExist =
-      userExist &&
-      (await User.findOne({
-        $and: [{ _id: senderId }, { privaterooms: { $in: [userExist._id] } }],
-      }))
-
-    if (!senderExist) {
-      await User.updateOne(
-        { _id: senderId },
-        { $push: { privaterooms: userExist._id } }
-      )
-      res.status(200).json(userExist)
-    }
-
     if (userExist) {
-      res.status(201)
-      res.json(userExist)
+      senderExist = await User.findOne({
+        $and: [{ _id: senderId }, { privaterooms: { $in: [userExist._id] } }],
+      })
+      if (!senderExist) {
+        await User.updateOne(
+          { _id: senderId },
+          { $push: { privaterooms: userExist._id } }
+        )
+        res.status(200).json(userExist)
+      } else {
+        res.status(201)
+        res.json(userExist)
+      }
     } else {
       const newRoom = await Privateroom.create({
         users: [recieverId, senderId],
       })
       await User.updateMany(
         { _id: { $in: [recieverId, senderId] } },
-        { privaterooms: newRoom }
+        { $push: { privaterooms: newRoom } }
       )
       if (newRoom) {
         res.status(200)

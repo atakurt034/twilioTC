@@ -24,9 +24,16 @@ export const App = () => {
   // socket.connect()
 
   React.useEffect(() => {
+    const listener = (event, ...args) => {
+      console.log(event, args)
+    }
+
+    socket.onAny(listener)
+
     return () => {
       socket.disconnect()
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

@@ -34,6 +34,7 @@ export const ContactList = ({ contact, history }) => {
   }, [chatroom, dispatch, history, error])
 
   const clickHandler = (id) => {
+    console.log(id)
     dispatch(CA.createPrivateRoom({ id }))
   }
 

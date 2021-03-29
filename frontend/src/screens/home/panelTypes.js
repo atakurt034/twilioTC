@@ -107,7 +107,7 @@ export const PanelTypes = (
         })}
       {userDetails &&
         !addContact &&
-        userDetails.contacts.map((contact) => {
+        userDetails.contacts.map((contact, index) => {
           return (
             <ContactList
               key={contact._id}
