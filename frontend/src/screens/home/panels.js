@@ -14,7 +14,7 @@ import { UA, CA } from '../../actions/index'
 
 import { PanelTypes } from './panelTypes'
 
-export const Panels = (classes, userInfo, history) => {
+export const Panels = (classes, userInfo, history, panelHandler) => {
   const dispatch = useDispatch()
 
   const { user, loading: loader, error } = useSelector(
@@ -148,7 +148,8 @@ export const Panels = (classes, userInfo, history) => {
     UserList,
     loading,
     history,
-    createGroupHandler
+    createGroupHandler,
+    panelHandler
   )
 
   return { contacts, call, chat, text }

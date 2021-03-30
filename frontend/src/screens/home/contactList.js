@@ -18,7 +18,7 @@ import ChatIcon from '@material-ui/icons/Chat'
 import { ModalLoader } from '../../components/modalloader'
 import { ModalMessage } from '../../components/modalmessage'
 
-export const ContactList = ({ contact, history }) => {
+export const ContactList = ({ contact, history, panelHandler }) => {
   const dispatch = useDispatch()
   const { chatroom, loading, error } = useSelector(
     (state) => state.chatroomPrivateCreate
@@ -43,6 +43,10 @@ export const ContactList = ({ contact, history }) => {
       dispatch(
         UA.deleteContactOrGroup({ type: 'contacts', deleteId: contact._id })
       )
+  }
+
+  const textHandler = (mobileNum) => {
+    panelHandler('text', mobileNum)
   }
 
   return (
@@ -88,8 +92,8 @@ export const ContactList = ({ contact, history }) => {
           <IconButton variant='outlined' disabled={true}>
             <PhoneIcon style={{ color: 'grey' }} fontSize='small' />
           </IconButton>
-          <IconButton variant='outlined' disabled={true}>
-            <PermPhoneMsgIcon style={{ color: 'grey' }} fontSize='small' />
+          <IconButton variant='outlined' onClick={textHandler}>
+            <PermPhoneMsgIcon style={{ color: 'goldenrod' }} fontSize='small' />
           </IconButton>
           <IconButton variant='outlined' onClick={deleteHandler}>
             <DeleteForeverIcon color='secondary' fontSize='small' />

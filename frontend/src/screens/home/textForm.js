@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { TA } from '../../actions/index'
 
-export const TextForm = () => {
+export const TextForm = ({ userMobileNum }) => {
   const classes = useStyles()
   const dispactch = useDispatch()
   const { register, handleSubmit, errors } = useForm()
@@ -41,7 +41,10 @@ export const TextForm = () => {
     if (info) {
       setSuccess(true)
     }
-  }, [info])
+    if (userMobileNum) {
+      console.log(userMobileNum)
+    }
+  }, [info, userMobileNum])
 
   return (
     <>

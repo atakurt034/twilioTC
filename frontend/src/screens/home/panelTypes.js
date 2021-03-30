@@ -35,7 +35,7 @@ export const PanelTypes = (
   loading,
   history,
   createGroupHandler,
-  textHandler
+  panelHandler
 ) => {
   const createGroupRef = React.useRef()
   const dispatch = useDispatch()
@@ -113,6 +113,7 @@ export const PanelTypes = (
               key={contact._id}
               history={history}
               contact={contact}
+              panelHandler={panelHandler}
             />
           )
         })}
