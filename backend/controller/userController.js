@@ -406,7 +406,7 @@ export const updateAvatar = asyncHandler(async (req, res) => {
   form.uploadDir = uploadFolder
   form.keepExtensions = true
   form.on('fileBegin', (name, file) => {
-    file.path = path.join(uploadFolder, slugify(file.name + Date.now()))
+    file.path = path.join(uploadFolder, slugify(file.name))
   })
 
   form.parse(req, (err, fields, files) => {

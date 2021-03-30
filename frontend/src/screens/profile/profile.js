@@ -37,7 +37,10 @@ export const Profile = ({ history }) => {
   const [image, setImage] = React.useState()
 
   const { register, handleSubmit, errors, watch } = useForm({
-    defaultValues: { name: userInfo.name, email: userInfo.email },
+    defaultValues: {
+      name: userDetails && userDetails.name,
+      email: userDetails && userDetails.email,
+    },
   })
 
   React.useEffect(() => {
@@ -51,10 +54,12 @@ export const Profile = ({ history }) => {
     }
     if (status) {
       dispatch(UA.getDetails())
-      dispatch({ type: USER.UPATE_PROFILE_RESET })
     }
     if (userDetails) {
       setImage(userDetails.image)
+    }
+    return () => {
+      dispatch({ type: USER.UPATE_PROFILE_RESET })
     }
   }, [userInfo, history, status, userDetails, dispatch])
 
@@ -89,20 +94,18 @@ export const Profile = ({ history }) => {
     }
   }
 
-  return (
+  return loading || loadingUpdate ? (
+    <ModalLoader />
+  ) : error ? (
+    <ModalMessage variant='error'>{error}</ModalMessage>
+  ) : errorUpdate ? (
+    <ModalMessage variant='error'>{errorUpdate}</ModalMessage>
+  ) : (
     <Grid container className={classes.container}>
       <Grid item xs={12}>
         <Paper className={classes.paper} elevation={12}>
           <CssBaseline />
-          {loading || loadingUpdate ? (
-            <ModalLoader />
-          ) : error ? (
-            <ModalMessage variant='error'>{error}</ModalMessage>
-          ) : (
-            errorUpdate && (
-              <ModalMessage variant='error'>{errorUpdate}</ModalMessage>
-            )
-          )}
+
           <Container style={{ textAlign: 'center' }}>
             <input
               type='file'

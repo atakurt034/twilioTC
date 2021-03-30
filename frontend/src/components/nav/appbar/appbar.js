@@ -112,7 +112,7 @@ const App = ({ history }) => {
                   )
                 }
               >
-                <Typography>{userInfo && userInfo.name}</Typography>
+                <Typography>{userDetails && userDetails.name}</Typography>
               </Button>
             </div>
           )}
