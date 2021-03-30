@@ -119,11 +119,29 @@ export const getUserDetails = asyncHandler(async (req, res) => {
       .populate({
         path: 'smsrooms',
         model: 'Smsroom',
-        populate: {
-          path: 'mobileNumbers',
-          model: 'MobileNum',
-          populate: { path: 'user', select: 'name' },
-        },
+        populate: [
+          {
+            path: 'mobileNumbers',
+            model: 'MobileNum',
+            populate: { path: 'user', select: 'name' },
+          },
+          {
+            path: 'messages',
+            model: 'Smsmessage',
+            populate: [
+              {
+                path: 'to',
+                model: 'MobileNum',
+                populate: { path: 'user', select: 'name' },
+              },
+              {
+                path: 'from',
+                model: 'MobileNum',
+                populate: { path: 'user', select: 'name' },
+              },
+            ],
+          },
+        ],
       })
 
     res.status(200).json(user)

@@ -11,4 +11,20 @@ export const useStyles = makeStyles((theme) => ({
     padding: 5,
     alignItems: 'center',
   },
+  mine: {
+    padding: 5,
+    margin: 5,
+    width: '70%',
+    float: 'right',
+    clear: 'both',
+    textAlign: 'right',
+  },
+  yours: {
+    padding: 5,
+    margin: 5,
+    width: '70%',
+    float: 'left',
+    clear: 'both',
+    textAlign: 'right',
+  },
 }))
