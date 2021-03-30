@@ -14,8 +14,10 @@ import { UA, CA } from '../../actions/index'
 
 import { PanelTypes } from './panelTypes'
 
-export const Panels = (classes, userInfo, history, panelHandler) => {
+export const Panels = (classes, userInfo, history) => {
   const dispatch = useDispatch()
+
+  const searchRef = React.useRef()
 
   const { user, loading: loader, error } = useSelector(
     (state) => state.userSearch
@@ -27,8 +29,7 @@ export const Panels = (classes, userInfo, history, panelHandler) => {
   const [loading, setLoading] = React.useState(false)
 
   const [success, setSuccess] = React.useState(false)
-  const invited =
-    user && user[0].invites.find((invite) => invite._id === userInfo._id)
+  const invited = user ? true : false
 
   React.useEffect(() => {
     if (user) {
@@ -119,17 +120,21 @@ export const Panels = (classes, userInfo, history, panelHandler) => {
             input: classes.inputInput,
           }}
           inputProps={{ 'aria-label': 'search' }}
+          inputRef={searchRef}
           onChange={changeHandler}
         />
       </div>
       <div>
         <LoadingButton
+          searchRef={searchRef}
+          user={user}
           invited={invited}
           loading={loading}
           success={success}
           search={search}
           setSuccess={setSuccess}
           addContact={setAddContact}
+          setSearch={setSearch}
         />
       </div>
     </div>
@@ -148,8 +153,7 @@ export const Panels = (classes, userInfo, history, panelHandler) => {
     UserList,
     loading,
     history,
-    createGroupHandler,
-    panelHandler
+    createGroupHandler
   )
 
   return { contacts, call, chat, text }

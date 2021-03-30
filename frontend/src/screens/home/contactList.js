@@ -52,8 +52,7 @@ export const ContactList = ({
 
   const textHandler = (mobileNum) => {
     panelHandler('text')
-    setMobileNum(mobileNum)
-    console.log(mobileNum)
+    history.push(`/sms/${mobileNum}`)
   }
 
   return (
@@ -101,7 +100,9 @@ export const ContactList = ({
           </IconButton>
           <IconButton
             variant='outlined'
-            onClick={() => textHandler(contact.mobile.mobile)}
+            onClick={() =>
+              textHandler(contact.mobile ? contact.mobile.mobile : 'none')
+            }
           >
             <PermPhoneMsgIcon style={{ color: 'goldenrod' }} fontSize='small' />
           </IconButton>

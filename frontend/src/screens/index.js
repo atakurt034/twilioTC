@@ -4,6 +4,7 @@ import { Register } from './register/register'
 import { Chatroom } from './chatroom/chatroom'
 import { PublicChatroom } from './chatroom/publicChatroom'
 import { Profile } from './profile/profile'
+import { Sms } from './sms/sms'
 
 export const screen = {
   Home,
@@ -12,4 +13,5 @@ export const screen = {
   Chatroom,
   PublicChatroom,
   Profile,
+  Sms,
 }
