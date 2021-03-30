@@ -42,7 +42,7 @@ export const TextForm = ({ userMobileNum }) => {
       setSuccess(true)
     }
     if (userMobileNum) {
-      console.log(userMobileNum)
+      setMobileNum(userMobileNum)
     }
   }, [info, userMobileNum])
 
@@ -54,7 +54,7 @@ export const TextForm = ({ userMobileNum }) => {
             <AddCircleIcon style={{ color: 'green', fontSize: 40 }} />
           </IconButton>
           <PhoneInput
-            enableSearch='true'
+            value={mobileNum}
             onChange={(e) => setMobileNum(e)}
             defaultErrorMessage='input only numbers'
             placeholder='input mobile number'
