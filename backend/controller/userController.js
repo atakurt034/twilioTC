@@ -116,6 +116,15 @@ export const getUserDetails = asyncHandler(async (req, res) => {
         path: 'chatrooms',
         populate: { path: 'users', select: 'name' },
       })
+      .populate({
+        path: 'smsrooms',
+        model: 'Smsroom',
+        populate: {
+          path: 'mobileNumbers',
+          model: 'MobileNum',
+          populate: { path: 'user', select: 'name' },
+        },
+      })
 
     res.status(200).json(user)
   } catch (error) {

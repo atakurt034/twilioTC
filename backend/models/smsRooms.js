@@ -2,8 +2,8 @@ import mongoose from 'mongoose'
 
 const smsRoomSchema = mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    to: { type: mongoose.Schema.Types.ObjectId, ref: 'MobileNum' },
+    mobileNumbers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MobileNum' }],
+    mobiles: [{ type: String }],
     messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Smsmessages' }],
   },
   { timestamps: true }

@@ -20,13 +20,14 @@ const from = process.env.TWILIO_NUMBER
 export const sendText = asyncHandler(async (req, res) => {
   const client = new Twilio(SID, TOKEN, { logLevel: 'debug' })
   const { message, to } = req.body
+
   let toUser
   let fromUser
   let smsMessage
   let smsRoom
 
-  const toFind = to.split('+')[1]
-  const fromfind = from.split('+')[1]
+  const toString = to.trim().toString().split('+')[1]
+  const fromString = from.trim().toString().split('+')[1]
 
   try {
     await client.messages.create({
@@ -37,30 +38,41 @@ export const sendText = asyncHandler(async (req, res) => {
 
     const user = await User.findById(req.user._id)
 
-    toUser = await MobileNum.findOne({ mobile: toFind })
+    fromUser = await MobileNum.findOne({ mobile: fromString })
+    toUser = await MobileNum.findOne({ mobile: toString })
+
+    const toUserExistinDB = await User.findOne({ mobile: toUser })
 
     // create a new mobile number entry
     if (!toUser) {
-      toUser = await MobileNum.create({ mobile: toFind })
+      toUser = await MobileNum.create({ mobile: toString })
+      if (toUserExistinDB) {
+        toUser.user = toUserExistinDB._id
+      }
     }
 
-    fromUser = user.mobile === fromfind ? user.mobile : false
+    const fromMobileExist = user.mobile.toString() === fromUser._id.toString()
     // add user mobile number to self
-    if (!fromUser) {
+    if (!fromMobileExist) {
       fromUser = await MobileNum.create({
-        mobile: fromfind,
+        mobile: fromString,
         user: req.user._id,
       })
-      user.mobile = fromUser
+      user.mobile = fromUser._id
     }
 
     smsRoom = await Smsroom.findOne({
-      $and: [{ _id: req.user._id }, { to: toUser }],
+      $or: [
+        { mobiles: { $eq: [toString, fromString] } },
+        { mobiles: { $eq: [fromString, toString] } },
+      ],
     })
-
     // create new smsRoom if it does not exist
     if (!smsRoom) {
-      smsRoom = await Smsroom.create({ users: [toUser, fromUser] })
+      smsRoom = await Smsroom.create({
+        mobileNumbers: [toUser, fromUser],
+        mobiles: [fromString, toString],
+      })
     }
     smsMessage = await Smsmessage.create({
       status: 'sent',
@@ -71,12 +83,19 @@ export const sendText = asyncHandler(async (req, res) => {
 
     // check if user has the roomSms
     let smsRoomExist
-    smsRoomExist = user.smsrooms.find((room) => room._id === smsRoom._id)
+    smsRoomExist = user.smsrooms.includes(smsRoom._id)
     if (!smsRoomExist) {
       user.smsrooms.push(smsRoom)
     }
 
     smsRoom.messages.push(smsMessage)
+
+    if (toUserExistinDB) {
+      if (!toUserExistinDB.smsrooms.includes(smsRoom._id)) {
+        toUserExistinDB.smsrooms.push(smsRoom)
+      }
+      await toUserExistinDB.save()
+    }
     await user.save()
     await smsRoom.save()
 
@@ -114,6 +133,20 @@ export const recieveCall = asyncHandler(async (req, res) => {
     // Render the response as XML in reply to the webhook request
     res.type('text/xml')
     res.send(client.toString())
+  } catch (error) {
+    res.status(401)
+    throw new Error(error)
+  }
+})
+
+export const getSMS = asyncHandler(async (req, res) => {
+  try {
+    // const smsRoom = await Smsroom.findOne({
+    //   $or: [
+    //     { 'mobileNumbers.mobile': { $eq: [toFind, fromfind] } },
+    //     { 'mobileNumbers.mobile': { $eq: [fromfind, toFind] } },
+    //   ],
+    // })
   } catch (error) {
     res.status(401)
     throw new Error(error)

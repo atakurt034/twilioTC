@@ -16,9 +16,11 @@ export const Text = ({ history }) => {
   const dispatch = useDispatch()
 
   const { mobile, loading, error } = useSelector((state) => state.searchMobile)
+  const { userDetails } = useSelector((state) => state.userDetails)
 
   const [mobileNum, setMobileNum] = React.useState()
   const [country, setCountry] = React.useState()
+  const [searched, setSearched] = React.useState(false)
 
   const changeHandler = (value, country) => {
     setMobileNum(value)
@@ -27,13 +29,21 @@ export const Text = ({ history }) => {
 
   const submitHandler = () => {
     dispatch(UA.searchMobile(mobileNum))
+    setSearched(true)
   }
 
   const textHandler = (mobileNumb) => {
     history.push(`/sms/${mobileNumb}`)
   }
 
+  const backHandler = (params) => {
+    setSearched(false)
+    dispatch({ type: USER.SEARCH_MOBILE_RESET })
+    setMobileNum()
+  }
+
   React.useEffect(() => {
+    dispatch(UA.getDetails())
     return () => {
       dispatch({ type: USER.SEARCH_MOBILE_RESET })
     }
@@ -55,11 +65,18 @@ export const Text = ({ history }) => {
           />
           <Button
             variant='contained'
+            disabled={!mobileNum}
             color='primary'
             style={{ margin: 0, left: -20 }}
-            onClick={submitHandler}
+            onClick={
+              mobileNum
+                ? searched
+                  ? backHandler
+                  : submitHandler
+                : submitHandler
+            }
           >
-            Search
+            {mobileNum ? (searched ? 'back' : 'search') : 'search'}
           </Button>
         </div>
         <Divider />
@@ -96,6 +113,48 @@ export const Text = ({ history }) => {
                 </Paper>
               )
             })}
+        {mobile
+          ? searched &&
+            mobile.length === 0 && (
+              <Paper
+                elevation={12}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 5,
+                }}
+              >
+                No user found continue to send a text?{' '}
+                <Button
+                  startIcon={<PermPhoneMsgIcon />}
+                  color='primary'
+                  variant='contained'
+                  onClick={() => textHandler(mobileNum)}
+                >
+                  Text
+                </Button>
+              </Paper>
+            )
+          : userDetails &&
+            !loading &&
+            userDetails.smsrooms.map((room) =>
+              room.mobileNumbers.map((num) => (
+                <Paper
+                  elevation={12}
+                  style={{ padding: 5, margin: 5 }}
+                  key={num._id}
+                >
+                  <Button
+                    fullWidth
+                    variant='outlined'
+                    onClick={() => textHandler(num.mobile)}
+                  >
+                    {num.mobile} {num.user && num.user.name}
+                  </Button>
+                </Paper>
+              ))
+            )}
       </Card>
     </>
   )
