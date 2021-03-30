@@ -8,7 +8,7 @@ import fs from 'fs'
 
 import { User } from '../models/userModel.js'
 import { Chatroom } from '../models/chatroomModel.js'
-// import { Sms } from '../models/smsModel.js'
+import { MobileNum } from '../models/mobileNum.js'
 let Sms = {}
 
 import { generateToken } from '../utils/generateToken.js'
@@ -96,7 +96,11 @@ export const getUserDetails = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(id)
       .select('-password')
-      .populate('contacts', 'name email image mobile')
+      .populate({
+        path: 'contacts',
+        select: 'name email image',
+        populate: { path: 'mobile', select: '-_id mobile' },
+      })
       .populate({
         path: 'invites',
         populate: [
@@ -359,6 +363,8 @@ export const getSms = asyncHandler(async (req, res) => {
 export const updateProfile = asyncHandler(async (req, res) => {
   const { name, email, image, password, mobile } = req.body
 
+  let mobileExist
+
   try {
     const user = await User.findById(req.user._id)
     user.name = name
@@ -367,9 +373,15 @@ export const updateProfile = asyncHandler(async (req, res) => {
     if (password) {
       user.password = password
     }
-    if (mobile) {
-      user.mobile = mobile
+
+    mobileExist = await MobileNum.findOne({ mobile })
+
+    if (mobileExist) {
+      user.mobile = mobileExist
+    } else {
+      user.mobile = await MobileNum.create({ mobile, user })
     }
+
     await user.save()
     res.json({ status: 200 })
   } catch (error) {

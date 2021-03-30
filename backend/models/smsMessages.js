@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const smsMessageSchema = mongoose.Schema(
   {
@@ -9,12 +9,14 @@ const smsMessageSchema = mongoose.Schema(
       type: String,
     },
     to: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'MobileNum',
     },
     from: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'MobileNum',
     },
   },
   { timestamps: true }
-);
-export const Smsmessage = mongoose.model("Smsmessage", smsMessageSchema);
+)
+export const Smsmessage = mongoose.model('Smsmessage', smsMessageSchema)

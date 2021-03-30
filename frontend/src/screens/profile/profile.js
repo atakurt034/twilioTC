@@ -121,7 +121,7 @@ export const Profile = ({ history }) => {
               >
                 <Avatar
                   src={image}
-                  alt={userInfo.name}
+                  alt={userDetails && userDetails.name}
                   style={{
                     height: '20vw',
                     width: '20vw',

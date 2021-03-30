@@ -42,6 +42,7 @@ export const TextForm = ({ userMobileNum }) => {
       setSuccess(true)
     }
     if (userMobileNum) {
+      console.log(userMobileNum)
       setMobileNum(userMobileNum)
     }
   }, [info, userMobileNum])
