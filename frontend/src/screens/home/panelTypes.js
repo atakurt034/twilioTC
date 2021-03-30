@@ -45,7 +45,6 @@ export const PanelTypes = (
   )
 
   const [rooms, setRooms] = React.useState([])
-  const [mobileNum, setMobileNum] = React.useState()
 
   React.useEffect(() => {
     dispatch(UA.getDetails())
@@ -115,7 +114,6 @@ export const PanelTypes = (
               history={history}
               contact={contact}
               panelHandler={panelHandler}
-              setMobileNum={setMobileNum}
             />
           )
         })}
@@ -191,6 +189,6 @@ export const PanelTypes = (
       List of Calls
     </Card>
   )
-  const text = <TextForm userMobileNum={mobileNum} />
+  const text = <TextForm history={history} />
   return { contacts, chat, call, text }
 }

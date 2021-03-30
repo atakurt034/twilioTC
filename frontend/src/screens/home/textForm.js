@@ -1,30 +1,44 @@
 import React from 'react'
-import {
-  Button,
-  Card,
-  Divider,
-  IconButton,
-  Paper,
-  TextField,
-  Typography,
-} from '@material-ui/core'
+import { Button, Card, Divider, Paper, Typography } from '@material-ui/core'
 
-import SendIcon from '@material-ui/icons/Send'
 import PhoneInput from 'react-phone-input-2'
-import AddCircleIcon from '@material-ui/icons/AddCircle'
+import PermPhoneMsgIcon from '@material-ui/icons/PermPhoneMsg'
 
 import { useStyles } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 
-import { TA } from '../../actions/index'
+import { UA } from '../../actions/index'
+import { USER } from '../../constants/index'
 
-export const TextForm = ({ userMobileNum }) => {
+export const Text = ({ history }) => {
   const classes = useStyles()
-  const dispactch = useDispatch()
+  const dispatch = useDispatch()
+
+  const { mobile, loading, error } = useSelector((state) => state.searchMobile)
 
   const [mobileNum, setMobileNum] = React.useState()
+  const [country, setCountry] = React.useState()
 
-  const submitHandler = ({ message }, event) => {}
+  const changeHandler = (value, country) => {
+    setMobileNum(value)
+    setCountry(country.name)
+  }
+
+  const submitHandler = () => {
+    dispatch(UA.searchMobile(mobileNum))
+  }
+
+  const textHandler = (mobileNumb) => {
+    history.push(`/sms/${mobileNumb}`)
+  }
+
+  React.useEffect(() => {
+    return () => {
+      dispatch({ type: USER.SEARCH_MOBILE_RESET })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <>
@@ -32,7 +46,7 @@ export const TextForm = ({ userMobileNum }) => {
         <div className={classes.cardActions}>
           <PhoneInput
             value={mobileNum}
-            onChange={(e) => setMobileNum(e)}
+            onChange={changeHandler}
             placeholder='Search mobile number'
             inputStyle={{ width: '88%' }}
             containerStyle={{
@@ -43,13 +57,48 @@ export const TextForm = ({ userMobileNum }) => {
             variant='contained'
             color='primary'
             style={{ margin: 0, left: -20 }}
+            onClick={submitHandler}
           >
             Search
           </Button>
         </div>
         <Divider />
-        list of sms
+        {loading
+          ? 'loading...'
+          : error
+          ? error
+          : mobile &&
+            mobile.map((mobile) => {
+              return (
+                <Paper
+                  key={mobile._id}
+                  elevation={12}
+                  style={{
+                    padding: 5,
+                    margin: 5,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography variant='body2'>
+                    {mobile.user.name} {mobile.user.email}
+                  </Typography>
+                  <Typography variant='body2'>{country}</Typography>
+                  <Button
+                    startIcon={<PermPhoneMsgIcon />}
+                    color='primary'
+                    variant='contained'
+                    onClick={() => textHandler(mobile.mobile)}
+                  >
+                    Text
+                  </Button>
+                </Paper>
+              )
+            })}
       </Card>
     </>
   )
 }
+
+export const TextForm = withRouter(Text)

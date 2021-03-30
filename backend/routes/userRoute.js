@@ -21,6 +21,8 @@ router
   .post(auth.loginRequired, user.search)
   .put(auth.loginRequired, user.acceptInvite)
 
+router.route('/mobile/:id').get(auth.loginRequired, user.searchMobileNum)
+
 router
   .route('/invite')
   .put(auth.loginRequired, user.addContacts)

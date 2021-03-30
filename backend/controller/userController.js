@@ -429,3 +429,25 @@ export const updateAvatar = asyncHandler(async (req, res) => {
     }
   })
 })
+
+/**
+ * route: /api/mobile/:id
+ * description: search mobile number
+ * access: Private
+ * method: GET
+ */
+export const searchMobileNum = asyncHandler(async (req, res) => {
+  try {
+    const mobileNum = req.params.id
+
+    const search = await MobileNum.find({ mobile: mobileNum }).populate(
+      'user',
+      'name email'
+    )
+
+    res.status(200).json(search)
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
+})

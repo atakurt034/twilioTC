@@ -18,12 +18,7 @@ import ChatIcon from '@material-ui/icons/Chat'
 import { ModalLoader } from '../../components/modalloader'
 import { ModalMessage } from '../../components/modalmessage'
 
-export const ContactList = ({
-  contact,
-  history,
-  panelHandler,
-  setMobileNum,
-}) => {
+export const ContactList = ({ contact, history }) => {
   const dispatch = useDispatch()
   const { chatroom, loading, error } = useSelector(
     (state) => state.chatroomPrivateCreate
@@ -51,7 +46,6 @@ export const ContactList = ({
   }
 
   const textHandler = (mobileNum) => {
-    panelHandler('text')
     history.push(`/sms/${mobileNum}`)
   }
 
@@ -99,12 +93,21 @@ export const ContactList = ({
             <PhoneIcon style={{ color: 'grey' }} fontSize='small' />
           </IconButton>
           <IconButton
+            disabled={contact.mobile && contact.mobile.mobile ? false : true}
             variant='outlined'
             onClick={() =>
               textHandler(contact.mobile ? contact.mobile.mobile : 'none')
             }
           >
-            <PermPhoneMsgIcon style={{ color: 'goldenrod' }} fontSize='small' />
+            <PermPhoneMsgIcon
+              style={{
+                color:
+                  contact.mobile && contact.mobile.mobile
+                    ? 'goldenrod'
+                    : 'grey',
+              }}
+              fontSize='small'
+            />
           </IconButton>
           <IconButton variant='outlined' onClick={deleteHandler}>
             <DeleteForeverIcon color='secondary' fontSize='small' />
