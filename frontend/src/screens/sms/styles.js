@@ -18,6 +18,7 @@ export const useStyles = makeStyles((theme) => ({
     float: 'right',
     clear: 'both',
     textAlign: 'right',
+    backgroundColor: theme.palette.success.light,
   },
   yours: {
     padding: 5,
@@ -26,5 +27,6 @@ export const useStyles = makeStyles((theme) => ({
     float: 'left',
     clear: 'both',
     textAlign: 'right',
+    backgroundColor: theme.palette.primary.light,
   },
 }))

@@ -11,6 +11,8 @@ const SID = process.env.TWILIO_ACCOUNT_SID
 const TOKEN = process.env.TWILIO_AUTH_TOKEN
 const from = process.env.TWILIO_NUMBER
 
+import { echoHandler } from '../index.js'
+
 /**
  * route: /api/twilio
  * description: send text message
@@ -112,9 +114,33 @@ export const recieveText = asyncHandler(async (req, res) => {
       logLevel: 'debug',
     })
 
-    const { SmsStatus, Body, From } = req.body
+    const { SmsStatus, Body, To, From } = req.body
 
-    client.message()
+    const chatroomId = From.trim().toString().split('+')[1]
+    const to = To.trim().toString().split('+')[1]
+
+    const toUser = await MobileNum.findOne({ mobile: to })
+    const fromUser = await MobileNum.findOne({ mobile: chatroomId })
+
+    const smsRoom = await Smsroom.findOne({
+      $or: [
+        { mobiles: { $eq: [chatroomId, to] } },
+        { mobiles: { $eq: [to, chatroomId] } },
+      ],
+    })
+
+    const msg = await Smsmessage.create({
+      status: SmsStatus,
+      message: Body,
+      to: toUser,
+      from: fromUser,
+    })
+
+    smsRoom.messages.push(msg)
+    await smsRoom.save()
+
+    echoHandler(chatroomId, { SmsStatus, Body, From, To })
+    client.message('Message recieved')
 
     res.writeHead(200, { 'Content-Type': 'text/xml' })
     res.end(client.toString())
@@ -133,20 +159,6 @@ export const recieveCall = asyncHandler(async (req, res) => {
     // Render the response as XML in reply to the webhook request
     res.type('text/xml')
     res.send(client.toString())
-  } catch (error) {
-    res.status(401)
-    throw new Error(error)
-  }
-})
-
-export const getSMS = asyncHandler(async (req, res) => {
-  try {
-    // const smsRoom = await Smsroom.findOne({
-    //   $or: [
-    //     { 'mobileNumbers.mobile': { $eq: [toFind, fromfind] } },
-    //     { 'mobileNumbers.mobile': { $eq: [fromfind, toFind] } },
-    //   ],
-    // })
   } catch (error) {
     res.status(401)
     throw new Error(error)

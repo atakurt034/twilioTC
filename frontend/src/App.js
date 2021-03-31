@@ -21,7 +21,6 @@ export const App = () => {
   const socket = io('http://192.168.254.111:5000', {
     query: { userId, name },
   })
-  // socket.connect()
 
   React.useEffect(() => {
     const listener = (event, ...args) => {
@@ -54,7 +53,11 @@ export const App = () => {
       <Route path='/login' component={screen.Login} exact />
       <Route path='/register' component={screen.Register} exact />
       <Route path='/profile' component={screen.Profile} exact />
-      <Route path='/sms/:id' component={screen.Sms} exact />
+      <Route
+        path='/sms/:id'
+        render={(e) => <screen.Sms {...e} socket={socket} />}
+        exact
+      />
 
       <Route
         path='/'

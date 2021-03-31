@@ -23,14 +23,15 @@ import { ModalLoader } from '../../components/modalloader'
 
 import { TA, UA } from '../../actions/index'
 
-export const Sms = ({ match }) => {
+export const Sms = ({ match, socket, history }) => {
   const scrollToView = React.useRef()
   const classes = useStyles()
   const dispactch = useDispatch()
   const { register, handleSubmit, errors } = useForm()
-  const userMobileNum = match.params.id ? match.params.id : ''
+  const userMobileNum = match.params.id && match.params.id
 
   const { info, loading, error } = useSelector((state) => state.sendText)
+  const { userInfo } = useSelector((state) => state.userLogin)
   const { userDetails, loading: loadingDetails } = useSelector(
     (state) => state.userDetails
   )
@@ -38,6 +39,7 @@ export const Sms = ({ match }) => {
   const [mobileNum, setMobileNum] = React.useState()
   const [sentMsg, setSentMsg] = React.useState([])
   const [pendingMsg, setPendingMsg] = React.useState()
+  const [chatroomId, setChatroomId] = React.useState()
 
   const scrollToBottom = () => {
     if (scrollToView.current) {
@@ -60,6 +62,7 @@ export const Sms = ({ match }) => {
 
   class SmsMsg {
     constructor(sms, userDetails) {
+      this.key = sms._id
       this.message = sms.message
       this.status = sms.status
       this.username = sms.to.user.name
@@ -71,7 +74,34 @@ export const Sms = ({ match }) => {
   }
 
   React.useEffect(() => {
+    if (socket) {
+      socket.on('incomingMessage', ({ SmsStatus, Body, From, To }) => {
+        const _id = new Date().getMilliseconds()
+        const response = new SmsMsg(
+          {
+            _id,
+            message: Body,
+            status: SmsStatus,
+            to: { user: { user: { name: userInfo.name } }, mobile: From },
+            from: From,
+          },
+          userDetails
+        )
+
+        setSentMsg((prev) => [...prev, response])
+        scrollToBottom()
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  React.useEffect(() => {
+    if (!userInfo) {
+      history.push('/login')
+    }
+
     dispactch(UA.getDetails())
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -82,7 +112,6 @@ export const Sms = ({ match }) => {
         status: info ? 'sent' : error && 'not sent',
         to: { user: { user: { name: '' } }, mobile: mobileNum },
         from: userDetails.mobile,
-        isMine: true,
       })
       setSentMsg((prev) => [...prev, newSms])
       setTimeout(() => {
@@ -94,18 +123,23 @@ export const Sms = ({ match }) => {
 
   React.useEffect(() => {
     if (userDetails) {
-      userDetails.smsrooms.map((room) =>
-        room.messages.map((msg) => {
-          const msgs = new SmsMsg(msg, userDetails)
-          setSentMsg((prev) => [...prev, msgs])
-          return msgs
-        })
+      userDetails.smsrooms.map(
+        (room) =>
+          room.mobiles.includes(userMobileNum) &&
+          room.messages.map((msg) => {
+            const msgs = new SmsMsg(msg, userDetails)
+            setSentMsg((prev) => [...prev, msgs])
+            return msgs
+          })
       )
       if (!loading && !loadingDetails) {
         setTimeout(() => {
           scrollToBottom()
         }, 1000)
       }
+    }
+    return () => {
+      setSentMsg([])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails])
@@ -115,10 +149,15 @@ export const Sms = ({ match }) => {
       dispactch(UA.getDetails())
     }
     if (userMobileNum) {
-      console.log(userMobileNum)
       setMobileNum(userMobileNum)
+      setChatroomId(userMobileNum)
     }
-  }, [dispactch, info, userMobileNum])
+    if (chatroomId) {
+      socket.emit('smsJoin', { chatroomId })
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispactch, info, userMobileNum, chatroomId])
 
   return (
     <Container maxWidth='sm'>
@@ -153,13 +192,15 @@ export const Sms = ({ match }) => {
           ) : (
             error && <ModalMessage variant='error'>{error}</ModalMessage>
           )}
-          {sentMsg.map((msg) => (
+          {sentMsg.map((msg, index) => (
             <Paper
-              key={msg}
+              key={msg.key + index}
               className={msg.isMine ? classes.mine : classes.yours}
               style={{
                 border:
-                  msg.status === 'sent' ? '2px solid green' : '2px solid red',
+                  msg.status === 'sent' || msg.status === 'received'
+                    ? '2px solid grey'
+                    : '2px solid red',
               }}
               elevation={12}
             >
