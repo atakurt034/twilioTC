@@ -47,21 +47,26 @@ export const Profile = ({ history }) => {
     dispatch(UA.getDetails())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
   React.useEffect(() => {
     if (!userInfo) {
       history.push('/login')
     }
+  }, [history, userInfo])
+
+  React.useEffect(() => {
     if (status) {
       dispatch(UA.getDetails())
     }
     if (userDetails) {
       setImage(userDetails.image)
+      if (userDetails.mobile) {
+        setMobile(userDetails.mobile.mobile)
+      }
     }
     return () => {
       dispatch({ type: USER.UPATE_PROFILE_RESET })
     }
-  }, [userInfo, history, status, userDetails, dispatch])
+  }, [status, userDetails, dispatch])
 
   const sumbitHandler = ({ name, email, password }) => {
     const update = { name, email, password, image, mobile }
@@ -216,6 +221,7 @@ export const Profile = ({ history }) => {
             )}
             <PhoneInput
               enableSearch='true'
+              value={mobile}
               onChange={(e) => setMobile(e)}
               defaultErrorMessage='input only numbers'
               placeholder='input mobile number'

@@ -66,7 +66,7 @@ export const Home = ({ socket, history }) => {
             <PermPhoneMsgIcon />
           </IconButton>
         </Grid>
-        <Grid item xs={12} sm={6} lg={4} className={classes.sidePanel}>
+        <Grid item xs={10} lg={4} className={classes.sidePanel}>
           {panel === 'chat'
             ? Panels(classes).chat
             : panel === 'call'
