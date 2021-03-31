@@ -65,9 +65,9 @@ export const Sms = ({ match, socket, history }) => {
       this.key = sms._id
       this.message = sms.message
       this.status = sms.status
-      this.username = sms.to.user.name
+      this.username = sms.to.user ? sms.to.user.name : sms.to.mobile
       this.mobileNum = sms.to.mobile
-      this.from = sms.from._id
+      this.from = sms.from
       this.userDetails = userDetails && userDetails.mobile
       this.isMine = this.from === this.userDetails
     }
@@ -99,9 +99,9 @@ export const Sms = ({ match, socket, history }) => {
     if (!userInfo) {
       history.push('/login')
     }
-
-    dispactch(UA.getDetails())
-
+    return () => {
+      setSentMsg([])
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -123,15 +123,15 @@ export const Sms = ({ match, socket, history }) => {
 
   React.useEffect(() => {
     if (userDetails) {
-      userDetails.smsrooms.map(
-        (room) =>
-          room.mobiles.includes(userMobileNum) &&
-          room.messages.map((msg) => {
-            const msgs = new SmsMsg(msg, userDetails)
-            setSentMsg((prev) => [...prev, msgs])
-            return msgs
-          })
+      userDetails.smsrooms.find((room) =>
+        // room.mobiles.includes(userMobileNum) &&
+        room.messages.map(
+          (msg) =>
+            msg.to.mobile === userMobileNum &&
+            setSentMsg((prev) => [...prev, new SmsMsg(msg, userDetails)])
+        )
       )
+
       if (!loading && !loadingDetails) {
         setTimeout(() => {
           scrollToBottom()
@@ -145,9 +145,6 @@ export const Sms = ({ match, socket, history }) => {
   }, [userDetails])
 
   React.useEffect(() => {
-    if (info) {
-      dispactch(UA.getDetails())
-    }
     if (userMobileNum) {
       setMobileNum(userMobileNum)
       setChatroomId(userMobileNum)
@@ -157,7 +154,7 @@ export const Sms = ({ match, socket, history }) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispactch, info, userMobileNum, chatroomId])
+  }, [dispactch, userMobileNum, chatroomId])
 
   return (
     <Container maxWidth='sm'>

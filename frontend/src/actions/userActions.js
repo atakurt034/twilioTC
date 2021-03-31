@@ -72,7 +72,7 @@ export const addContact = (email) => async (dispatch, getState) => {
       },
     }
 
-    const { data } = await axios.put(`/api/user/invite`, email, config)
+    const { data } = await axios.put('/api/user/invite', email, config)
     dispatch({ type: USER.ADD_CONTACT_SUCCESS, payload: data })
   } catch (error) {
     dispatch({
@@ -269,7 +269,7 @@ export const updateProfile = (update) => async (dispatch, getState) => {
       },
     }
 
-    const { data } = await axios.put(
+    const { data } = await axios.post(
       `/api/user/${userInfo._id}`,
       update,
       config

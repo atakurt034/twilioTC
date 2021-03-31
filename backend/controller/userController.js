@@ -159,6 +159,7 @@ export const getUserDetails = asyncHandler(async (req, res) => {
  */
 export const addContacts = asyncHandler(async (req, res) => {
   try {
+    console.log('hit addcontacts')
     const { _id } = req.user //login user's id
     const { email } = req.body //new contact's email
     const user = await User.findById(_id)
@@ -390,6 +391,7 @@ export const getSms = asyncHandler(async (req, res) => {
 export const updateProfile = asyncHandler(async (req, res) => {
   const { name, email, image, password, mobile } = req.body
 
+  console.log('hit update')
   let mobileExist
 
   try {

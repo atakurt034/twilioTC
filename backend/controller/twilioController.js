@@ -28,7 +28,7 @@ export const sendText = asyncHandler(async (req, res) => {
   let smsMessage
   let smsRoom
 
-  const toString = to.trim().toString().split('+')[1]
+  const toString = await to.trim().toString().split('+')[1]
   const fromString = from.trim().toString().split('+')[1]
 
   try {
@@ -53,7 +53,9 @@ export const sendText = asyncHandler(async (req, res) => {
       }
     }
 
-    const fromMobileExist = user.mobile.toString() === fromUser._id.toString()
+    const fromMobileExist = user.mobile
+      ? user.mobile.toString() === fromUser._id.toString()
+      : false
     // add user mobile number to self
     if (!fromMobileExist) {
       fromUser = await MobileNum.create({
