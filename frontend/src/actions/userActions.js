@@ -8,7 +8,7 @@ export const register = (user) => async (dispatch) => {
 
     const config = { headers: { 'Content-Type': 'application/json' } }
 
-    const { data } = await axios.post('/api/user/register', user, config)
+    const { data } = await axios.put('/api/user/register', user, config)
     dispatch({ type: USER.REGISTER_SUCCESS, payload: 'success' })
     dispatch({ type: USER.LOGIN_SUCCESS, payload: data })
     localStorage.setItem('userInfo', JSON.stringify(data))
