@@ -28,7 +28,7 @@ export const sendText = asyncHandler(async (req, res) => {
   let smsMessage
   let smsRoom
 
-  const toString = to.trim().toString().split('+')[1]
+  const toString = await to.trim().toString().split('+')[1]
   const fromString = from.trim().toString().split('+')[1]
 
   try {
@@ -53,7 +53,9 @@ export const sendText = asyncHandler(async (req, res) => {
       }
     }
 
-    const fromMobileExist = user.mobile.toString() === fromUser._id.toString()
+    const fromMobileExist = user.mobile
+      ? user.mobile.toString() === fromUser._id.toString()
+      : false
     // add user mobile number to self
     if (!fromMobileExist) {
       fromUser = await MobileNum.create({
@@ -81,6 +83,7 @@ export const sendText = asyncHandler(async (req, res) => {
       message,
       to: toUser,
       from: user.mobile,
+      roomId: smsRoom._id,
     })
 
     // check if user has the roomSms
@@ -134,12 +137,14 @@ export const recieveText = asyncHandler(async (req, res) => {
       message: Body,
       to: toUser,
       from: fromUser,
+      roomId: smsRoom._id,
     })
 
     smsRoom.messages.push(msg)
     await smsRoom.save()
 
-    echoHandler(chatroomId, { SmsStatus, Body, From, To })
+    echoHandler(chatroomId, { SmsStatus, Body, From, To }, 'incomingMessage')
+    echoHandler(req.user._id, {}, 'refreshUserDetails')
     client.message('Message recieved')
 
     res.writeHead(200, { 'Content-Type': 'text/xml' })
@@ -159,6 +164,25 @@ export const recieveCall = asyncHandler(async (req, res) => {
     // Render the response as XML in reply to the webhook request
     res.type('text/xml')
     res.send(client.toString())
+  } catch (error) {
+    res.status(401)
+    throw new Error(error)
+  }
+})
+
+/**
+ * route: /api/twilio/sms
+ * description: set messages to read status
+ * access: Private
+ * method: PUT
+ */
+export const setToRead = asyncHandler(async (req, res) => {
+  try {
+    const roomId = req.body.id
+
+    const smsRoom = await Smsmessage.updateMany({ roomId }, { unread: false })
+
+    res.status(200).json(smsRoom)
   } catch (error) {
     res.status(401)
     throw new Error(error)

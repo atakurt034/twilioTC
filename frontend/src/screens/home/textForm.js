@@ -21,10 +21,14 @@ export const Text = ({ history }) => {
   const [mobileNum, setMobileNum] = React.useState()
   const [country, setCountry] = React.useState()
   const [searched, setSearched] = React.useState(false)
+  const [count, setCount] = React.useState(0)
+
+  const [smsRooms, setSmsRooms] = React.useState([])
 
   const changeHandler = (value, country) => {
     setMobileNum(value)
     setCountry(country.name)
+    setSearched(false)
   }
 
   const submitHandler = () => {
@@ -49,6 +53,29 @@ export const Text = ({ history }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  React.useEffect(() => {
+    if (userDetails && !loading) {
+      const rooms = []
+      userDetails.smsrooms.find((room) =>
+        room.mobileNumbers.map(
+          (num) => num.mobile !== userDetails.mobile.mobile && rooms.push(num)
+        )
+      )
+      setSmsRooms(rooms)
+      console.log(rooms)
+    }
+  }, [loading, userDetails])
+
+  React.useEffect(() => {
+    const unreadCount = []
+    if (userDetails) {
+      userDetails.smsrooms.map((room) =>
+        room.messages.map((msg) => msg.unread === true && unreadCount.push(msg))
+      )
+      setCount(unreadCount.length)
+    }
+  }, [userDetails])
 
   return (
     <>
@@ -99,7 +126,8 @@ export const Text = ({ history }) => {
                   }}
                 >
                   <Typography variant='body2'>
-                    {mobile.user.name} {mobile.user.email}
+                    {mobile.user && mobile.user.name}{' '}
+                    {mobile.user && mobile.user.email}
                   </Typography>
                   <Typography variant='body2'>{country}</Typography>
                   <Button
@@ -136,10 +164,8 @@ export const Text = ({ history }) => {
                 </Button>
               </Paper>
             )
-          : userDetails &&
-            !loading &&
-            userDetails.smsrooms.map((room) =>
-              room.mobileNumbers.map((num) => (
+          : smsRooms.map((num) => {
+              return (
                 <Paper
                   elevation={12}
                   style={{ padding: 5, margin: 5 }}
@@ -148,13 +174,15 @@ export const Text = ({ history }) => {
                   <Button
                     fullWidth
                     variant='outlined'
+                    color={count > 0 ? 'secondary' : 'default'}
                     onClick={() => textHandler(num.mobile)}
                   >
-                    {num.mobile} {num.user && num.user.name}
+                    {num.mobile} {num.user && num.user.name}{' '}
+                    {count > 0 ? `${count} - unread` : ''}
                   </Button>
                 </Paper>
-              ))
-            )}
+              )
+            })}
       </Card>
     </>
   )

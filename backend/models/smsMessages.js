@@ -7,6 +7,7 @@ const smsMessageSchema = mongoose.Schema(
     },
     message: {
       type: String,
+      required: true,
     },
     to: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,6 +16,15 @@ const smsMessageSchema = mongoose.Schema(
     from: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'MobileNum',
+    },
+    unread: {
+      type: Boolean,
+      default: true,
+    },
+    roomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Smsroom',
+      required: true,
     },
   },
   { timestamps: true }

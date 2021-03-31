@@ -7,14 +7,14 @@ const router = Router()
 router
   .route('/:id')
   .get(auth.loginRequired, user.getUserDetails)
-  .put(auth.loginRequired, user.updateProfile)
+  .post(auth.loginRequired, user.updateProfile)
   .delete(auth.loginRequired, user.deleteContactOrGroup)
 
 router.route('/uploads/avatar').post(auth.loginRequired, user.updateAvatar)
 
-router.post('/register', user.register)
 router.post('/login', user.login)
 router.post('/logout', user.logout)
+router.route('/register').put(user.register)
 
 router
   .route('/')

@@ -60,6 +60,7 @@ export const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body
     const user = await User.findOne({ email })
       .populate('contacts', 'name email')
+      .populate('mobile', '-_id mobile')
       .populate({
         path: 'invites',
         populate: { path: '_id', select: 'name email' },
@@ -96,6 +97,7 @@ export const getUserDetails = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(id)
       .select('-password')
+      .populate('mobile', 'mobile')
       .populate({
         path: 'contacts',
         select: 'name email image',
@@ -159,6 +161,7 @@ export const getUserDetails = asyncHandler(async (req, res) => {
  */
 export const addContacts = asyncHandler(async (req, res) => {
   try {
+    console.log('hit addcontacts')
     const { _id } = req.user //login user's id
     const { email } = req.body //new contact's email
     const user = await User.findById(_id)
@@ -390,6 +393,7 @@ export const getSms = asyncHandler(async (req, res) => {
 export const updateProfile = asyncHandler(async (req, res) => {
   const { name, email, image, password, mobile } = req.body
 
+  console.log('hit update')
   let mobileExist
 
   try {

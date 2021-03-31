@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ModalMessage } from '../../components/modalmessage'
 import { ModalLoader } from '../../components/modalloader'
 
-import { TA, UA } from '../../actions/index'
+import { TA } from '../../actions/index'
 
 export const Sms = ({ match, socket, history }) => {
   const scrollToView = React.useRef()
@@ -35,6 +35,12 @@ export const Sms = ({ match, socket, history }) => {
   const { userDetails, loading: loadingDetails } = useSelector(
     (state) => state.userDetails
   )
+
+  const currentRoom =
+    userDetails &&
+    userDetails.smsrooms.find((room) =>
+      room.mobiles.find((mobile) => mobile === userMobileNum)
+    )
 
   const [mobileNum, setMobileNum] = React.useState()
   const [sentMsg, setSentMsg] = React.useState([])
@@ -61,15 +67,14 @@ export const Sms = ({ match, socket, history }) => {
   }
 
   class SmsMsg {
-    constructor(sms, userDetails) {
+    constructor(sms, isMine) {
       this.key = sms._id
       this.message = sms.message
       this.status = sms.status
-      this.username = sms.to.user.name
+      this.username = sms.to.user ? sms.to.user.name : sms.to.mobile
       this.mobileNum = sms.to.mobile
-      this.from = sms.from._id
-      this.userDetails = userDetails && userDetails.mobile
-      this.isMine = this.from === this.userDetails
+      this.from = sms.from
+      this.isMine = isMine
     }
   }
 
@@ -77,20 +82,27 @@ export const Sms = ({ match, socket, history }) => {
     if (socket) {
       socket.on('incomingMessage', ({ SmsStatus, Body, From, To }) => {
         const _id = new Date().getMilliseconds()
-        const response = new SmsMsg(
-          {
-            _id,
-            message: Body,
-            status: SmsStatus,
-            to: { user: { user: { name: userInfo.name } }, mobile: From },
-            from: From,
-          },
-          userDetails
-        )
+        const response = new SmsMsg({
+          _id,
+          message: Body,
+          status: SmsStatus,
+          to: { user: { user: { name: userInfo.name } }, mobile: From },
+          isMine: From === userDetails && userDetails.mobile.mobile,
+        })
 
         setSentMsg((prev) => [...prev, response])
         scrollToBottom()
       })
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  React.useEffect(() => {
+    if (userDetails) {
+      if (currentRoom) {
+        dispactch(TA.setToRead(currentRoom._id))
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -99,20 +111,23 @@ export const Sms = ({ match, socket, history }) => {
     if (!userInfo) {
       history.push('/login')
     }
-
-    dispactch(UA.getDetails())
-
+    return () => {
+      setSentMsg([])
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   React.useEffect(() => {
     if (info || error) {
-      const newSms = new SmsMsg({
-        message: pendingMsg,
-        status: info ? 'sent' : error && 'not sent',
-        to: { user: { user: { name: '' } }, mobile: mobileNum },
-        from: userDetails.mobile,
-      })
+      const newSms = new SmsMsg(
+        {
+          key: new Date().getMilliseconds(),
+          message: pendingMsg,
+          status: info ? 'sent' : error && 'not sent',
+          to: { user: { user: { name: '' } }, mobile: mobileNum },
+        },
+        true
+      )
       setSentMsg((prev) => [...prev, newSms])
       setTimeout(() => {
         scrollToBottom()
@@ -123,15 +138,15 @@ export const Sms = ({ match, socket, history }) => {
 
   React.useEffect(() => {
     if (userDetails) {
-      userDetails.smsrooms.map(
-        (room) =>
-          room.mobiles.includes(userMobileNum) &&
-          room.messages.map((msg) => {
-            const msgs = new SmsMsg(msg, userDetails)
-            setSentMsg((prev) => [...prev, msgs])
-            return msgs
-          })
+      userDetails.smsrooms.find((room) =>
+        // room.mobiles.includes(userMobileNum) &&
+        room.messages.map(
+          (msg) =>
+            msg.to.mobile === userMobileNum &&
+            setSentMsg((prev) => [...prev, new SmsMsg(msg, userDetails)])
+        )
       )
+
       if (!loading && !loadingDetails) {
         setTimeout(() => {
           scrollToBottom()
@@ -145,9 +160,6 @@ export const Sms = ({ match, socket, history }) => {
   }, [userDetails])
 
   React.useEffect(() => {
-    if (info) {
-      dispactch(UA.getDetails())
-    }
     if (userMobileNum) {
       setMobileNum(userMobileNum)
       setChatroomId(userMobileNum)
@@ -157,7 +169,7 @@ export const Sms = ({ match, socket, history }) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispactch, info, userMobileNum, chatroomId])
+  }, [dispactch, userMobileNum, chatroomId])
 
   return (
     <Container maxWidth='sm'>
@@ -211,7 +223,6 @@ export const Sms = ({ match, socket, history }) => {
               >
                 {msg.mobileNum} - {msg.status}
               </Typography>
-              <div style={{ float: 'right', clear: 'both' }}></div>
               <div
                 ref={scrollToView}
                 style={{

@@ -4,12 +4,13 @@ import { IconButton, Grid } from '@material-ui/core'
 import PhoneIcon from '@material-ui/icons/Phone'
 import PeopleIcon from '@material-ui/icons/People'
 import ChatIcon from '@material-ui/icons/Chat'
-import PermPhoneMsgIcon from '@material-ui/icons/PermPhoneMsg'
 import { useStyles } from './styles.js'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { UA } from '../../actions/index'
 import { Panels } from './panels'
+
+import { SmsBadge } from './badgedIcons/smsBadge'
 
 export const Home = ({ socket, history }) => {
   const dispatch = useDispatch()
@@ -21,6 +22,7 @@ export const Home = ({ socket, history }) => {
   const { status: statusDelete } = useSelector((state) => state.deleteAny)
 
   const [panel, setPanel] = React.useState('contacts')
+  const [count, setCount] = React.useState(0)
 
   React.useEffect(() => {
     if (!userInfo) {
@@ -36,6 +38,16 @@ export const Home = ({ socket, history }) => {
     setPanel(type)
     dispatch(UA.getDetails())
   }
+
+  React.useEffect(() => {
+    const unreadCount = []
+    if (userDetails) {
+      userDetails.smsrooms.find((room) =>
+        room.messages.map((msg) => msg.unread === true && unreadCount.push(msg))
+      )
+      setCount(unreadCount.length)
+    }
+  }, [userDetails])
 
   return (
     <>
@@ -63,10 +75,10 @@ export const Home = ({ socket, history }) => {
             className={classes.icon}
             onClick={() => panelHandler('text')}
           >
-            <PermPhoneMsgIcon />
+            <SmsBadge count={count} />
           </IconButton>
         </Grid>
-        <Grid item xs={12} sm={6} lg={4} className={classes.sidePanel}>
+        <Grid item xs={10} lg={4} className={classes.sidePanel}>
           {panel === 'chat'
             ? Panels(classes).chat
             : panel === 'call'

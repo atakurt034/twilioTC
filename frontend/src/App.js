@@ -1,17 +1,23 @@
 import React from "react";
 
-import { screen } from "./screens/index";
-import { Appbar } from "./components/nav/appbar/appbar";
-import { Footer } from "./components/footer";
-import { BrowserRouter, Route } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { screen } from './screens/index'
+import { Appbar } from './components/nav/appbar/appbar'
+import { Footer } from './components/footer'
+import { BrowserRouter, Route } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+
+import { UA } from './actions/index'
+
 
 import { io } from "socket.io-client";
 
 export const App = () => {
-  let userId;
-  let name;
-  const userLogin = useSelector((state) => state.userLogin);
+
+  const dispatch = useDispatch()
+  let userId
+  let name
+  const userLogin = useSelector((state) => state.userLogin)
+
 
   if (userLogin.userInfo) {
     userId = userLogin.userInfo._id;
@@ -27,7 +33,12 @@ export const App = () => {
       console.log(event, args);
     };
 
-    socket.onAny(listener);
+
+    socket.onAny(listener)
+    socket.emit('login')
+    socket.on('refreshUserDetails', () => {
+      dispatch(UA.getDetails())
+    })
 
     return () => {
       socket.disconnect();
