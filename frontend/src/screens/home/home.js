@@ -32,7 +32,7 @@ export const Home = ({ socket, history }) => {
     dispatch(UA.getDetails())
   }, [userInfo, history, dispatch, status, statusDelete])
 
-  const panelHandler = (type) => {
+  const panelHandler = (type, payload) => {
     setPanel(type)
     dispatch(UA.getDetails())
   }
@@ -72,7 +72,7 @@ export const Home = ({ socket, history }) => {
             : panel === 'call'
             ? Panels(classes).call
             : panel === 'contacts'
-            ? Panels(classes, userDetails, history).contacts
+            ? Panels(classes, userDetails, history, panelHandler).contacts
             : Panels(classes).text}
         </Grid>
       </Grid>

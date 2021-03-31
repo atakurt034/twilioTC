@@ -45,6 +45,10 @@ export const ContactList = ({ contact, history }) => {
       )
   }
 
+  const textHandler = (mobileNum) => {
+    history.push(`/sms/${mobileNum}`)
+  }
+
   return (
     <Container
       style={{
@@ -88,8 +92,22 @@ export const ContactList = ({ contact, history }) => {
           <IconButton variant='outlined' disabled={true}>
             <PhoneIcon style={{ color: 'grey' }} fontSize='small' />
           </IconButton>
-          <IconButton variant='outlined' disabled={true}>
-            <PermPhoneMsgIcon style={{ color: 'grey' }} fontSize='small' />
+          <IconButton
+            disabled={contact.mobile && contact.mobile.mobile ? false : true}
+            variant='outlined'
+            onClick={() =>
+              textHandler(contact.mobile ? contact.mobile.mobile : 'none')
+            }
+          >
+            <PermPhoneMsgIcon
+              style={{
+                color:
+                  contact.mobile && contact.mobile.mobile
+                    ? 'goldenrod'
+                    : 'grey',
+              }}
+              fontSize='small'
+            />
           </IconButton>
           <IconButton variant='outlined' onClick={deleteHandler}>
             <DeleteForeverIcon color='secondary' fontSize='small' />

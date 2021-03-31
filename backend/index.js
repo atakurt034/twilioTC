@@ -13,7 +13,7 @@ import ngrok from 'ngrok'
 import userRoute from './routes/userRoute.js'
 import chatroomRoute from './routes/chatroomRoute.js'
 import twilioRoute from './routes/twilio.js'
-import { pr, pub, msg } from './socketRoutes/index.js'
+import { pr, pub, msg, twi } from './socketRoutes/index.js'
 
 // initialize dotenv for environment variables
 config()
@@ -84,6 +84,10 @@ io.use(async (socket, next) => {
   }
 })
 
+export var echoHandler = (chatroomId, body) => {
+  io.to(chatroomId).emit('incomingMessage', body)
+}
+
 io.on('connection', (socket) => {
   socket.on('privateJoin', pr.privateJoin(io, socket))
   socket.on('disconnect', pr.disconnect(io, socket))
@@ -97,4 +101,11 @@ io.on('connection', (socket) => {
   socket.on('sending signal', pub.sendingSignal(io, socket))
   socket.on('returning signal', pub.returningSignal(io, socket))
   socket.on('leftRoom', pub.leftRoom(io, socket))
+  socket.on('smsJoin', twi.smsJoin(io, socket))
+
+  const listener = (event, ...args) => {
+    console.log(event, args)
+  }
+
+  socket.onAny(listener)
 })

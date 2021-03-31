@@ -147,3 +147,18 @@ export const updateProfileReducer = (state = {}, action) => {
       return state
   }
 }
+
+export const searchMobileReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER.SEARCH_MOBILE_REQUEST:
+      return { loading: true }
+    case USER.SEARCH_MOBILE_SUCCESS:
+      return { loading: false, mobile: action.payload }
+    case USER.SEARCH_MOBILE_FAIL:
+      return { loading: false, error: action.payload }
+    case USER.SEARCH_MOBILE_RESET:
+      return {}
+    default:
+      return state
+  }
+}

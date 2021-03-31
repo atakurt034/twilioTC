@@ -285,3 +285,31 @@ export const updateProfile = (update) => async (dispatch, getState) => {
     })
   }
 }
+
+export const searchMobile = (mobileNum) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER.SEARCH_MOBILE_REQUEST })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.get(`/api/user/mobile/${mobileNum}`, config)
+    dispatch({ type: USER.SEARCH_MOBILE_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: USER.SEARCH_MOBILE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}

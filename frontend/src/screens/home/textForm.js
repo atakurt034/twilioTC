@@ -1,165 +1,163 @@
 import React from 'react'
-import {
-  Button,
-  Card,
-  Divider,
-  IconButton,
-  Paper,
-  TextField,
-  Typography,
-} from '@material-ui/core'
+import { Button, Card, Divider, Paper, Typography } from '@material-ui/core'
 
-import SendIcon from '@material-ui/icons/Send'
 import PhoneInput from 'react-phone-input-2'
-import AddCircleIcon from '@material-ui/icons/AddCircle'
+import PermPhoneMsgIcon from '@material-ui/icons/PermPhoneMsg'
 
-import { useForm } from 'react-hook-form'
 import { useStyles } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 
-import { TA } from '../../actions/index'
+import { UA } from '../../actions/index'
+import { USER } from '../../constants/index'
 
-export const TextForm = () => {
+export const Text = ({ history }) => {
   const classes = useStyles()
-  const dispactch = useDispatch()
-  const { register, handleSubmit, errors } = useForm()
+  const dispatch = useDispatch()
 
-  const { info, loading, error } = useSelector((state) => state.sendText)
+  const { mobile, loading, error } = useSelector((state) => state.searchMobile)
+  const { userDetails } = useSelector((state) => state.userDetails)
 
   const [mobileNum, setMobileNum] = React.useState()
-  const [success, setSuccess] = React.useState(false)
-  const [sentMsg, setSentMsg] = React.useState([])
+  const [country, setCountry] = React.useState()
+  const [searched, setSearched] = React.useState(false)
 
-  const submitHandler = ({ message }, event) => {
-    setSentMsg((prev) => [...prev, { message, mobileNum }])
-    const to = '+' + mobileNum
-    dispactch(TA.sendTextMsg({ to, message }))
-    event.target.reset()
+  const changeHandler = (value, country) => {
+    setMobileNum(value)
+    setCountry(country.name)
+  }
+
+  const submitHandler = () => {
+    dispatch(UA.searchMobile(mobileNum))
+    setSearched(true)
+  }
+
+  const textHandler = (mobileNumb) => {
+    history.push(`/sms/${mobileNumb}`)
+  }
+
+  const backHandler = (params) => {
+    setSearched(false)
+    dispatch({ type: USER.SEARCH_MOBILE_RESET })
+    setMobileNum()
   }
 
   React.useEffect(() => {
-    if (info) {
-      setSuccess(true)
+    dispatch(UA.getDetails())
+    return () => {
+      dispatch({ type: USER.SEARCH_MOBILE_RESET })
     }
-  }, [info])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <>
       <Card className={classes.paper}>
         <div className={classes.cardActions}>
-          <IconButton style={{ padding: 5 }}>
-            <AddCircleIcon style={{ color: 'green', fontSize: 40 }} />
-          </IconButton>
           <PhoneInput
-            enableSearch='true'
-            onChange={(e) => setMobileNum(e)}
-            defaultErrorMessage='input only numbers'
-            placeholder='input mobile number'
+            value={mobileNum}
+            onChange={changeHandler}
+            placeholder='Search mobile number'
             inputStyle={{ width: '88%' }}
             containerStyle={{
               margin: '2% 0 2% 1%',
             }}
           />
+          <Button
+            variant='contained'
+            disabled={!mobileNum}
+            color='primary'
+            style={{ margin: 0, left: -20 }}
+            onClick={
+              mobileNum
+                ? searched
+                  ? backHandler
+                  : submitHandler
+                : submitHandler
+            }
+          >
+            {mobileNum ? (searched ? 'back' : 'search') : 'search'}
+          </Button>
         </div>
         <Divider />
-
-        <Paper
-          style={{
-            padding: 10,
-            height: '40vh',
-            margin: 10,
-            overflow: 'auto',
-          }}
-        >
-          {loading
-            ? 'sending...'
-            : error
-            ? sentMsg.map((msg) => (
+        {loading
+          ? 'loading...'
+          : error
+          ? error
+          : mobile &&
+            mobile.map((mobile) => {
+              return (
                 <Paper
-                  key={msg}
+                  key={mobile._id}
+                  elevation={12}
                   style={{
-                    maxHeight: '100%',
                     padding: 5,
                     margin: 5,
-                    width: '70%',
-                    border: '2px solid red',
-                    float: 'right',
-                    clear: 'both',
-                    textAlign: 'right',
                     display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    overflow: 'auto',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                   }}
-                  elevation={12}
                 >
-                  <Typography style={{ color: 'red', lineHeight: '2' }}>
-                    {msg.message}
+                  <Typography variant='body2'>
+                    {mobile.user.name} {mobile.user.email}
                   </Typography>
-                  <Typography
-                    color='secondary'
-                    variant='caption'
-                    style={{ lineHeight: '1' }}
+                  <Typography variant='body2'>{country}</Typography>
+                  <Button
+                    startIcon={<PermPhoneMsgIcon />}
+                    color='primary'
+                    variant='contained'
+                    onClick={() => textHandler(mobile.mobile)}
                   >
-                    {msg.mobileNum} - not delivered
-                  </Typography>
+                    Text
+                  </Button>
                 </Paper>
-              ))
-            : success
-            ? sentMsg.map((msg) => (
-                <Paper
-                  key={msg}
-                  style={{
-                    padding: 5,
-                    margin: 5,
-                    width: '70%',
-                    border: '2px solid green',
-                    float: 'right',
-                    clear: 'both',
-                    textAlign: 'right',
-                  }}
-                  elevation={12}
-                >
-                  <p>{msg.message} </p>
-                  <Typography variant='caption' style={{ color: 'green' }}>
-                    {msg.mobileNum} - delivered
-                  </Typography>
-                </Paper>
-              ))
-            : ''}
-        </Paper>
-        <form onSubmit={handleSubmit(submitHandler)} style={{ margin: 10 }}>
-          <TextField
-            inputRef={register({
-              required: true,
-              validate: (text) => text.trim().length >= 1,
+              )
             })}
-            error={errors.message}
-            type='text'
-            variant='outlined'
-            margin='normal'
-            required
-            fullWidth
-            label='Message'
-            multiline
-            rows={5}
-            style={{ backgroundColor: '#fff' }}
-            name='message'
-          />
-
-          <Button
-            type='submit'
-            fullWidth
-            variant='contained'
-            color='primary'
-            size='large'
-            startIcon={<SendIcon />}
-            disabled={!mobileNum}
-          >
-            Send
-          </Button>
-        </form>
+        {mobile
+          ? searched &&
+            mobile.length === 0 && (
+              <Paper
+                elevation={12}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 5,
+                }}
+              >
+                No user found continue to send a text?{' '}
+                <Button
+                  startIcon={<PermPhoneMsgIcon />}
+                  color='primary'
+                  variant='contained'
+                  onClick={() => textHandler(mobileNum)}
+                >
+                  Text
+                </Button>
+              </Paper>
+            )
+          : userDetails &&
+            !loading &&
+            userDetails.smsrooms.map((room) =>
+              room.mobileNumbers.map((num) => (
+                <Paper
+                  elevation={12}
+                  style={{ padding: 5, margin: 5 }}
+                  key={num._id}
+                >
+                  <Button
+                    fullWidth
+                    variant='outlined'
+                    onClick={() => textHandler(num.mobile)}
+                  >
+                    {num.mobile} {num.user && num.user.name}
+                  </Button>
+                </Paper>
+              ))
+            )}
       </Card>
     </>
   )
 }
+
+export const TextForm = withRouter(Text)

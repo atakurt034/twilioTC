@@ -42,6 +42,9 @@ export const LoadingButton = ({
   addContact,
   invited,
   setSuccess,
+  user,
+  setSearch,
+  searchRef,
 }) => {
   const dispatch = useDispatch()
   const classes = useStyles()
@@ -55,6 +58,8 @@ export const LoadingButton = ({
   const handleButtonClick = () => {
     if (!isEmpty) {
       dispatch(UA.search({ email: search }))
+      setSearch('')
+      searchRef.current.value = ''
     } else {
       dispatch({ type: USER.SEARCH_RESET })
       setSuccess(false)
@@ -68,10 +73,10 @@ export const LoadingButton = ({
     } else {
       setIsEmpty(true)
     }
-    if (invited && !invited.accept) {
+    if (!user && invited && !invited.accept) {
       setIsEmpty(true)
     }
-  }, [search, invited, addContact, setSuccess])
+  }, [search, invited, addContact, setSuccess, user])
 
   return (
     <div className={classes.root}>

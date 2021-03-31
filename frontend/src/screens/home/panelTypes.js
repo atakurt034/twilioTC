@@ -38,7 +38,7 @@ export const PanelTypes = (
   loading,
   history,
   createGroupHandler,
-  textHandler
+  panelHandler
 ) => {
   const createGroupRef = React.useRef();
   const dispatch = useDispatch();
@@ -116,6 +116,7 @@ export const PanelTypes = (
               key={contact._id}
               history={history}
               contact={contact}
+              panelHandler={panelHandler}
             />
           );
         })}
@@ -230,6 +231,6 @@ export const PanelTypes = (
       List of Calls
     </Card>
   );
-  const text = <TextForm />;
+  const text = <TextForm history={history} />;
   return { contacts, chat, call, text };
 };

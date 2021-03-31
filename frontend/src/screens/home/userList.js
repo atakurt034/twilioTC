@@ -10,7 +10,7 @@ export const UserList = ({ user, backHandler }) => {
 
   const { userInfo } = useSelector((state) => state.userLogin)
 
-  const [invite, setInvite] = React.useState('')
+  const [invite, setInvite] = React.useState()
 
   const inviteHandler = () => {
     if (user) {
@@ -23,7 +23,9 @@ export const UserList = ({ user, backHandler }) => {
 
   React.useEffect(() => {
     if (userInfo) {
-      const invited = user.invites.find((invite) => invite._id === userInfo._id)
+      const invited = user
+        ? user.invites.find((invite) => invite._id === userInfo._id)
+        : false
       setInvite(invited)
     }
   }, [user, userInfo])
@@ -40,17 +42,21 @@ export const UserList = ({ user, backHandler }) => {
     >
       <Grid item xs={8}>
         <Typography style={{ textAlign: 'left', padding: 5 }}>
-          {user.name} {user.email}
+          {user && user.name} {user && user.email}
         </Typography>
       </Grid>
       <Grid item xs={4}>
-        <Button
-          variant='outlined'
-          onClick={inviteHandler}
-          disabled={invite && !invite.accept}
-        >
-          {invite ? !invite.accept && 'pending' : 'invite'}
-        </Button>
+        {user ? (
+          <Button
+            variant='outlined'
+            onClick={inviteHandler}
+            disabled={invite && !invite.accept}
+          >
+            {invite ? !invite.accept && 'pending' : 'invite'}
+          </Button>
+        ) : (
+          'user not found'
+        )}
       </Grid>
     </Grid>
   )
