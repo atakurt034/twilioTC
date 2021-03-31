@@ -18,6 +18,7 @@ import PhoneCallbackIcon from "@material-ui/icons/PhoneCallback";
 import "react-phone-input-2/lib/high-res.css";
 
 import { ContactList } from "./contactList";
+import { PhoneDetails } from "./phoneDetails";
 import { ChatList } from "./chatList";
 import { UA } from "../../actions/index";
 import { ModalMessage } from "../../components/modalmessage";
@@ -201,14 +202,14 @@ export const PanelTypes = (
     </IconButton>
   );
 
-  const test1 = (
+  const callDefault = (
     <IconButton onClick={addMobileHandler} style={{ padding: 5 }}>
       <AddCircleIcon style={{ color: "green", fontSize: 40 }} />
       <Typography style={{ flex: 1 }}>New call</Typography>
     </IconButton>
   );
 
-  const test2 = (
+  const inputMobileNum = (
     <>
       <PhoneInput
         enableSearch="true"
@@ -226,9 +227,26 @@ export const PanelTypes = (
 
   const call = (
     <Card className={classes.paper}>
-      <div className={classes.cardActions}>{status ? test2 : test1}</div>
+      <div className={classes.cardActions}>
+        {status ? inputMobileNum : callDefault}
+      </div>
       <Divider />
-      List of Calls
+      {status ? (
+        userDetails &&
+        !addContact &&
+        userDetails.contacts.map((contact, index) => {
+          return (
+            <PhoneDetails
+              key={contact._id}
+              history={history}
+              contact={contact}
+              panelHandler={panelHandler}
+            />
+          );
+        })
+      ) : (
+        <h2>History of Calls</h2>
+      )}
     </Card>
   );
   const text = <TextForm history={history} />;
