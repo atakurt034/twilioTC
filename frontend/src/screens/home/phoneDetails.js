@@ -49,7 +49,7 @@ export const PhoneDetails = ({ contact, history }) => {
           <Avatar src={contact.image} alt={contact.name} />
           <Typography style={{ textAlign: "left", padding: 5 }}>
             <>
-              <b>{contact.name + " "}</b>
+              <b>{contact.name + "  "}</b>
               {"+" + contact.mobile.mobile}
             </>
           </Typography>
