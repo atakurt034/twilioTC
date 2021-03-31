@@ -25,6 +25,7 @@ export const Text = ({ history }) => {
   const changeHandler = (value, country) => {
     setMobileNum(value)
     setCountry(country.name)
+    setSearched(false)
   }
 
   const submitHandler = () => {
