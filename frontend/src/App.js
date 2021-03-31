@@ -4,11 +4,14 @@ import { screen } from './screens/index'
 import { Appbar } from './components/nav/appbar/appbar'
 import { Footer } from './components/footer'
 import { BrowserRouter, Route } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+
+import { UA } from './actions/index'
 
 import { io } from 'socket.io-client'
 
 export const App = () => {
+  const dispatch = useDispatch()
   let userId
   let name
   const userLogin = useSelector((state) => state.userLogin)
@@ -29,6 +32,9 @@ export const App = () => {
 
     socket.onAny(listener)
     socket.emit('login')
+    socket.on('refreshUserDetails', () => {
+      dispatch(UA.getDetails())
+    })
 
     return () => {
       socket.disconnect()

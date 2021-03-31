@@ -142,6 +142,7 @@ export const recieveText = asyncHandler(async (req, res) => {
     await smsRoom.save()
 
     echoHandler(chatroomId, { SmsStatus, Body, From, To }, 'incomingMessage')
+    echoHandler(req.user._id, {}, 'refreshUserDetails')
     client.message('Message recieved')
 
     res.writeHead(200, { 'Content-Type': 'text/xml' })
