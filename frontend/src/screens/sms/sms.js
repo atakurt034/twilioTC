@@ -72,10 +72,15 @@ export const Sms = ({ match, socket, history }) => {
       this.key = sms._id
       this.message = sms.message
       this.status = sms.status
-      this.username = sms.to.user.name
+      this.username = sms.to.user ? sms.to.user.name : sms.to.mobile
       this.mobileNum = sms.to.mobile
       this.from = sms.from
+<<<<<<< HEAD
       this.isMine = isMine
+=======
+      this.userDetails = userDetails && userDetails.mobile
+      this.isMine = this.from === this.userDetails
+>>>>>>> main
     }
   }
 
@@ -112,6 +117,7 @@ export const Sms = ({ match, socket, history }) => {
     if (!userInfo) {
       history.push('/login')
     }
+<<<<<<< HEAD
     if (userInfo) {
       if (userInfo.mobile) {
         setMyNumber(userInfo.mobile.mobile.trim().toString())
@@ -119,6 +125,11 @@ export const Sms = ({ match, socket, history }) => {
     }
     dispactch(UA.getDetails())
 
+=======
+    return () => {
+      setSentMsg([])
+    }
+>>>>>>> main
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -141,6 +152,7 @@ export const Sms = ({ match, socket, history }) => {
 
   React.useEffect(() => {
     if (userDetails) {
+<<<<<<< HEAD
       userDetails.smsrooms.map(
         (room) =>
           room.mobiles.includes(userMobileNum) &&
@@ -153,7 +165,17 @@ export const Sms = ({ match, socket, history }) => {
             setSentMsg((prev) => [...prev, msgs])
             return msgs
           })
+=======
+      userDetails.smsrooms.find((room) =>
+        // room.mobiles.includes(userMobileNum) &&
+        room.messages.map(
+          (msg) =>
+            msg.to.mobile === userMobileNum &&
+            setSentMsg((prev) => [...prev, new SmsMsg(msg, userDetails)])
+        )
+>>>>>>> main
       )
+
       if (!loading && !loadingDetails) {
         setTimeout(() => {
           scrollToBottom()
@@ -167,9 +189,6 @@ export const Sms = ({ match, socket, history }) => {
   }, [userDetails])
 
   React.useEffect(() => {
-    if (info) {
-      dispactch(UA.getDetails())
-    }
     if (userMobileNum) {
       setMobileNum(userMobileNum)
       setChatroomId(userMobileNum)
@@ -179,7 +198,7 @@ export const Sms = ({ match, socket, history }) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispactch, info, userMobileNum, chatroomId])
+  }, [dispactch, userMobileNum, chatroomId])
 
   return (
     <Container maxWidth='sm'>
