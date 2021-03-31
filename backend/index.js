@@ -84,8 +84,8 @@ io.use(async (socket, next) => {
   }
 })
 
-export var echoHandler = (chatroomId, body) => {
-  io.to(chatroomId).emit('incomingMessage', body)
+export var echoHandler = (chatroomId, body, event) => {
+  io.to(chatroomId).emit(event, body)
 }
 
 io.on('connection', (socket) => {
@@ -102,6 +102,7 @@ io.on('connection', (socket) => {
   socket.on('returning signal', pub.returningSignal(io, socket))
   socket.on('leftRoom', pub.leftRoom(io, socket))
   socket.on('smsJoin', twi.smsJoin(io, socket))
+  socket.on('login', twi.login(io, socket))
 
   const listener = (event, ...args) => {
     console.log(event, args)

@@ -36,10 +36,17 @@ export const Sms = ({ match, socket, history }) => {
     (state) => state.userDetails
   )
 
+  const currentRoom =
+    userDetails &&
+    userDetails.smsrooms.find((room) =>
+      room.mobiles.find((mobile) => mobile === userMobileNum)
+    )
+
   const [mobileNum, setMobileNum] = React.useState()
   const [sentMsg, setSentMsg] = React.useState([])
   const [pendingMsg, setPendingMsg] = React.useState()
   const [chatroomId, setChatroomId] = React.useState()
+  const [myNumber, setMyNumber] = React.useState()
 
   const scrollToBottom = () => {
     if (scrollToView.current) {
@@ -61,15 +68,14 @@ export const Sms = ({ match, socket, history }) => {
   }
 
   class SmsMsg {
-    constructor(sms, userDetails) {
+    constructor(sms, isMine) {
       this.key = sms._id
       this.message = sms.message
       this.status = sms.status
       this.username = sms.to.user.name
       this.mobileNum = sms.to.mobile
-      this.from = sms.from._id
-      this.userDetails = userDetails && userDetails.mobile
-      this.isMine = this.from === this.userDetails
+      this.from = sms.from
+      this.isMine = isMine
     }
   }
 
@@ -77,20 +83,27 @@ export const Sms = ({ match, socket, history }) => {
     if (socket) {
       socket.on('incomingMessage', ({ SmsStatus, Body, From, To }) => {
         const _id = new Date().getMilliseconds()
-        const response = new SmsMsg(
-          {
-            _id,
-            message: Body,
-            status: SmsStatus,
-            to: { user: { user: { name: userInfo.name } }, mobile: From },
-            from: From,
-          },
-          userDetails
-        )
+        const response = new SmsMsg({
+          _id,
+          message: Body,
+          status: SmsStatus,
+          to: { user: { user: { name: userInfo.name } }, mobile: From },
+          isMine: From === myNumber,
+        })
 
         setSentMsg((prev) => [...prev, response])
         scrollToBottom()
       })
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  React.useEffect(() => {
+    if (userDetails) {
+      if (currentRoom) {
+        dispactch(TA.setToRead(currentRoom._id))
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -99,7 +112,11 @@ export const Sms = ({ match, socket, history }) => {
     if (!userInfo) {
       history.push('/login')
     }
-
+    if (userInfo) {
+      if (userInfo.mobile) {
+        setMyNumber(userInfo.mobile.mobile.trim().toString())
+      }
+    }
     dispactch(UA.getDetails())
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -108,10 +125,11 @@ export const Sms = ({ match, socket, history }) => {
   React.useEffect(() => {
     if (info || error) {
       const newSms = new SmsMsg({
+        key: new Date().getMilliseconds(),
         message: pendingMsg,
         status: info ? 'sent' : error && 'not sent',
         to: { user: { user: { name: '' } }, mobile: mobileNum },
-        from: userDetails.mobile,
+        isMine: true,
       })
       setSentMsg((prev) => [...prev, newSms])
       setTimeout(() => {
@@ -119,7 +137,7 @@ export const Sms = ({ match, socket, history }) => {
       }, 1000)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [info, error])
+  }, [])
 
   React.useEffect(() => {
     if (userDetails) {
@@ -127,7 +145,11 @@ export const Sms = ({ match, socket, history }) => {
         (room) =>
           room.mobiles.includes(userMobileNum) &&
           room.messages.map((msg) => {
-            const msgs = new SmsMsg(msg, userDetails)
+            const isMine =
+              userInfo &&
+              userInfo.mobile &&
+              userInfo.mobile.mobile === msg.from.mobile
+            const msgs = new SmsMsg(msg, isMine)
             setSentMsg((prev) => [...prev, msgs])
             return msgs
           })
@@ -211,7 +233,6 @@ export const Sms = ({ match, socket, history }) => {
               >
                 {msg.mobileNum} - {msg.status}
               </Typography>
-              <div style={{ float: 'right', clear: 'both' }}></div>
               <div
                 ref={scrollToView}
                 style={{

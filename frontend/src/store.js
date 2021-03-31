@@ -27,6 +27,7 @@ const reducers = combineReducers({
   chatroomPublicCreate: chatroom.publicCreateReducer,
   getPublicMessage: chatroom.publicGetMessagesReducer,
   sendText: twilio.sendTextReducer,
+  setToRead: twilio.setToReadReducer,
 })
 
 const initialState = {

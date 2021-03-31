@@ -21,6 +21,7 @@ export const Text = ({ history }) => {
   const [mobileNum, setMobileNum] = React.useState()
   const [country, setCountry] = React.useState()
   const [searched, setSearched] = React.useState(false)
+  const [count, setCount] = React.useState(0)
 
   const changeHandler = (value, country) => {
     setMobileNum(value)
@@ -50,6 +51,16 @@ export const Text = ({ history }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  React.useEffect(() => {
+    const unreadCount = []
+    if (userDetails) {
+      userDetails.smsrooms.map((room) =>
+        room.messages.map((msg) => msg.unread === true && unreadCount.push(msg))
+      )
+      setCount(unreadCount.length)
+    }
+  }, [userDetails])
 
   return (
     <>
@@ -149,9 +160,11 @@ export const Text = ({ history }) => {
                   <Button
                     fullWidth
                     variant='outlined'
+                    color={count > 0 ? 'secondary' : 'default'}
                     onClick={() => textHandler(num.mobile)}
                   >
-                    {num.mobile} {num.user && num.user.name}
+                    {num.mobile} {num.user && num.user.name}{' '}
+                    {count > 0 ? `${count} - unread` : ''}
                   </Button>
                 </Paper>
               ))

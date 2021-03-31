@@ -81,6 +81,7 @@ export const sendText = asyncHandler(async (req, res) => {
       message,
       to: toUser,
       from: user.mobile,
+      roomId: smsRoom._id,
     })
 
     // check if user has the roomSms
@@ -134,12 +135,13 @@ export const recieveText = asyncHandler(async (req, res) => {
       message: Body,
       to: toUser,
       from: fromUser,
+      roomId: smsRoom._id,
     })
 
     smsRoom.messages.push(msg)
     await smsRoom.save()
 
-    echoHandler(chatroomId, { SmsStatus, Body, From, To })
+    echoHandler(chatroomId, { SmsStatus, Body, From, To }, 'incomingMessage')
     client.message('Message recieved')
 
     res.writeHead(200, { 'Content-Type': 'text/xml' })
@@ -159,6 +161,25 @@ export const recieveCall = asyncHandler(async (req, res) => {
     // Render the response as XML in reply to the webhook request
     res.type('text/xml')
     res.send(client.toString())
+  } catch (error) {
+    res.status(401)
+    throw new Error(error)
+  }
+})
+
+/**
+ * route: /api/twilio/sms
+ * description: set messages to read status
+ * access: Private
+ * method: PUT
+ */
+export const setToRead = asyncHandler(async (req, res) => {
+  try {
+    const roomId = req.body.id
+
+    const smsRoom = await Smsmessage.updateMany({ roomId }, { unread: false })
+
+    res.status(200).json(smsRoom)
   } catch (error) {
     res.status(401)
     throw new Error(error)

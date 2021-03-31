@@ -28,6 +28,7 @@ export const App = () => {
     }
 
     socket.onAny(listener)
+    socket.emit('login')
 
     return () => {
       socket.disconnect()

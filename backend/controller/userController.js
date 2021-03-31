@@ -60,6 +60,7 @@ export const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body
     const user = await User.findOne({ email })
       .populate('contacts', 'name email')
+      .populate('mobile', '-_id mobile')
       .populate({
         path: 'invites',
         populate: { path: '_id', select: 'name email' },
