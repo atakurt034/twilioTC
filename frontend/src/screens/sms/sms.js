@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ModalMessage } from '../../components/modalmessage'
 import { ModalLoader } from '../../components/modalloader'
 
-import { TA, UA } from '../../actions/index'
+import { TA } from '../../actions/index'
 
 export const Sms = ({ match, socket, history }) => {
   const scrollToView = React.useRef()
@@ -46,7 +46,6 @@ export const Sms = ({ match, socket, history }) => {
   const [sentMsg, setSentMsg] = React.useState([])
   const [pendingMsg, setPendingMsg] = React.useState()
   const [chatroomId, setChatroomId] = React.useState()
-  const [myNumber, setMyNumber] = React.useState()
 
   const scrollToBottom = () => {
     if (scrollToView.current) {
@@ -75,12 +74,7 @@ export const Sms = ({ match, socket, history }) => {
       this.username = sms.to.user ? sms.to.user.name : sms.to.mobile
       this.mobileNum = sms.to.mobile
       this.from = sms.from
-<<<<<<< HEAD
       this.isMine = isMine
-=======
-      this.userDetails = userDetails && userDetails.mobile
-      this.isMine = this.from === this.userDetails
->>>>>>> main
     }
   }
 
@@ -93,7 +87,7 @@ export const Sms = ({ match, socket, history }) => {
           message: Body,
           status: SmsStatus,
           to: { user: { user: { name: userInfo.name } }, mobile: From },
-          isMine: From === myNumber,
+          isMine: From === userDetails && userDetails.mobile.mobile,
         })
 
         setSentMsg((prev) => [...prev, response])
@@ -117,55 +111,33 @@ export const Sms = ({ match, socket, history }) => {
     if (!userInfo) {
       history.push('/login')
     }
-<<<<<<< HEAD
-    if (userInfo) {
-      if (userInfo.mobile) {
-        setMyNumber(userInfo.mobile.mobile.trim().toString())
-      }
-    }
-    dispactch(UA.getDetails())
-
-=======
     return () => {
       setSentMsg([])
     }
->>>>>>> main
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   React.useEffect(() => {
     if (info || error) {
-      const newSms = new SmsMsg({
-        key: new Date().getMilliseconds(),
-        message: pendingMsg,
-        status: info ? 'sent' : error && 'not sent',
-        to: { user: { user: { name: '' } }, mobile: mobileNum },
-        isMine: true,
-      })
+      const newSms = new SmsMsg(
+        {
+          key: new Date().getMilliseconds(),
+          message: pendingMsg,
+          status: info ? 'sent' : error && 'not sent',
+          to: { user: { user: { name: '' } }, mobile: mobileNum },
+        },
+        true
+      )
       setSentMsg((prev) => [...prev, newSms])
       setTimeout(() => {
         scrollToBottom()
       }, 1000)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [info, error])
 
   React.useEffect(() => {
     if (userDetails) {
-<<<<<<< HEAD
-      userDetails.smsrooms.map(
-        (room) =>
-          room.mobiles.includes(userMobileNum) &&
-          room.messages.map((msg) => {
-            const isMine =
-              userInfo &&
-              userInfo.mobile &&
-              userInfo.mobile.mobile === msg.from.mobile
-            const msgs = new SmsMsg(msg, isMine)
-            setSentMsg((prev) => [...prev, msgs])
-            return msgs
-          })
-=======
       userDetails.smsrooms.find((room) =>
         // room.mobiles.includes(userMobileNum) &&
         room.messages.map(
@@ -173,7 +145,6 @@ export const Sms = ({ match, socket, history }) => {
             msg.to.mobile === userMobileNum &&
             setSentMsg((prev) => [...prev, new SmsMsg(msg, userDetails)])
         )
->>>>>>> main
       )
 
       if (!loading && !loadingDetails) {

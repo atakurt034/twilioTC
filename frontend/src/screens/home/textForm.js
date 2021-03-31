@@ -111,7 +111,8 @@ export const Text = ({ history }) => {
                   }}
                 >
                   <Typography variant='body2'>
-                    {mobile.user.name} {mobile.user.email}
+                    {mobile.user && mobile.user.name}{' '}
+                    {mobile.user && mobile.user.email}
                   </Typography>
                   <Typography variant='body2'>{country}</Typography>
                   <Button
