@@ -63,7 +63,6 @@ export const Text = ({ history }) => {
         )
       )
       setSmsRooms(rooms)
-      console.log(rooms)
     }
   }, [loading, userDetails])
 

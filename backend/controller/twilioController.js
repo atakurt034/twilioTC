@@ -159,8 +159,8 @@ export const recieveText = asyncHandler(async (req, res) => {
 export const recieveCall = asyncHandler(async (req, res) => {
   try {
     const client = new twiml.VoiceResponse(SID, TOKEN, { logLevel: 'debug' })
-
-    client.say({ voice: 'alice' }, 'hello world!')
+    const dial = client.dial({ callerId: req.body.From, answerOnBridge: true })
+    dial.client('Kurt')
 
     // Render the response as XML in reply to the webhook request
     res.type('text/xml')
@@ -192,27 +192,18 @@ export const setToRead = asyncHandler(async (req, res) => {
 
 export const makeCall = asyncHandler(async (req, res) => {
   try {
-    const client = new Twilio(SID, TOKEN)
-
-    const call = await client.calls.create({
-      twiml: '<Response><Say>Ahoy, World!</Say></Response>',
-      to: '+639614203904',
-      from: from,
-    })
-    console.log(call)
-
-    res.status(200)
-  } catch (error) {
-    res.status(401)
-    throw new Error(error)
-  }
-})
-
-export const answerCall = asyncHandler(async (req, res) => {
-  try {
     const client = new twiml.VoiceResponse()
+    let dial
 
-    client.dial({ callerId: from }, req.body.number)
+    console.log(req)
+
+    if (!req.body.number) {
+      dial = client.dial({ callerId: req.body.From, answerOnBridge: true })
+      dial.client('Kurt')
+    } else {
+      dial = client.dial({ callerId: from, answerOnBridge: true })
+      dial.number(req.body.number)
+    }
 
     res.type('text/xml')
     res.send(client.toString())
@@ -223,23 +214,57 @@ export const answerCall = asyncHandler(async (req, res) => {
   }
 })
 
-export const getToken = asyncHandler(async (req, res) => {
+export const getTokenCall = asyncHandler(async (req, res) => {
   try {
     const capability = new jwt.ClientCapability({
       accountSid: SID,
       authToken: TOKEN,
     })
 
-    capability.addScope(
+    const scopes = [
       new jwt.ClientCapability.OutgoingClientScope({
         applicationSid: twiml_SID,
         clientName: 'Kurt',
-      })
-    )
+      }),
+      new jwt.ClientCapability.IncomingClientScope('Kurt'),
+    ]
+
+    scopes.forEach((scope) => capability.scopes.push(scope))
 
     const token = capability.toJwt()
 
     res.status(200).json(token)
+  } catch (error) {
+    res.status(401)
+    throw new Error(error)
+  }
+})
+
+export const getTokenIncoming = asyncHandler(async (req, res) => {
+  try {
+    const capability = new jwt.ClientCapability({
+      accountSid: SID,
+      authToken: TOKEN,
+    })
+
+    capability.addScope(new jwt.ClientCapability.IncomingClientScope('Kurt'))
+
+    const token = capability.toJwt()
+
+    res.status(200).json(token)
+  } catch (error) {
+    res.status(401)
+    throw new Error(error)
+  }
+})
+
+export const answerCallback = asyncHandler(async (req, res) => {
+  try {
+    // echoHandler()
+    console.log(req)
+
+    res.type('text/xml')
+    res.status(200)
   } catch (error) {
     res.status(401)
     throw new Error(error)

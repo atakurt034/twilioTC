@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler'
-import ngrok from 'ngrok'
+// import ngrok from 'ngrok'
 
 import slugify from 'slugify'
 import formidable from 'formidable'
@@ -357,7 +357,7 @@ export const deleteContactOrGroup = asyncHandler(async (req, res) => {
  */
 export const logout = asyncHandler(async (req, res) => {
   try {
-    const disconnected = await ngrok.disconnect() // stops all
+    // const disconnected = await ngrok.disconnect() // stops all
 
     res.status(200).json(disconnected)
   } catch (error) {

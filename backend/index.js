@@ -8,7 +8,7 @@ import session from 'express-session'
 
 import morgan from 'morgan'
 import 'colors'
-import ngrok from 'ngrok'
+// import ngrok from 'ngrok'
 
 import userRoute from './routes/userRoute.js'
 import chatroomRoute from './routes/chatroomRoute.js'
@@ -40,14 +40,14 @@ app.use(
 
 if (NODE_ENV === 'development') {
   app.use(morgan('dev'))
-  await ngrok
-    .connect(5000)
-    .then((res) => {
-      console.log(res.red.bold)
-      const apiUrl = ngrok.getUrl()
-      console.log(apiUrl.green.bold)
-    })
-    .catch(console.log)
+  // await ngrok
+  //   .connect(5000)
+  //   .then((res) => {
+  //     console.log(res.red.bold)
+  //     const apiUrl = ngrok.getUrl()
+  //     console.log(apiUrl.green.bold)
+  //   })
+  //   .catch(console.log)
 }
 
 // API Routes

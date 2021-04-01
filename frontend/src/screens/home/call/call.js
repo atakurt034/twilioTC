@@ -18,7 +18,7 @@ export const Call = () => {
         Twilio.setup(data)
         Twilio.ready(() => {
           console.log('Connected')
-          Twilio.connect({ number: '+639614203904' })
+          Twilio.connect({ From: '+639614203904' })
         })
 
         console.log(data)
