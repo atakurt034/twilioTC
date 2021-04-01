@@ -6,10 +6,11 @@ import { MobileNum } from '../models/mobileNum.js'
 import { User } from '../models/userModel.js'
 import 'colors'
 
-const { Twilio, twiml } = pkg
+const { Twilio, twiml, webhook, jwt } = pkg
 const SID = process.env.TWILIO_ACCOUNT_SID
 const TOKEN = process.env.TWILIO_AUTH_TOKEN
 const from = process.env.TWILIO_NUMBER
+const twiml_SID = process.env.TWILIO_TWIML_APP_SID
 
 import { echoHandler } from '../index.js'
 
@@ -183,6 +184,62 @@ export const setToRead = asyncHandler(async (req, res) => {
     const smsRoom = await Smsmessage.updateMany({ roomId }, { unread: false })
 
     res.status(200).json(smsRoom)
+  } catch (error) {
+    res.status(401)
+    throw new Error(error)
+  }
+})
+
+export const makeCall = asyncHandler(async (req, res) => {
+  try {
+    const client = new Twilio(SID, TOKEN)
+
+    const call = await client.calls.create({
+      twiml: '<Response><Say>Ahoy, World!</Say></Response>',
+      to: '+639614203904',
+      from: from,
+    })
+    console.log(call)
+
+    res.status(200)
+  } catch (error) {
+    res.status(401)
+    throw new Error(error)
+  }
+})
+
+export const answerCall = asyncHandler(async (req, res) => {
+  try {
+    const client = new twiml.VoiceResponse()
+
+    client.dial({ callerId: from }, req.body.number)
+
+    res.type('text/xml')
+    res.send(client.toString())
+    res.status(200)
+  } catch (error) {
+    res.status(401)
+    throw new Error(error)
+  }
+})
+
+export const getToken = asyncHandler(async (req, res) => {
+  try {
+    const capability = new jwt.ClientCapability({
+      accountSid: SID,
+      authToken: TOKEN,
+    })
+
+    capability.addScope(
+      new jwt.ClientCapability.OutgoingClientScope({
+        applicationSid: twiml_SID,
+        clientName: 'Kurt',
+      })
+    )
+
+    const token = capability.toJwt()
+
+    res.status(200).json(token)
   } catch (error) {
     res.status(401)
     throw new Error(error)

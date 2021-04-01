@@ -12,7 +12,7 @@ router
 
 router.route('/uploads/avatar').post(auth.loginRequired, user.updateAvatar)
 
-router.post('/login', user.login)
+router.put('/login', user.login)
 router.post('/logout', user.logout)
 router.route('/register').put(user.register)
 

@@ -29,7 +29,7 @@ export const login = (body) => async (dispatch) => {
 
     const config = { headers: { 'Content-Type': 'application/json' } }
 
-    const { data } = await axios.post('/api/user/login', body, config)
+    const { data } = await axios.put('/api/user/login', body, config)
     dispatch({ type: USER.LOGIN_SUCCESS, payload: data })
     localStorage.setItem('userInfo', JSON.stringify(data))
   } catch (error) {

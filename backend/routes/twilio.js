@@ -11,6 +11,9 @@ router
   .post(twilio.recieveText)
   .put(auth.loginRequired, twilio.setToRead)
 
-router.route('/call').post(twilio.recieveCall)
+router.route('/call').get(twilio.recieveCall).post(twilio.makeCall)
+
+router.route('/answerCall').post(twilio.answerCall)
+router.route('/token').post(twilio.getToken)
 
 export default router
