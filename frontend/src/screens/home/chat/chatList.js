@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom'
 
 import { useDispatch } from 'react-redux'
 import { UA } from '../../../actions/index'
+import { makeToast } from '../../../components/toast'
 
 const List = ({ id, name, history, type }) => {
   const dispatch = useDispatch()
@@ -19,13 +20,14 @@ const List = ({ id, name, history, type }) => {
       history.push(`/chatroom/${id}`)
     }
   }
-  const deleteHandler = () => {
+  const deleteHandler = async () => {
     let types = 'privateroom'
     if (type === 'Public') {
       types = 'chatroom'
     }
+    const answer = await makeToast('delete', 'question', '', name)
 
-    if (window.confirm(`Are you sure you wan't delete ${name}?`)) {
+    if (answer) {
       dispatch(UA.deleteContactOrGroup({ type: types, deleteId: id }))
     }
   }

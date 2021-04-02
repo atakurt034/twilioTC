@@ -15,6 +15,7 @@ import { Contacts } from './contact/contact'
 import { Chat } from './chat/chat'
 import { Call } from './call/call'
 import { SmsPanel } from './sms/smsPanel'
+import { makeToast } from '../../components/toast'
 
 export const Home = ({ socket, history }) => {
   const dispatch = useDispatch()
@@ -27,6 +28,10 @@ export const Home = ({ socket, history }) => {
 
   const [panel, setPanel] = React.useState('contacts')
   const [count, setCount] = React.useState(0)
+
+  React.useEffect(() => {
+    socket.on('room full', () => makeToast('error', 'room is full', 'error'))
+  }, [socket])
 
   React.useEffect(() => {
     if (!userInfo) {

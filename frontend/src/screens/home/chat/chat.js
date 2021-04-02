@@ -8,6 +8,8 @@ import { ModalMessage } from '../../../components/modalmessage'
 import { ChatList } from './chatList'
 import { useStyles } from './styles'
 
+import { makeToast } from '../../../components/toast'
+
 export const Chat = () => {
   const createGroupRef = React.useRef()
   const dispatch = useDispatch()
@@ -49,16 +51,25 @@ export const Chat = () => {
     }
   }, [userDetails])
 
-  const createGroupHandler = (event, ref) => {
+  const createGroupHandler = async (event, ref) => {
     const { key, keyCode } = event
     if (key === 'Enter' || keyCode === 'Enter' || keyCode === 13) {
-      const answer = window.confirm(`Create ${ref.current.value} Group?`)
+      const answer = await makeToast(
+        'create',
+        'question',
+        '',
+        ref.current.value
+      )
       if (answer) {
         dispatch(CA.createPublicRoom({ name: ref.current.value }))
       }
     } else if (event._reactName === 'onClick') {
-      console.log(event._reactName)
-      const answer = window.confirm(`Create ${ref.current.value} Group?`)
+      const answer = await makeToast(
+        'create',
+        'question',
+        '',
+        ref.current.value
+      )
       if (answer) {
         dispatch(CA.createPublicRoom({ name: ref.current.value }))
       }

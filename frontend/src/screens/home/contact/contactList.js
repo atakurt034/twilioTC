@@ -24,6 +24,8 @@ import axios from 'axios'
 import { Device } from 'twilio-client'
 import { CallModalDrag } from '../call/dragableCallModal'
 
+import { makeToast } from '../../../components/toast'
+
 const Contact = ({ contact, history }) => {
   const callRef = React.useRef()
   const dispatch = useDispatch()
@@ -48,8 +50,10 @@ const Contact = ({ contact, history }) => {
     dispatch(CA.createPrivateRoom({ id }))
   }
 
-  const deleteHandler = () => {
-    if (window.confirm(`Are you sure you want to delet ${contact.name}?`))
+  const deleteHandler = async () => {
+    const answer = await makeToast('delete', 'question', '', contact.name)
+
+    if (answer)
       dispatch(
         UA.deleteContactOrGroup({ type: 'contacts', deleteId: contact._id })
       )
