@@ -1,6 +1,5 @@
 import pkg from 'passport-google-oauth20'
 const { Strategy: GoogleStrategy } = pkg
-import mongoose from 'mongoose'
 import pkgF from 'passport-facebook'
 const { Strategy: FacebookStrategy } = pkgF
 
@@ -12,8 +11,7 @@ export default function (passport) {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL:
-          'https://sabongshop.herokuapp.com/api/auth/google/callback',
+        callbackURL: 'http://localhost:3000/api/auth/google/callback',
         userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
       },
       async (accessToken, refreshToken, profile, done) => {
@@ -43,7 +41,7 @@ export default function (passport) {
       {
         clientID: process.env.FACEBOOK_CLIENT_ID,
         clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-        callbackURL: '/api/auth/facebook/callback',
+        callbackURL: 'http://localhost:3000/api/auth/facebook/callback',
         profileFields: ['id', 'displayName', 'photos', 'email'],
       },
       async (accessToken, refreshToken, profile, done) => {

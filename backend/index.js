@@ -11,7 +11,8 @@ import 'colors'
 
 import userRoute from './routes/userRoute.js'
 import chatroomRoute from './routes/chatroomRoute.js'
-import twilioRoute from './routes/twilio.js'
+import twilioRoute from './routes/twilioRoute.js'
+import auth from './routes/authRoute.js'
 import { pr, pub, msg, twi } from './socketRoutes/index.js'
 
 import passport from 'passport'
@@ -55,6 +56,7 @@ app.get('/', async (req, res) => {
 app.use('/api/user', userRoute)
 app.use('/api/chatroom', chatroomRoute)
 app.use('/api/twilio', twilioRoute)
+app.use('/api/auth', auth)
 
 // error handlers
 app.use(error.errorHandler)

@@ -28,6 +28,9 @@ export const Login = ({ history }) => {
   const dispatch = useDispatch()
 
   const { userInfo, error, loading } = useSelector((state) => state.userLogin)
+  const { info, error: errorFBGG, loading: loadingFBGG } = useSelector(
+    (state) => state.getGGFBLoginInfo
+  )
 
   const [data, setData] = React.useState({
     email: '',
@@ -38,7 +41,15 @@ export const Login = ({ history }) => {
     if (userInfo) {
       history.push('/')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo, history])
+
+  React.useEffect(() => {
+    if (!info) {
+      dispatch(UA.getGGFBLogin())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const login = (event) => {
     event.preventDefault()
@@ -51,16 +62,28 @@ export const Login = ({ history }) => {
     setData({ ...data, [name]: value })
   }
 
+  const ggfbHandler = (type) => {
+    if (type === 'facebook') {
+      window.location.href = '/api/auth/facebook'
+    } else {
+      window.location.href = '/api/auth/google'
+    }
+  }
+
   return (
     <Grid container className={classes.container}>
       <Grid item xs={12}>
         <Paper className={classes.paper} elevation={12}>
           <CssBaseline />
 
-          {loading ? (
+          {loading && loadingFBGG ? (
             <ModalLoader />
+          ) : error ? (
+            <ModalMessage variant='error'>{error}</ModalMessage>
           ) : (
-            error && <ModalMessage variant='error'>{error}</ModalMessage>
+            errorFBGG && (
+              <ModalMessage variant='error'>{errorFBGG}</ModalMessage>
+            )
           )}
 
           <Typography
@@ -76,8 +99,8 @@ export const Login = ({ history }) => {
           </Typography>
 
           <Button
+            onClick={() => ggfbHandler('google')}
             className={classes.button}
-            type='button'
             fullWidth
             variant='contained'
             color='secondary'
@@ -90,6 +113,7 @@ export const Login = ({ history }) => {
             Sign in with google
           </Button>
           <Button
+            onClick={() => ggfbHandler('facebook')}
             className={classes.button}
             color='primary'
             fullWidth

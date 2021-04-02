@@ -69,7 +69,7 @@ export const Register = ({ history }) => {
               inputRef={register({
                 required: true,
                 minLength: { value: 3, message: 'Minimum of 3 letters' },
-                maxLength: { value: 20, message: 'Maximum of 20 letters' },
+                maxLength: { value: 30, message: 'Maximum of 30 letters' },
                 pattern: {
                   value: /^[A-Za-z\s]+$/,
                   message: 'Please use only letters',

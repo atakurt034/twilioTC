@@ -31,6 +31,7 @@ export const login = (body) => async (dispatch) => {
 
     const { data } = await axios.post('/api/user/login', body, config)
     dispatch({ type: USER.LOGIN_SUCCESS, payload: data })
+
     localStorage.setItem('userInfo', JSON.stringify(data))
   } catch (error) {
     dispatch({
@@ -306,6 +307,27 @@ export const searchMobile = (mobileNum) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: USER.SEARCH_MOBILE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+
+export const getGGFBLogin = () => async (dispatch) => {
+  try {
+    dispatch({ type: USER.GOOGLE_FB_LOGIN_REQUEST })
+
+    const { data } = await axios.get('/api/auth/currentuser')
+
+    dispatch({ type: USER.GOOGLE_FB_LOGIN_SUCCESS, payload: data })
+    dispatch({ type: USER.LOGIN_SUCCESS, payload: data })
+
+    localStorage.setItem('userInfo', JSON.stringify(data))
+  } catch (error) {
+    dispatch({
+      type: USER.GOOGLE_FB_LOGIN_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message

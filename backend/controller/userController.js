@@ -355,6 +355,9 @@ export const deleteContactOrGroup = asyncHandler(async (req, res) => {
  */
 export const logout = asyncHandler(async (req, res) => {
   try {
+    req.logout()
+    res.redirect('/')
+
     res.status(200).json({ message: 'disconnected' })
   } catch (error) {
     res.status(400)
