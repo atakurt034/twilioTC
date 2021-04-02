@@ -69,7 +69,6 @@ export const App = () => {
         })
 
         twilioRef.current = Twilio
-        console.log(data)
       } catch (error) {
         console.log(error)
       }

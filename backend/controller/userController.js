@@ -227,7 +227,6 @@ export const acceptInvite = asyncHandler(async (req, res) => {
     const { _id } = req.user //my id
     const { userId, inviteId, chatroomId, type } = req.body //invite id
     const user = await User.findById(_id)
-    console.log(userId, inviteId, chatroomId, type)
 
     if (type === 'user') {
       const newContact = await User.findById(userId)

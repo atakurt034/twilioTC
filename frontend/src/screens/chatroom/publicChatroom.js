@@ -26,12 +26,6 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
 
   const { userInfo } = useSelector((state) => state.userLogin)
 
-  const listener = (eventName, ...args) => {
-    console.log(eventName, args)
-  }
-
-  socket.onAny(listener)
-
   React.useEffect(() => {
     if (!userInfo) {
       history.push('/login')
@@ -135,10 +129,6 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
     return peer
   }
 
-  const addUserHandler = (params) => {
-    console.log('clicked')
-  }
-
   const trackHandler = (track) => {
     track.current.enabled = !track.current.enabled
   }
@@ -148,7 +138,7 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
       <Paper elevation={12} style={{ minHeight: '80vh' }}>
         <h2 style={{ float: 'left', padding: '0 20px' }}>{roomName}</h2>
         <div style={{ float: 'right' }}>
-          <AddUsers chatroomId={roomID} onClick={addUserHandler} />
+          <AddUsers chatroomId={roomID} />
         </div>
         <Grid
           spacing={2}

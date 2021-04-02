@@ -76,6 +76,7 @@ export class GetPermission {
   }
 
   closeStreams = () => {
-    this.streams.getTracks().forEach((track) => track.stop())
+    navigator.mediaDevices &&
+      this.streams.getTracks().forEach((track) => track.stop())
   }
 }

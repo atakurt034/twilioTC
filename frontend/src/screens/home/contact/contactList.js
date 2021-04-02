@@ -19,11 +19,21 @@ import { ModalLoader } from '../../../components/modalloader'
 import { ModalMessage } from '../../../components/modalmessage'
 import { withRouter } from 'react-router'
 
+import { _Call } from '../call/classHelper'
+import axios from 'axios'
+import { Device } from 'twilio-client'
+import { CallModal } from '../call/callModal'
+
 const Contact = ({ contact, history }) => {
+  const callRef = React.useRef()
   const dispatch = useDispatch()
   const { chatroom, loading, error } = useSelector(
     (state) => state.chatroomPrivateCreate
   )
+
+  const number = contact.mobile && contact.mobile.mobile
+  const [open, setOpen] = React.useState()
+  const [ready, setReady] = React.useState()
 
   React.useEffect(() => {
     if (chatroom) {
@@ -46,6 +56,17 @@ const Contact = ({ contact, history }) => {
 
   const textHandler = (mobileNum) => {
     history.push(`/sms/${mobileNum}`)
+  }
+
+  const callHandler = (params) => {
+    const call = new _Call(axios, Device, setOpen, number, setReady, callRef)
+    call.makeCall()
+  }
+
+  const cancelHandler = () => {
+    setOpen(false)
+    setReady(false)
+    callRef.current.disconnectAll()
   }
 
   return (
@@ -74,6 +95,13 @@ const Contact = ({ contact, history }) => {
         }}
         elevation={12}
       >
+        <CallModal
+          cancel={cancelHandler}
+          mobileNum={number}
+          open={open}
+          ready={ready}
+        />
+
         <div style={{ display: 'flex', padding: 5 }}>
           <Avatar src={contact.image} alt={contact.name} />
           <Typography style={{ textAlign: 'left', padding: 5 }}>
@@ -88,8 +116,18 @@ const Contact = ({ contact, history }) => {
           >
             <ChatIcon color='primary' fontSize='small' />
           </IconButton>
-          <IconButton variant='outlined' disabled={true}>
-            <PhoneIcon style={{ color: 'grey' }} fontSize='small' />
+          <IconButton
+            onClick={callHandler}
+            variant='outlined'
+            disabled={contact.mobile && contact.mobile.mobile ? false : true}
+          >
+            <PhoneIcon
+              style={{
+                color:
+                  contact.mobile && contact.mobile.mobile ? 'green' : 'grey',
+              }}
+              fontSize='small'
+            />
           </IconButton>
           <IconButton
             disabled={contact.mobile && contact.mobile.mobile ? false : true}

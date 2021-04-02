@@ -62,7 +62,6 @@ export const Call = () => {
         />
       </Grid>
       <CallModal
-        s
         cancel={cancelHandler}
         mobileNum={number}
         open={open}

@@ -11,7 +11,7 @@ import { withRouter } from 'react-router-dom'
 import { UA } from '../../../actions/index'
 import { USER } from '../../../constants/index'
 
-export const Text = ({ history }) => {
+const Text = ({ history }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
 
@@ -163,7 +163,8 @@ export const Text = ({ history }) => {
                 </Button>
               </Paper>
             )
-          : smsRooms.map((num) => {
+          : !searched &&
+            smsRooms.map((num) => {
               return (
                 <Paper
                   elevation={12}
@@ -187,4 +188,4 @@ export const Text = ({ history }) => {
   )
 }
 
-export const TextForm = withRouter(Text)
+export const SmsPanel = withRouter(Text)

@@ -14,6 +14,7 @@ import { SmsBadge } from './badgedIcons/smsBadge'
 import { Contacts } from './contact/contact'
 import { Chat } from './chat/chat'
 import { Call } from './call/call'
+import { SmsPanel } from './sms/smsPanel'
 
 export const Home = ({ socket, history }) => {
   const dispatch = useDispatch()
@@ -76,7 +77,7 @@ export const Home = ({ socket, history }) => {
           </IconButton>
           <IconButton
             className={classes.icon}
-            onClick={() => panelHandler('text')}
+            onClick={() => panelHandler('sms')}
           >
             <SmsBadge count={count} />
           </IconButton>
@@ -86,8 +87,10 @@ export const Home = ({ socket, history }) => {
             <Contacts />
           ) : panel === 'chat' ? (
             <Chat />
-          ) : (
+          ) : panel === 'call' ? (
             <Call />
+          ) : (
+            <SmsPanel />
           )}
         </Grid>
       </Grid>

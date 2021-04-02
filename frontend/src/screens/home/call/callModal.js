@@ -117,8 +117,7 @@ export const CallModal = ({ cancel, to, mobileNum, open, ready }) => {
         justifyContent: 'center',
         alignItems: 'center',
       }}
-      open={open}
-      // onClose={handleClose}
+      open={typeof open === 'undefined' ? false : open}
     >
       {ready ? answered : body}
     </Modal>

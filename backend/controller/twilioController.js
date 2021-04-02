@@ -195,8 +195,6 @@ export const makeCall = asyncHandler(async (req, res) => {
     const client = new twiml.VoiceResponse()
     let dial
 
-    console.log(req)
-
     if (!req.body.number) {
       dial = client.dial({ callerId: req.body.From, answerOnBridge: true })
       dial.client('Kurt')
@@ -261,7 +259,6 @@ export const getTokenIncoming = asyncHandler(async (req, res) => {
 export const answerCallback = asyncHandler(async (req, res) => {
   try {
     // echoHandler()
-    console.log(req)
 
     res.type('text/xml')
     res.status(200)
