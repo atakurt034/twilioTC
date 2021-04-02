@@ -6,7 +6,7 @@ export const joinRoom = (io, socket) => async ({ roomID, name }) => {
   if (users[roomID]) {
     const length = users[roomID].length
     if (length === 4) {
-      socket.emit('room full')
+      io.to(socket.userId).emit('room full')
       return
     }
     users[roomID].push(socket.id)
