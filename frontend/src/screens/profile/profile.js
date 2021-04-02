@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form'
 import { Message } from '../../components/message'
 import { ModalLoader } from '../../components/modalloader'
 import { ModalMessage } from '../../components/modalmessage'
+import { makeToast } from '../../components/toast'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { UA } from '../../actions/index'
@@ -36,7 +37,7 @@ export const Profile = ({ history }) => {
   const [mobile, setMobile] = React.useState()
   const [image, setImage] = React.useState()
 
-  const { register, handleSubmit, errors, watch } = useForm({
+  const { register, handleSubmit, errors, watch, reset } = useForm({
     defaultValues: {
       name: userDetails && userDetails.name,
       email: userDetails && userDetails.email,
@@ -56,9 +57,11 @@ export const Profile = ({ history }) => {
   React.useEffect(() => {
     if (status) {
       dispatch(UA.getDetails())
+      makeToast('notification', 'success', 'Saved')
     }
     if (userDetails) {
       setImage(userDetails.image)
+
       if (userDetails.mobile) {
         setMobile(userDetails.mobile.mobile)
       }
@@ -66,11 +69,12 @@ export const Profile = ({ history }) => {
     return () => {
       dispatch({ type: USER.UPATE_PROFILE_RESET })
     }
-  }, [status, userDetails, dispatch])
+  }, [status, userDetails, dispatch, reset])
 
   const sumbitHandler = ({ name, email, password }) => {
     const update = { name, email, password, image, mobile }
     dispatch(UA.updateProfile(update))
+    reset({ name: name, email: email })
   }
 
   const imageHandler = async (event) => {
@@ -99,7 +103,7 @@ export const Profile = ({ history }) => {
     }
   }
 
-  return loading || loadingUpdate ? (
+  return loading || loadingUpdate || !userDetails ? (
     <ModalLoader />
   ) : error ? (
     <ModalMessage variant='error'>{error}</ModalMessage>
