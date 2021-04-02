@@ -15,25 +15,10 @@ import {
 
 import '../../chatroom/styles.scss'
 
-export const CallModal = ({
-  open,
-  setOpen,
-  name,
-  mobileNum,
-  callRef,
-  cancel,
-  ready,
-}) => {
+export const CallModal = ({ cancel, to, mobileNum, open, ready }) => {
   const clickHandler = () => {
-    callRef.current.disconnectAll()
     cancel()
   }
-
-  React.useEffect(() => {
-    if (callRef.current) {
-      console.log(callRef.current.status())
-    }
-  }, [callRef])
 
   const answered = (
     <Paper
@@ -115,7 +100,7 @@ export const CallModal = ({
         </div>
       </div>
       <Typography variant='h6'>
-        Calling {name && name} {mobileNum && mobileNum}
+        Calling {to && to} {mobileNum && mobileNum}
       </Typography>
       <Divider />
       <Button onClick={clickHandler} variant='contained' color='secondary'>

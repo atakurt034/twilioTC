@@ -8,8 +8,8 @@ import { useStyles } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
-import { UA } from '../../actions/index'
-import { USER } from '../../constants/index'
+import { UA } from '../../../actions/index'
+import { USER } from '../../../constants/index'
 
 export const Text = ({ history }) => {
   const classes = useStyles()

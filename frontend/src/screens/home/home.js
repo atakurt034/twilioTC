@@ -8,9 +8,12 @@ import { useStyles } from './styles.js'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { UA } from '../../actions/index'
-import { Panels } from './panels'
 
 import { SmsBadge } from './badgedIcons/smsBadge'
+
+import { Contacts } from './contact/contact'
+import { Chat } from './chat/chat'
+import { Call } from './call/call'
 
 export const Home = ({ socket, history }) => {
   const dispatch = useDispatch()
@@ -79,13 +82,13 @@ export const Home = ({ socket, history }) => {
           </IconButton>
         </Grid>
         <Grid item xs={10} lg={4} className={classes.sidePanel}>
-          {panel === 'chat'
-            ? Panels(classes).chat
-            : panel === 'call'
-            ? Panels(classes).call
-            : panel === 'contacts'
-            ? Panels(classes, userDetails, history, panelHandler).contacts
-            : Panels(classes).text}
+          {panel === 'contacts' ? (
+            <Contacts />
+          ) : panel === 'chat' ? (
+            <Chat />
+          ) : (
+            <Call />
+          )}
         </Grid>
       </Grid>
     </>

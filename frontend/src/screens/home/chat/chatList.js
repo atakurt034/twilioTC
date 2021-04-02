@@ -6,7 +6,7 @@ import ChatIcon from '@material-ui/icons/Chat'
 import { withRouter } from 'react-router-dom'
 
 import { useDispatch } from 'react-redux'
-import { UA } from '../../actions/index'
+import { UA } from '../../../actions/index'
 
 const List = ({ id, name, history, type }) => {
   const dispatch = useDispatch()

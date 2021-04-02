@@ -2,8 +2,8 @@ import React from 'react'
 
 import { Button, Grid, Typography } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { UA } from '../../actions/index'
-import { USER } from '../../constants/index'
+import { UA } from '../../../actions/index'
+import { USER } from '../../../constants/index'
 
 export const UserList = ({ user, backHandler }) => {
   const dispatch = useDispatch()

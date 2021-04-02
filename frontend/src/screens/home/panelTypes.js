@@ -17,12 +17,12 @@ import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback'
 
 import 'react-phone-input-2/lib/high-res.css'
 
-import { ContactList } from './contactList'
-import { PhoneDetails } from './phoneDetails'
-import { ChatList } from './chatList'
+import { ContactList } from './contact/contactList'
+import { PhoneDetails } from './call/phoneDetails'
+import { ChatList } from './chat/chatList'
 import { UA } from '../../actions/index'
 import { ModalMessage } from '../../components/modalmessage'
-import { TextForm } from './textForm'
+import { TextForm } from './chat/textForm'
 
 export const PanelTypes = (
   classes,
@@ -114,7 +114,6 @@ export const PanelTypes = (
           return (
             <ContactList
               key={contact._id}
-              history={history}
               contact={contact}
               panelHandler={panelHandler}
             />

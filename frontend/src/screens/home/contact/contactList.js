@@ -8,17 +8,18 @@ import {
   Typography,
 } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { CA, UA } from '../../actions/index'
-import { CHAT } from '../../constants/index'
+import { CA, UA } from '../../../actions/index'
+import { CHAT } from '../../../constants/index'
 
 import PhoneIcon from '@material-ui/icons/Phone'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import PermPhoneMsgIcon from '@material-ui/icons/PermPhoneMsg'
 import ChatIcon from '@material-ui/icons/Chat'
-import { ModalLoader } from '../../components/modalloader'
-import { ModalMessage } from '../../components/modalmessage'
+import { ModalLoader } from '../../../components/modalloader'
+import { ModalMessage } from '../../../components/modalmessage'
+import { withRouter } from 'react-router'
 
-export const ContactList = ({ contact, history }) => {
+const Contact = ({ contact, history }) => {
   const dispatch = useDispatch()
   const { chatroom, loading, error } = useSelector(
     (state) => state.chatroomPrivateCreate
@@ -29,8 +30,6 @@ export const ContactList = ({ contact, history }) => {
       history.push(`/chatroom/${chatroom._id}`)
       dispatch({ type: CHAT.CREATE_PRIVATE_RESET })
     }
-
-    return () => {}
   }, [chatroom, dispatch, history, error])
 
   const clickHandler = (id) => {
@@ -117,3 +116,5 @@ export const ContactList = ({ contact, history }) => {
     </Container>
   )
 }
+
+export const ContactList = withRouter(Contact)

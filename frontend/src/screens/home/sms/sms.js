@@ -18,10 +18,10 @@ import { useForm } from 'react-hook-form'
 import { useStyles } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { ModalMessage } from '../../components/modalmessage'
-import { ModalLoader } from '../../components/modalloader'
+import { ModalMessage } from '../../../components/modalmessage'
+import { ModalLoader } from '../../../components/modalloader'
 
-import { TA } from '../../actions/index'
+import { TA } from '../../../actions/index'
 
 export const Sms = ({ match, socket, history }) => {
   const scrollToView = React.useRef()

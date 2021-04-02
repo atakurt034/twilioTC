@@ -10,19 +10,6 @@ export const useStyles = makeStyles((theme) => ({
     padding: 5,
     alignItems: 'center',
   },
-  sideIcons: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'left',
-  },
-
-  sidePanel: {
-    minHeight: '80vh',
-  },
-  icon: {
-    width: 70,
-  },
-
   search: {
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -53,5 +40,18 @@ export const useStyles = makeStyles((theme) => ({
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
     transition: theme.transitions.create('width'),
     minWidth: '100%',
+  },
+  addTrue: {
+    padding: '4px 0',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexGrow: 1,
+  },
+  invites: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 5,
   },
 }))

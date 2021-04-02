@@ -1,21 +1,26 @@
 import React from 'react'
-
-import { Typography, InputBase, Button } from '@material-ui/core'
-import SearchIcon from '@material-ui/icons/Search'
-
-import { LoadingButton } from '../../components/loadingbutton'
-import { UserList } from './userList'
-
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 
+import {
+  Typography,
+  InputBase,
+  Button,
+  Paper,
+  Divider,
+} from '@material-ui/core'
+import SearchIcon from '@material-ui/icons/Search'
 import { useSelector, useDispatch } from 'react-redux'
-import { USER } from '../../constants/index'
-import { UA, CA } from '../../actions/index'
 
-import { PanelTypes } from './panelTypes'
+import { LoadingButton } from '../../../components/loadingbutton'
+import { USER } from '../../../constants/index'
+import { UA } from '../../../actions/index'
+import { UserList } from './userList'
+import { ContactList } from './contactList'
+import { useStyles } from './styles.js'
 
-export const Panels = (classes, userInfo, history) => {
+export const Contacts = () => {
   const dispatch = useDispatch()
+  const classes = useStyles()
 
   const searchRef = React.useRef()
 
@@ -23,6 +28,7 @@ export const Panels = (classes, userInfo, history) => {
     (state) => state.userSearch
   )
   const { status } = useSelector((state) => state.userAddContact)
+  const { userDetails } = useSelector((state) => state.userDetails)
 
   const [addContact, setAddContact] = React.useState(false)
   const [search, setSearch] = React.useState('')
@@ -71,22 +77,6 @@ export const Panels = (classes, userInfo, history) => {
     dispatch({ type: USER.ACCEPT_RESET })
   }
 
-  const createGroupHandler = (event, ref) => {
-    const { key, keyCode } = event
-    if (key === 'Enter' || keyCode === 'Enter' || keyCode === 13) {
-      const answer = window.confirm(`Create ${ref.current.value} Group?`)
-      if (answer) {
-        dispatch(CA.createPublicRoom({ name: ref.current.value }))
-      }
-    } else if (event._reactName === 'onClick') {
-      console.log(event._reactName)
-      const answer = window.confirm(`Create ${ref.current.value} Group?`)
-      if (answer) {
-        dispatch(CA.createPublicRoom({ name: ref.current.value }))
-      }
-    }
-  }
-
   const add_false = (
     <div>
       <Button
@@ -99,15 +89,7 @@ export const Panels = (classes, userInfo, history) => {
   )
 
   const add_true = (
-    <div
-      style={{
-        padding: '4px 0',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexGrow: 1,
-      }}
-    >
+    <div className={classes.addTrue}>
       <div className={classes.search}>
         <div className={classes.searchIcon}>
           <SearchIcon />
@@ -139,22 +121,59 @@ export const Panels = (classes, userInfo, history) => {
       </div>
     </div>
   )
-  const { contacts, call, chat, text } = PanelTypes(
-    classes,
-    addContact,
-    add_true,
-    add_false,
-    userInfo,
-    acceptHandler,
-    error,
-    backHandler,
-    user,
-    invited,
-    UserList,
-    loading,
-    history,
-    createGroupHandler
-  )
+  return (
+    <Paper className={classes.paper}>
+      <div className={classes.cardActions}>
+        {addContact ? add_true : add_false}
+      </div>
+      <Divider />
+      {userDetails &&
+        !addContact &&
+        userDetails.invites.map((invite) => {
+          return (
+            <div key={invite._id} className={classes.invites}>
+              <Typography variant='h6' style={{ padding: 3 }}>
+                {invite.user
+                  ? invite.user.email
+                  : invite.chatroom && invite.chatroom.name}
+              </Typography>
+              <Button variant='outlined' onClick={() => acceptHandler(invite)}>
+                Accept
+              </Button>
+            </div>
+          )
+        })}
+      {userDetails &&
+        !addContact &&
+        userDetails.contacts.map((contact, index) => {
+          return <ContactList key={contact._id} contact={contact} />
+        })}
 
-  return { contacts, call, chat, text }
+      {error ? (
+        error === 'added' ? (
+          addContact && (
+            <div>
+              contact already added <button onClick={backHandler}>Back</button>{' '}
+            </div>
+          )
+        ) : (
+          addContact && (
+            <div>
+              No Results Found <button onClick={backHandler}>Back</button>{' '}
+            </div>
+          )
+        )
+      ) : user ? (
+        invited && !invited.accept ? (
+          <UserList user={user[0]} backHandler={backHandler} />
+        ) : (
+          <UserList user={user[0]} backHandler={backHandler} />
+        )
+      ) : loading ? (
+        'searching..'
+      ) : (
+        ''
+      )}
+    </Paper>
+  )
 }
