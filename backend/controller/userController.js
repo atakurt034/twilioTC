@@ -1,5 +1,4 @@
 import asyncHandler from 'express-async-handler'
-// import ngrok from 'ngrok'
 
 import slugify from 'slugify'
 import formidable from 'formidable'
@@ -356,9 +355,7 @@ export const deleteContactOrGroup = asyncHandler(async (req, res) => {
  */
 export const logout = asyncHandler(async (req, res) => {
   try {
-    // const disconnected = await ngrok.disconnect() // stops all
-
-    res.status(200).json(disconnected)
+    res.status(200).json({ message: 'disconnected' })
   } catch (error) {
     res.status(400)
     throw new Error(error)
@@ -408,7 +405,8 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
     if (mobileExist) {
       user.mobile = mobileExist
-    } else {
+    }
+    if (mobile) {
       user.mobile = await MobileNum.create({ mobile, user })
     }
 

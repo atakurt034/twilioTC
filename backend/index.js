@@ -8,7 +8,6 @@ import session from 'express-session'
 
 import morgan from 'morgan'
 import 'colors'
-// import ngrok from 'ngrok'
 
 import userRoute from './routes/userRoute.js'
 import chatroomRoute from './routes/chatroomRoute.js'
@@ -33,21 +32,13 @@ mongoConnect()
 app.use(
   session({
     secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
+    resave: true,
+    saveUninitialized: false,
   })
 )
 
 if (NODE_ENV === 'development') {
   app.use(morgan('dev'))
-  // await ngrok
-  //   .connect(5000)
-  //   .then((res) => {
-  //     console.log(res.red.bold)
-  //     const apiUrl = ngrok.getUrl()
-  //     console.log(apiUrl.green.bold)
-  //   })
-  //   .catch(console.log)
 }
 
 // API Routes
@@ -84,7 +75,7 @@ io.use(async (socket, next) => {
   }
 })
 
-export var echoHandler = (chatroomId, body, event) => {
+export const echoHandler = (chatroomId, body, event) => {
   io.to(chatroomId).emit(event, body)
 }
 
