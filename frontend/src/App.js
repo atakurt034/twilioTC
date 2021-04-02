@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import { Device } from 'twilio-client'
 import axios from 'axios'
-import { Incoming } from './components/modalIncoming/incoming'
+import { Incoming } from './components/modalIncoming/incomingDrag'
 
 import { UA } from './actions/index'
 
@@ -23,6 +23,8 @@ export const App = () => {
   const userLogin = useSelector((state) => state.userLogin)
 
   const [open, setOpen] = React.useState(false)
+  const [mute, setMute] = React.useState(false)
+  const [answer, setAnswer] = React.useState(false)
 
   if (userLogin.userInfo) {
     userId = userLogin.userInfo._id
@@ -63,8 +65,10 @@ export const App = () => {
           connectionRef.current = con
           setOpen(true)
         })
-        Twilio.on('disconnect', () => {
+        Twilio.on('disconnect', (d) => {
           Twilio.disconnectAll()
+          console.log(d, 'disconnect')
+          setAnswer(false)
           setOpen(false)
         })
 
@@ -74,11 +78,32 @@ export const App = () => {
       }
     }
     getToken()
+    return () => {
+      setAnswer(false)
+      setOpen(false)
+    }
   }, [])
 
   const cancelHandler = () => {
     setOpen(false)
+    twilioRef.current.disconnectAll()
+  }
+
+  const muteHandler = async () => {
+    const conn = await twilioRef.current.activeConnection()
+    conn.mute(!conn.isMuted())
+    setMute(conn.isMuted())
+    console.log(conn.isMuted())
+  }
+
+  const accept = (params) => {
+    connectionRef.current.accept()
+    setAnswer(true)
+  }
+  const reject = (params) => {
     connectionRef.current.reject()
+    setAnswer(false)
+    setOpen(false)
   }
 
   return (
@@ -89,6 +114,11 @@ export const App = () => {
         open={open}
         setOpen={setOpen}
         twilioRef={twilioRef}
+        mute={mute}
+        muteHandler={muteHandler}
+        accept={accept}
+        reject={reject}
+        answer={answer}
       />
       <div>
         <Appbar />
