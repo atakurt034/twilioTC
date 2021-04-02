@@ -22,7 +22,7 @@ import { withRouter } from 'react-router'
 import { _Call } from '../call/classHelper'
 import axios from 'axios'
 import { Device } from 'twilio-client'
-import { CallModal } from '../call/callModal'
+import { CallModalDrag } from '../call/dragableCallModal'
 
 const Contact = ({ contact, history }) => {
   const callRef = React.useRef()
@@ -34,6 +34,7 @@ const Contact = ({ contact, history }) => {
   const number = contact.mobile && contact.mobile.mobile
   const [open, setOpen] = React.useState()
   const [ready, setReady] = React.useState()
+  const [mute, setMute] = React.useState(false)
 
   React.useEffect(() => {
     if (chatroom) {
@@ -69,6 +70,12 @@ const Contact = ({ contact, history }) => {
     callRef.current.disconnectAll()
   }
 
+  const muteHandler = async () => {
+    const conn = await callRef.current.activeConnection()
+    conn.mute(!conn.isMuted())
+    setMute(conn.isMuted())
+  }
+
   return (
     <Container
       style={{
@@ -95,11 +102,14 @@ const Contact = ({ contact, history }) => {
         }}
         elevation={12}
       >
-        <CallModal
+        <CallModalDrag
           cancel={cancelHandler}
           mobileNum={number}
           open={open}
           ready={ready}
+          to={contact.name}
+          mute={mute}
+          muteHandler={muteHandler}
         />
 
         <div style={{ display: 'flex', padding: 5 }}>

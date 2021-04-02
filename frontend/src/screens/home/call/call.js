@@ -9,7 +9,7 @@ import { Dialer } from './dialer'
 import { _Call } from './classHelper'
 import axios from 'axios'
 import { Device } from 'twilio-client'
-import { CallModal } from './callModal'
+import { CallModalDrag } from './dragableCallModal'
 
 export const Call = () => {
   const classes = useStyles()
@@ -18,6 +18,7 @@ export const Call = () => {
   const [number, setNumbers] = React.useState()
   const [open, setOpen] = React.useState()
   const [ready, setReady] = React.useState()
+  const [mute, setMute] = React.useState(false)
 
   const newCall = new _Call(axios, Device, setOpen, number, setReady, callRef)
 
@@ -29,6 +30,13 @@ export const Call = () => {
     setOpen(false)
     setReady(false)
     callRef.current.disconnectAll()
+  }
+
+  const muteHandler = async () => {
+    const conn = await callRef.current.activeConnection()
+    conn.mute(!conn.isMuted())
+    setMute(conn.isMuted())
+    console.log(conn.isMuted())
   }
 
   return (
@@ -61,11 +69,13 @@ export const Call = () => {
           callHandler={callHandler}
         />
       </Grid>
-      <CallModal
+      <CallModalDrag
         cancel={cancelHandler}
         mobileNum={number}
         open={open}
         ready={ready}
+        mute={mute}
+        muteHandler={muteHandler}
       />
     </Paper>
   )
