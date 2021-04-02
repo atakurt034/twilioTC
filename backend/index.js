@@ -14,8 +14,12 @@ import chatroomRoute from './routes/chatroomRoute.js'
 import twilioRoute from './routes/twilio.js'
 import { pr, pub, msg, twi } from './socketRoutes/index.js'
 
+import passport from 'passport'
+import passportConfig from './middlewares/passport.js'
+
 // initialize dotenv for environment variables
 config()
+passportConfig(passport)
 
 // environment variables
 const { PORT, NODE_ENV, SESSION_SECRET, MONGO_URI, JWT_SECRET } = process.env
@@ -40,6 +44,9 @@ app.use(
 if (NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 // API Routes
 app.get('/', async (req, res) => {

@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     image: {
       type: String,
@@ -35,6 +36,12 @@ const userSchema = new mongoose.Schema(
         accept: { type: Boolean, default: false },
       },
     ],
+    googleId: {
+      type: String,
+    },
+    facebookId: {
+      type: String,
+    },
   },
   { timestamps: true }
 )
