@@ -31,7 +31,7 @@ export const App = () => {
     name = userLogin.userInfo.name
   }
 
-  const socket = io('http://192.168.254.111:5000', {
+  const socket = io('https://foneapi.herokuapp.com/', {
     query: { userId, name },
   })
 

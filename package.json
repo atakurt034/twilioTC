@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "client": "npm start --prefix frontend",
-    "dev": "concurrently \"npm run client \" \"nodemon ./backend/index.js\" "
+    "dev": "concurrently \"npm run client \" \"nodemon ./backend/index.js\" ",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [
     "sms",
