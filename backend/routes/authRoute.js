@@ -41,7 +41,7 @@ router.get('/currentuser', (req, res) => {
       token: generateToken(user._id),
     })
   } else {
-    res.send(null)
+    res.status(200)
   }
 })
 
