@@ -4,7 +4,6 @@ import { error } from './middlewares/index.js'
 import { mongoConnect } from './database/mongo.js'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import session from 'express-session'
 
 import userRoute from './routes/userRoute.js'
 import chatroomRoute from './routes/chatroomRoute.js'
@@ -30,19 +29,6 @@ app.use(express.urlencoded({ extended: true }))
 
 // connect mongo
 mongoConnect()
-
-// initialize sessions
-app.use(
-  session({
-    secret: SESSION_SECRET,
-    resave: true,
-    saveUninitialized: false,
-  })
-)
-
-// if (NODE_ENV === 'development') {
-//   app.use(morgan('dev'))
-// }
 
 // heroku /
 const __dirname = path.resolve()
