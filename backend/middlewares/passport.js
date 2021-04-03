@@ -11,7 +11,7 @@ export default function (passport) {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: 'http://localhost:3000/api/auth/google/callback',
+        callbackURL: 'https://foneapi.herokuapp.com/api/auth/google/callback',
         userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
       },
       async (accessToken, refreshToken, profile, done) => {
@@ -41,7 +41,7 @@ export default function (passport) {
       {
         clientID: process.env.FACEBOOK_CLIENT_ID,
         clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-        callbackURL: 'http://localhost:3000/api/auth/facebook/callback',
+        callbackURL: 'https://foneapi.herokuapp.com/api/auth/facebook/callback',
         profileFields: ['id', 'displayName', 'photos', 'email'],
       },
       async (accessToken, refreshToken, profile, done) => {
