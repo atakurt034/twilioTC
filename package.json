@@ -4,11 +4,12 @@
   "description": "Google Hangouts Clone",
   "main": "index.js",
   "type": "module",
-  "engines": {"node": "14.16.0"},
+  "engines": {
+    "node": "14.16.0"
+  },
   "scripts": {
     "client": "npm start --prefix frontend",
-    "dev": "concurrently \"npm run client \" \"nodemon ./backend/index.js\" ",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
+    "dev": "concurrently \"npm run client \" \"nodemon ./backend/index.js\" "
   },
   "keywords": [
     "sms",
@@ -35,8 +36,5 @@
     "socket.io": "^4.0.1",
     "twilio": "^3.59.0"
   },
-  "devDependencies": {
-    "colors": "^1.4.0",
-    "morgan": "^1.10.0"
-  }
+  "devDependencies": {}
 }
