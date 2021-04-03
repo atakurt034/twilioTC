@@ -129,6 +129,7 @@ export const Contacts = () => {
       <Divider />
       {userDetails &&
         !addContact &&
+        userDetails.invites &&
         userDetails.invites.map((invite) => {
           return (
             <div key={invite._id} className={classes.invites}>
@@ -145,6 +146,7 @@ export const Contacts = () => {
         })}
       {userDetails &&
         !addContact &&
+        userDetails.contacts &&
         userDetails.contacts.map((contact, index) => {
           return <ContactList key={contact._id} contact={contact} />
         })}
