@@ -10,7 +10,7 @@ export const mongoConnect = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
-    console.info(`MongoDB connected to ${connect.connection.name.bold.red} `)
+    console.info(`MongoDB connected to ${connect.connection.name}`)
   } catch (error) {
     throw new Error(error)
   }

@@ -6,9 +6,6 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import session from 'express-session'
 
-// import morgan from 'morgan'
-import 'colors'
-
 import userRoute from './routes/userRoute.js'
 import chatroomRoute from './routes/chatroomRoute.js'
 import twilioRoute from './routes/twilioRoute.js'
@@ -79,7 +76,7 @@ app.use(error.notFound)
 
 export const server = createServer(app).listen(
   PORT,
-  console.log(`Server running at PORT: ${PORT}`.yellow.bold)
+  console.log(`Server running at PORT: ${PORT}`)
 )
 
 export const io = new Server(server, {
