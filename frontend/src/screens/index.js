@@ -1,5 +1,5 @@
 import { Home } from './home/home'
-import { Login } from './login/login'
+import { Login } from './Login/login.js'
 import { Register } from './register/register'
 import { Chatroom } from './chatroom/chatroom'
 import { PublicChatroom } from './chatroom/publicChatroom'
