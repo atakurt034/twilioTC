@@ -42,11 +42,6 @@ app.use(
 // heroku /
 const __dirname = path.resolve()
 
-app.use(express.static(path.join(__dirname, '/frontend/build')))
-app.get('*', (req, res) =>
-  res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
-)
-
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -58,6 +53,11 @@ app.use('/api/user', userRoute)
 app.use('/api/chatroom', chatroomRoute)
 app.use('/api/twilio', twilioRoute)
 app.use('/api/auth', auth)
+
+app.use(express.static(path.join(__dirname, '/frontend/build')))
+app.get('*', (req, res) =>
+  res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+)
 
 // error handlers
 app.use(error.errorHandler)
