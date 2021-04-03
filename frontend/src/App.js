@@ -41,11 +41,17 @@ export const App = () => {
       dispatch(UA.getDetails())
     })
 
+    const button = document.querySelectorAll('button button')
+
+    if (button) {
+      button.forEach((btn) => (btn.style.backgroundColor = 'red'))
+    }
+
     return () => {
       socket.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [document])
 
   React.useEffect(() => {
     const getToken = async () => {
