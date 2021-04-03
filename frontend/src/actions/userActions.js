@@ -44,16 +44,23 @@ export const login = (body) => async (dispatch) => {
   }
 }
 
-export const logout = () => async (dispatch) => {
+export const logout = () => async (dispatch, getState) => {
   try {
-    dispatch({ type: USER.LOGOUT })
-    localStorage.removeItem('userInfo')
-
     const config = { headers: { 'Content-Type': 'application/json' } }
 
-    const { data } = await axios.post('/api/user/logout', config)
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    if (userInfo) {
+      const { data } = await axios.post('/api/user/logout', config)
+
+      console.log(data)
+    }
+
     localStorage.removeItem('userInfo')
-    console.log(data)
+    dispatch({ type: USER.LOGOUT })
+    document.location.href = '/login'
   } catch (error) {
     console.log(error)
   }
