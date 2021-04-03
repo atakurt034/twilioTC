@@ -329,7 +329,7 @@ export const getGGFBLogin = () => async (dispatch) => {
 
     const { data } = await axios.get('/api/auth/currentuser')
 
-    dispatch({ type: USER.GOOGLE_FB_LOGIN_SUCCESS, payload: data })
+    dispatch({ type: USER.LOGIN_SUCCESS, payload: data })
 
     localStorage.setItem('userInfo', JSON.stringify(data))
   } catch (error) {
