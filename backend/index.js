@@ -46,9 +46,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 // API Routes
-app.get('/', async (req, res) => {
-  res.send('connected')
-})
+
 app.use('/api/user', userRoute)
 app.use('/api/chatroom', chatroomRoute)
 app.use('/api/twilio', twilioRoute)
