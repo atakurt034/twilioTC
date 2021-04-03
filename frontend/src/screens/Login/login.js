@@ -42,7 +42,9 @@ export const Login = ({ history }) => {
   }, [userInfo, history])
 
   React.useEffect(() => {
-    dispatch(UA.getGGFBLogin())
+    if (!userInfo) {
+      dispatch(UA.getGGFBLogin())
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
