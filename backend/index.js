@@ -14,6 +14,7 @@ import { pr, pub, msg, twi } from './socketRoutes/index.js'
 
 import passport from 'passport'
 import passportConfig from './middlewares/passport.js'
+import path from 'path'
 
 // initialize dotenv for environment variables
 config()
