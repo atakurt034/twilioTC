@@ -1,7 +1,6 @@
 import React from 'react'
 import Badge from '@material-ui/core/Badge'
 import { withStyles } from '@material-ui/core/styles'
-import IconButton from '@material-ui/core/IconButton'
 import PermPhoneMsgIcon from '@material-ui/icons/PermPhoneMsg'
 
 const StyledBadge = withStyles((theme) => ({
@@ -14,7 +13,7 @@ const StyledBadge = withStyles((theme) => ({
 
 export const SmsBadge = ({ count }) => {
   return (
-    <IconButton
+    <div
       style={{
         boxSizing: 'border-box',
         display: 'flex',
@@ -26,6 +25,6 @@ export const SmsBadge = ({ count }) => {
       <StyledBadge badgeContent={count} color='error'>
         <PermPhoneMsgIcon />
       </StyledBadge>
-    </IconButton>
+    </div>
   )
 }
