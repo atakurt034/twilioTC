@@ -327,7 +327,13 @@ export const getGGFBLogin = () => async (dispatch) => {
   try {
     dispatch({ type: USER.LOGIN_REQUEST })
 
-    const { data } = await axios.get('/api/auth/currentuser')
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+
+    const { data } = await axios.get('/api/auth/currentuser', config)
 
     dispatch({ type: USER.LOGIN_SUCCESS, payload: data })
 
