@@ -12,6 +12,7 @@ import auth from './routes/authRoute.js'
 import { pr, pub, msg, twi } from './socketRoutes/index.js'
 
 import passport from 'passport'
+import session from 'express-session'
 import passportConfig from './middlewares/passport.js'
 import path from 'path'
 
@@ -29,6 +30,14 @@ app.use(express.urlencoded({ extended: true }))
 
 // connect mongo
 mongoConnect()
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+)
 
 // heroku /
 const __dirname = path.resolve()

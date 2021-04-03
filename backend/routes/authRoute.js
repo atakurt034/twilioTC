@@ -11,6 +11,7 @@ const router = express.Router()
 router.get(
   '/google',
   (req, res, next) => {
+    req.session.redirectPath = req.query.redirect
     next()
   },
   passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -50,6 +51,7 @@ router.get('/currentuser', (req, res) => {
 router.get(
   '/facebook',
   (req, res, next) => {
+    req.session.redirectPath = req.query.redirect
     next()
   },
   passport.authenticate('facebook', {
@@ -65,7 +67,8 @@ router.get(
   '/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect('/')
+    const redirect = req.session.redirectPath
+    res.redirect(`/login?redirect=${redirect}`)
   }
 )
 
