@@ -6,7 +6,7 @@ import { MobileNum } from '../models/mobileNum.js'
 import { User } from '../models/userModel.js'
 import 'colors'
 
-const { Twilio, twiml, webhook, jwt } = pkg
+const { Twilio, twiml, jwt } = pkg
 const SID = process.env.TWILIO_ACCOUNT_SID
 const TOKEN = process.env.TWILIO_AUTH_TOKEN
 const from = process.env.TWILIO_NUMBER
@@ -196,10 +196,17 @@ export const makeCall = asyncHandler(async (req, res) => {
     let dial
 
     if (!req.body.number) {
+      // incoming
       dial = client.dial({ callerId: req.body.From, answerOnBridge: true })
       dial.client('Kurt')
     } else {
-      dial = client.dial({ callerId: from, answerOnBridge: true })
+      // outbound
+
+      dial = client.dial({
+        callerId: from,
+        answerOnBridge: true,
+        ringTone: 'us-old',
+      })
       dial.number(req.body.number)
     }
 
@@ -238,30 +245,42 @@ export const getTokenCall = asyncHandler(async (req, res) => {
   }
 })
 
-export const getTokenIncoming = asyncHandler(async (req, res) => {
+export const callback = asyncHandler(async (req, res) => {
   try {
-    const capability = new jwt.ClientCapability({
-      accountSid: SID,
-      authToken: TOKEN,
-    })
+    console.log(req.body)
 
-    capability.addScope(new jwt.ClientCapability.IncomingClientScope('Kurt'))
-
-    const token = capability.toJwt()
-
-    res.status(200).json(token)
+    res.type('text/xml')
+    res.status(200)
   } catch (error) {
     res.status(401)
     throw new Error(error)
   }
 })
 
-export const answerCallback = asyncHandler(async (req, res) => {
+export const getCallHistory = asyncHandler(async (req, res) => {
   try {
-    // echoHandler()
+    const client = new Twilio(SID, TOKEN)
+    const calls = await client.calls.list()
 
     res.type('text/xml')
-    res.status(200)
+    res.status(200).json(calls)
+  } catch (error) {
+    res.status(401)
+    throw new Error(error)
+  }
+})
+
+export const getSmsHistory = asyncHandler(async (req, res) => {
+  try {
+    const client = new Twilio(SID, TOKEN)
+    const messages = await client.messages.page({
+      pageSize: 50,
+      pageNumber: req.body.page,
+      pageToken: req.body.token,
+    })
+
+    res.type('text/xml')
+    res.status(200).json(messages)
   } catch (error) {
     res.status(401)
     throw new Error(error)

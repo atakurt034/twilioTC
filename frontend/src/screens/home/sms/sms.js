@@ -22,11 +22,12 @@ import { ModalMessage } from '../../../components/modalmessage'
 import { ModalLoader } from '../../../components/modalloader'
 
 import { TA } from '../../../actions/index'
+import { TWILIO } from '../../../constants/index'
 
 export const Sms = ({ match, socket, history }) => {
   const scrollToView = React.useRef()
   const classes = useStyles()
-  const dispactch = useDispatch()
+  const dispatch = useDispatch()
   const { register, handleSubmit, errors } = useForm()
   const userMobileNum = match.params.id && match.params.id
 
@@ -62,7 +63,7 @@ export const Sms = ({ match, socket, history }) => {
     setPendingMsg(message)
 
     const to = '+' + mobileNum
-    dispactch(TA.sendTextMsg({ to, message }))
+    dispatch(TA.sendTextMsg({ to, message }))
     event.target.reset()
   }
 
@@ -101,7 +102,7 @@ export const Sms = ({ match, socket, history }) => {
   React.useEffect(() => {
     if (userDetails) {
       if (currentRoom) {
-        dispactch(TA.setToRead(currentRoom._id))
+        dispatch(TA.setToRead(currentRoom._id))
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,6 +133,9 @@ export const Sms = ({ match, socket, history }) => {
       setTimeout(() => {
         scrollToBottom()
       }, 1000)
+    }
+    return () => {
+      dispatch({ type: TWILIO.SEND_TEXT_RESET })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [info, error])
@@ -169,7 +173,7 @@ export const Sms = ({ match, socket, history }) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispactch, userMobileNum, chatroomId])
+  }, [dispatch, userMobileNum, chatroomId])
 
   return (
     <Container maxWidth='sm'>

@@ -14,8 +14,10 @@ router
 router.route('/call').post(twilio.makeCall).get(twilio.makeCall)
 router.route('/call/incoming').post(twilio.recieveCall).get(twilio.recieveCall)
 
-router.route('/answerCallback').post(twilio.answerCallback)
+router.route('/callback').post(twilio.callback)
 router.route('/token').post(twilio.getTokenCall)
-router.route('/token/incoming').post(twilio.getTokenIncoming)
+
+router.route('/sms/history').get(auth.loginRequired, twilio.getSmsHistory)
+router.route('/call/history').get(auth.loginRequired, twilio.getCallHistory)
 
 export default router
