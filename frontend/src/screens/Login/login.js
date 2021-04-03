@@ -28,9 +28,6 @@ export const Login = ({ history }) => {
   const dispatch = useDispatch()
 
   const { userInfo, error, loading } = useSelector((state) => state.userLogin)
-  const { info, error: errorFBGG, loading: loadingFBGG } = useSelector(
-    (state) => state.getGGFBLoginInfo
-  )
 
   const [data, setData] = React.useState({
     email: '',
@@ -45,9 +42,7 @@ export const Login = ({ history }) => {
   }, [userInfo, history])
 
   React.useEffect(() => {
-    if (!info) {
-      dispatch(UA.getGGFBLogin())
-    }
+    dispatch(UA.getGGFBLogin())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -76,14 +71,10 @@ export const Login = ({ history }) => {
         <Paper className={classes.paper} elevation={12}>
           <CssBaseline />
 
-          {loading && loadingFBGG ? (
+          {loading ? (
             <ModalLoader />
-          ) : error ? (
-            <ModalMessage variant='error'>{error}</ModalMessage>
           ) : (
-            errorFBGG && (
-              <ModalMessage variant='error'>{errorFBGG}</ModalMessage>
-            )
+            error && <ModalMessage variant='error'>{error}</ModalMessage>
           )}
 
           <Typography

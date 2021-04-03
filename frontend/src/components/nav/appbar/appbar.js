@@ -33,14 +33,14 @@ const App = ({ history }) => {
       dispatch(UA.getDetails())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [userInfo])
 
   React.useEffect(() => {
     if (!userInfo) {
       history.push('/login')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [userInfo])
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)

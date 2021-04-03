@@ -34,13 +34,17 @@ export const Home = ({ socket, history }) => {
   }, [socket])
 
   React.useEffect(() => {
+    dispatch(UA.getDetails())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  React.useEffect(() => {
     if (!userInfo) {
       history.push('/login')
     }
     if ((status && status.message === 'updated') || statusDelete) {
       dispatch(UA.getDetails())
     }
-    dispatch(UA.getDetails())
   }, [userInfo, history, dispatch, status, statusDelete])
 
   const panelHandler = (type, payload) => {
