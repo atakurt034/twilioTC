@@ -46,6 +46,7 @@ if (NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
 
+// heroku
 const __dirname = path.resolve()
 app.use(
   '/frontend/build/public/uploads/avatar_images',
