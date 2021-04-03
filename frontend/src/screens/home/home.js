@@ -51,9 +51,12 @@ export const Home = ({ socket, history }) => {
   React.useEffect(() => {
     const unreadCount = []
     if (userDetails) {
-      userDetails.smsrooms.find((room) =>
-        room.messages.map((msg) => msg.unread === true && unreadCount.push(msg))
-      )
+      userDetails.smsrooms &&
+        userDetails.smsrooms.find((room) =>
+          room.messages.map(
+            (msg) => msg.unread === true && unreadCount.push(msg)
+          )
+        )
       setCount(unreadCount.length)
     }
   }, [userDetails])
