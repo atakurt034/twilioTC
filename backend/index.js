@@ -48,12 +48,6 @@ if (NODE_ENV === 'development') {
 
 // heroku /
 const __dirname = path.resolve()
-app.use(
-  '/frontend/build/public/uploads/avatar_images',
-  express.static(
-    path.join(__dirname, 'frontend', 'public', 'uploads', 'avatar_images')
-  )
-)
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '/frontend/build')))
