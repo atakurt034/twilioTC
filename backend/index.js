@@ -42,9 +42,9 @@ app.use(
   })
 )
 
-if (NODE_ENV === 'development') {
-  app.use(morgan('dev'))
-}
+// if (NODE_ENV === 'development') {
+//   app.use(morgan('dev'))
+// }
 
 // heroku /
 const __dirname = path.resolve()
