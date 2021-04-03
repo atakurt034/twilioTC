@@ -41,12 +41,12 @@ export const Login = ({ history }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo, history])
 
-  React.useEffect(() => {
-    if (!userInfo) {
-      dispatch(UA.getGGFBLogin())
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // React.useEffect(() => {
+  //   if (!userInfo) {
+  //     dispatch(UA.getGGFBLogin())
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [])
 
   const login = (event) => {
     event.preventDefault()
