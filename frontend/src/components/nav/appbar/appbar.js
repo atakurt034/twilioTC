@@ -29,7 +29,16 @@ const App = ({ history }) => {
   const isMenuOpen = Boolean(anchorEl)
 
   React.useEffect(() => {
-    dispatch(UA.getDetails())
+    if (userInfo) {
+      dispatch(UA.getDetails())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  React.useEffect(() => {
+    if (!userInfo) {
+      history.push('/login')
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

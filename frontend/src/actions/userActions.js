@@ -52,6 +52,7 @@ export const logout = () => async (dispatch) => {
     const config = { headers: { 'Content-Type': 'application/json' } }
 
     const { data } = await axios.post('/api/user/logout', config)
+    localStorage.removeItem('userInfo')
     console.log(data)
   } catch (error) {
     console.log(error)
