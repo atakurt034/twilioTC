@@ -28,10 +28,10 @@ const App = ({ history }) => {
 
   const isMenuOpen = Boolean(anchorEl)
 
-  React.useEffect(() => {
-    dispatch(UA.getDetails())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // React.useEffect(() => {
+  //   dispatch(UA.getDetails())
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [])
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -78,7 +78,7 @@ const App = ({ history }) => {
       variant={'standard'}
     >
       <Avatar
-        src={userDetails && userDetails.image}
+        src={userDetails ? userDetails.image : userInfo && userInfo.image}
         alt={userInfo && userInfo.name}
         className={classes.avatar}
       />
@@ -104,15 +104,11 @@ const App = ({ history }) => {
                 aria-haspopup='true'
                 onClick={handleProfileMenuOpen}
                 color='inherit'
-                startIcon={
-                  userDetails && userDetails.image ? (
-                    avatarIcon
-                  ) : (
-                    <AccountCircle />
-                  )
-                }
+                startIcon={userInfo ? avatarIcon : <AccountCircle />}
               >
-                <Typography>{userDetails && userDetails.name}</Typography>
+                <Typography>
+                  {userDetails ? userDetails.name : userInfo && userInfo.name}
+                </Typography>
               </Button>
             </div>
           )}
