@@ -169,7 +169,7 @@ export const Chatroom = ({ match, socket, history, location }) => {
         container
         spacing={2}
         alignItems='center'
-        style={{ minHeight: '80vh' }}
+        style={{ minHeight: '70vh' }}
       >
         <Grid
           item

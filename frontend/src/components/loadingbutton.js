@@ -5,10 +5,14 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { green } from '@material-ui/core/colors'
 import Button from '@material-ui/core/Button'
 
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
+import SearchIcon from '@material-ui/icons/Search'
+
 import { useDispatch } from 'react-redux'
 
 import { UA } from '../actions/index'
 import { USER } from '../constants/index'
+import { IconButton, useMediaQuery, useTheme } from '@material-ui/core'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,9 +49,14 @@ export const LoadingButton = ({
   user,
   setSearch,
   searchRef,
+  entered,
+  setEntered,
 }) => {
   const dispatch = useDispatch()
   const classes = useStyles()
+  const theme = useTheme()
+
+  const xs = useMediaQuery(theme.breakpoints.down('xs'))
 
   const [isEmpty, setIsEmpty] = React.useState(true)
 
@@ -68,6 +77,16 @@ export const LoadingButton = ({
   }
 
   React.useEffect(() => {
+    if (entered) {
+      handleButtonClick()
+    }
+    return () => {
+      setEntered(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entered])
+
+  React.useEffect(() => {
     if (search.length > 0) {
       setIsEmpty(false)
     } else {
@@ -81,15 +100,27 @@ export const LoadingButton = ({
   return (
     <div className={classes.root}>
       <div className={classes.wrapper}>
-        <Button
-          variant='contained'
-          color='primary'
-          className={buttonClassname}
-          disabled={loading}
-          onClick={handleButtonClick}
-        >
-          {!isEmpty ? 'Search' : 'Back'}
-        </Button>
+        {xs ? (
+          <IconButton
+            variant='contained'
+            color='primary'
+            className={buttonClassname}
+            disabled={loading}
+            onClick={handleButtonClick}
+          >
+            {!isEmpty ? <SearchIcon /> : <ArrowBackIcon />}
+          </IconButton>
+        ) : (
+          <Button
+            variant='contained'
+            color='primary'
+            className={buttonClassname}
+            disabled={loading}
+            onClick={handleButtonClick}
+          >
+            {!isEmpty ? 'Search' : 'Back'}
+          </Button>
+        )}
         {loading && (
           <CircularProgress size={24} className={classes.buttonProgress} />
         )}

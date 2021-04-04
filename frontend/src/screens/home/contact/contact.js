@@ -35,6 +35,7 @@ export const Contacts = () => {
   const [loading, setLoading] = React.useState(false)
 
   const [success, setSuccess] = React.useState(false)
+  const [entered, setEntered] = React.useState(false)
   const invited = user ? true : false
 
   React.useEffect(() => {
@@ -88,6 +89,13 @@ export const Contacts = () => {
     </div>
   )
 
+  const keyUp = (event) => {
+    const { key, keyCode } = event
+    if (key === 'Enter' || keyCode === 'Enter' || keyCode === 13) {
+      setEntered(true)
+    }
+  }
+
   const add_true = (
     <div className={classes.addTrue}>
       <div className={classes.search}>
@@ -104,6 +112,7 @@ export const Contacts = () => {
           inputProps={{ 'aria-label': 'search' }}
           inputRef={searchRef}
           onChange={changeHandler}
+          onKeyUp={keyUp}
         />
       </div>
       <div>
@@ -117,6 +126,8 @@ export const Contacts = () => {
           setSuccess={setSuccess}
           addContact={setAddContact}
           setSearch={setSearch}
+          entered={entered}
+          setEntered={setEntered}
         />
       </div>
     </div>
