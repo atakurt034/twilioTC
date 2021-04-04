@@ -98,14 +98,16 @@ export const Chat = () => {
           />
         </div>
         <Divider />
-        {rooms.map((room) => (
-          <ChatList
-            key={room._id}
-            id={room._id}
-            name={room.name}
-            type={room.type}
-          />
-        ))}
+        <div style={{ padding: 3, overflow: 'auto', height: '85%' }}>
+          {rooms.map((room) => (
+            <ChatList
+              key={room._id}
+              id={room._id}
+              name={room.name}
+              type={room.type}
+            />
+          ))}
+        </div>
       </Paper>
     </>
   )

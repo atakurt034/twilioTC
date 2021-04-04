@@ -1,4 +1,11 @@
-import { Button, Grid, IconButton, Paper, Typography } from '@material-ui/core'
+import {
+  Button,
+  Grid,
+  IconButton,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
 import React from 'react'
 
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
@@ -12,12 +19,13 @@ import { makeToast } from '../../../components/toast'
 const List = ({ id, name, history, type }) => {
   const dispatch = useDispatch()
 
+  const [focus, setFocus] = React.useState(false)
+
   const clickHandler = () => {
     if (type === 'Public') {
       history.push(`/public/${id}?name=${name}`)
     } else {
-      console.log(name)
-      history.push(`/chatroom/${id}`)
+      history.push(`/chatroom/${id}?name=${name}`)
     }
   }
   const deleteHandler = async () => {
@@ -46,8 +54,18 @@ const List = ({ id, name, history, type }) => {
           <Button
             startIcon={<ChatIcon fontSize='small' />}
             onClick={clickHandler}
+            onMouseEnter={() => setFocus(true)}
+            onMouseOut={() => setFocus(false)}
           >
-            <Typography>{name}</Typography>
+            {name.length > 10 ? (
+              <Tooltip disableFocusListener title={name} placement='top'>
+                <Typography on>
+                  {name.length > 10 ? name.slice(0, 10) + '...' : name}
+                </Typography>
+              </Tooltip>
+            ) : (
+              <Typography on>{name}</Typography>
+            )}
           </Button>
         </Grid>
         <Grid item xs={4}>
