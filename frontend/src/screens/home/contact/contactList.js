@@ -115,11 +115,19 @@ const Contact = ({ contact, history }) => {
             }}
           >
             <Avatar src={contact.image} alt={contact.name} />
-            <Typography style={{ textAlign: 'left', padding: 5 }}>
+            <Typography style={{ textAlign: 'center', padding: 5 }}>
               {contact.name}
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={8}>
+          <Grid
+            item
+            xs={12}
+            sm={8}
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <IconButton
               variant='outlined'
               onClick={() => clickHandler(contact._id, contact.name)}

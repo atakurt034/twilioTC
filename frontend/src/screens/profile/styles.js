@@ -5,9 +5,9 @@ export const useStyles = makeStyles((theme) => ({
     maxWidth: theme.spacing(70),
     padding: theme.spacing(4),
     margin: 'auto',
+    height: '100%',
   },
   paper: {
-    marginTop: 'auto',
     padding: 20,
   },
   avatar: {

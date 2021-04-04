@@ -138,53 +138,59 @@ export const Contacts = () => {
         {addContact ? add_true : add_false}
       </div>
       <Divider />
-      {userDetails &&
-        !addContact &&
-        userDetails.invites.map((invite) => {
-          return (
-            <div key={invite._id} className={classes.invites}>
-              <Typography variant='h6' style={{ padding: 3 }}>
-                {invite.user
-                  ? invite.user.email
-                  : invite.chatroom && invite.chatroom.name}
-              </Typography>
-              <Button variant='outlined' onClick={() => acceptHandler(invite)}>
-                Accept
-              </Button>
-            </div>
-          )
-        })}
-      {userDetails &&
-        !addContact &&
-        userDetails.contacts.map((contact, index) => {
-          return <ContactList key={contact._id} contact={contact} />
-        })}
+      <div style={{ overflow: 'auto', maxHeight: '85%' }}>
+        {userDetails &&
+          !addContact &&
+          userDetails.invites.map((invite) => {
+            return (
+              <div key={invite._id} className={classes.invites}>
+                <Typography variant='h6' style={{ padding: 3 }}>
+                  {invite.user
+                    ? invite.user.email
+                    : invite.chatroom && invite.chatroom.name}
+                </Typography>
+                <Button
+                  variant='outlined'
+                  onClick={() => acceptHandler(invite)}
+                >
+                  Accept
+                </Button>
+              </div>
+            )
+          })}
+        {userDetails &&
+          !addContact &&
+          userDetails.contacts.map((contact, index) => {
+            return <ContactList key={contact._id} contact={contact} />
+          })}
 
-      {error ? (
-        error === 'added' ? (
-          addContact && (
-            <div>
-              contact already added <button onClick={backHandler}>Back</button>{' '}
-            </div>
+        {error ? (
+          error === 'added' ? (
+            addContact && (
+              <div>
+                contact already added{' '}
+                <button onClick={backHandler}>Back</button>{' '}
+              </div>
+            )
+          ) : (
+            addContact && (
+              <div>
+                No Results Found <button onClick={backHandler}>Back</button>{' '}
+              </div>
+            )
           )
-        ) : (
-          addContact && (
-            <div>
-              No Results Found <button onClick={backHandler}>Back</button>{' '}
-            </div>
+        ) : user ? (
+          invited && !invited.accept ? (
+            <UserList user={user[0]} backHandler={backHandler} />
+          ) : (
+            <UserList user={user[0]} backHandler={backHandler} />
           )
-        )
-      ) : user ? (
-        invited && !invited.accept ? (
-          <UserList user={user[0]} backHandler={backHandler} />
+        ) : loading ? (
+          'searching..'
         ) : (
-          <UserList user={user[0]} backHandler={backHandler} />
-        )
-      ) : loading ? (
-        'searching..'
-      ) : (
-        ''
-      )}
+          ''
+        )}
+      </div>
     </Paper>
   )
 }
