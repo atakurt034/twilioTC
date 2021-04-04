@@ -14,7 +14,7 @@ const StyledBadge = withStyles((theme) => ({
 
 export const ChatBadge = ({ count }) => {
   return (
-    <IconButton
+    <div
       style={{
         boxSizing: 'border-box',
         display: 'flex',
@@ -26,6 +26,6 @@ export const ChatBadge = ({ count }) => {
       <StyledBadge badgeContent={count} color='error'>
         <SpeakerNotesOffIcon />
       </StyledBadge>
-    </IconButton>
+    </div>
   )
 }

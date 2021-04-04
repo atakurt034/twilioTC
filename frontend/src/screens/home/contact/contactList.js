@@ -38,16 +38,17 @@ const Contact = ({ contact, history }) => {
   const [open, setOpen] = React.useState()
   const [ready, setReady] = React.useState()
   const [mute, setMute] = React.useState(false)
+  const [userName, setUserName] = React.useState()
 
   React.useEffect(() => {
-    if (chatroom) {
-      history.push(`/chatroom/${chatroom._id}`)
+    if (chatroom && userName) {
+      history.push(`/chatroom/${chatroom._id}?name=${userName.split(' ')[0]}`)
       dispatch({ type: CHAT.CREATE_PRIVATE_RESET })
     }
-  }, [chatroom, dispatch, history, error])
+  }, [chatroom, dispatch, history, error, userName])
 
-  const clickHandler = (id) => {
-    console.log(id)
+  const clickHandler = (id, name) => {
+    setUserName(name)
     dispatch(CA.createPrivateRoom({ id }))
   }
 
@@ -121,7 +122,7 @@ const Contact = ({ contact, history }) => {
           <Grid item xs={12} sm={8}>
             <IconButton
               variant='outlined'
-              onClick={() => clickHandler(contact._id)}
+              onClick={() => clickHandler(contact._id, contact.name)}
             >
               <ChatIcon color='primary' fontSize='small' />
             </IconButton>

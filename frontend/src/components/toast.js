@@ -30,13 +30,16 @@ const create = Swal.mixin({
   confirmButtonText: 'Yes, create it!',
 })
 
-export const makeToast = async (type, icon, msg, data) => {
+export const makeToast = async (type, icon, msg, data, callback) => {
   switch (type) {
     case 'notification':
-      return notification.fire({
-        icon: icon,
-        title: msg,
-      })
+      return notification
+        .fire({
+          icon: icon,
+          title: msg,
+        })
+        .then(() => callback())
+        .catch(console.log)
     case 'delete':
       const result = await confirm.fire({
         text: `Delete ${data} you won't be able to revert this!`,

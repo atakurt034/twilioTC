@@ -45,9 +45,15 @@ export const useStyles = makeStyles((theme) => ({
   },
   show: {
     display: 'block',
+    position: 'relative',
+    width: '100%',
+    height: '100%',
   },
   hidden: {
     display: 'none',
+    position: 'relative',
+    width: '100%',
+    height: '100%',
   },
   rootBottomNav: {
     width: '100%',
@@ -56,6 +62,6 @@ export const useStyles = makeStyles((theme) => ({
   endCall: {
     color: 'red',
   },
-  muted: { color: 'blue' },
-  unmuted: { color: 'rgba(10,101,110,0.8)' },
+  muted: { color: 'red' },
+  unmuted: { color: 'grey' },
 }))

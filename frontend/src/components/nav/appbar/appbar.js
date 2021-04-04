@@ -85,7 +85,7 @@ const App = ({ history }) => {
       <AppBar
         position='static'
         color='transparent'
-        elevation='0'
+        elevation={0}
         style={{ marginBottom: 10 }}
       >
         <Toolbar>
