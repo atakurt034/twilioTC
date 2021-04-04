@@ -59,12 +59,12 @@ const List = ({ id, name, history, type }) => {
           >
             {name.length > 10 ? (
               <Tooltip disableFocusListener title={name} placement='top'>
-                <Typography on>
+                <Typography>
                   {name.length > 10 ? name.slice(0, 10) + '...' : name}
                 </Typography>
               </Tooltip>
             ) : (
-              <Typography on>{name}</Typography>
+              <Typography>{name}</Typography>
             )}
           </Button>
         </Grid>
