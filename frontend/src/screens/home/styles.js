@@ -14,14 +14,13 @@ export const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'left',
+    marginRight: 10,
   },
 
   sidePanel: {
-    minHeight: '80vh',
+    minHeight: '100%',
   },
-  icon: {
-    width: 70,
-  },
+  icon: { width: 'auto' },
 
   search: {
     position: 'relative',

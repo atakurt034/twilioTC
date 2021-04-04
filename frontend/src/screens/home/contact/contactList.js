@@ -3,6 +3,7 @@ import React from 'react'
 import {
   Avatar,
   Container,
+  Grid,
   IconButton,
   Paper,
   Typography,
@@ -81,14 +82,7 @@ const Contact = ({ contact, history }) => {
   }
 
   return (
-    <Container
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        padding: 5,
-      }}
-    >
+    <>
       {loading ? (
         <ModalLoader />
       ) : (
@@ -97,75 +91,77 @@ const Contact = ({ contact, history }) => {
           <ModalMessage variant='error'>{error}</ModalMessage>
         )
       )}
-      <Paper
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '100%',
-        }}
-        elevation={12}
-      >
-        <CallModalDrag
-          cancel={cancelHandler}
-          mobileNum={number}
-          open={open}
-          ready={ready}
-          to={contact.name}
-          mute={mute}
-          muteHandler={muteHandler}
-        />
 
-        <div style={{ display: 'flex', padding: 5 }}>
-          <Avatar src={contact.image} alt={contact.name} />
-          <Typography style={{ textAlign: 'left', padding: 5 }}>
-            {contact.name}
-          </Typography>
-        </div>
-
-        <div>
-          <IconButton
-            variant='outlined'
-            onClick={() => clickHandler(contact._id)}
+      <Paper style={{ margin: '10px 5px' }} elevation={12}>
+        <Grid container style={{ padding: 5 }}>
+          <CallModalDrag
+            cancel={cancelHandler}
+            mobileNum={number}
+            open={open}
+            ready={ready}
+            to={contact.name}
+            mute={mute}
+            muteHandler={muteHandler}
+          />
+          <Grid
+            item
+            xs={12}
+            sm={4}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: 5,
+            }}
           >
-            <ChatIcon color='primary' fontSize='small' />
-          </IconButton>
-          <IconButton
-            onClick={callHandler}
-            variant='outlined'
-            disabled={contact.mobile && contact.mobile.mobile ? false : true}
-          >
-            <PhoneIcon
-              style={{
-                color:
-                  contact.mobile && contact.mobile.mobile ? 'green' : 'grey',
-              }}
-              fontSize='small'
-            />
-          </IconButton>
-          <IconButton
-            disabled={contact.mobile && contact.mobile.mobile ? false : true}
-            variant='outlined'
-            onClick={() =>
-              textHandler(contact.mobile ? contact.mobile.mobile : 'none')
-            }
-          >
-            <PermPhoneMsgIcon
-              style={{
-                color:
-                  contact.mobile && contact.mobile.mobile
-                    ? 'goldenrod'
-                    : 'grey',
-              }}
-              fontSize='small'
-            />
-          </IconButton>
-          <IconButton variant='outlined' onClick={deleteHandler}>
-            <DeleteForeverIcon color='secondary' fontSize='small' />
-          </IconButton>
-        </div>
+            <Avatar src={contact.image} alt={contact.name} />
+            <Typography style={{ textAlign: 'left', padding: 5 }}>
+              {contact.name}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={8}>
+            <IconButton
+              variant='outlined'
+              onClick={() => clickHandler(contact._id)}
+            >
+              <ChatIcon color='primary' fontSize='small' />
+            </IconButton>
+            <IconButton
+              onClick={callHandler}
+              variant='outlined'
+              disabled={contact.mobile && contact.mobile.mobile ? false : true}
+            >
+              <PhoneIcon
+                style={{
+                  color:
+                    contact.mobile && contact.mobile.mobile ? 'green' : 'grey',
+                }}
+                fontSize='small'
+              />
+            </IconButton>
+            <IconButton
+              disabled={contact.mobile && contact.mobile.mobile ? false : true}
+              variant='outlined'
+              onClick={() =>
+                textHandler(contact.mobile ? contact.mobile.mobile : 'none')
+              }
+            >
+              <PermPhoneMsgIcon
+                style={{
+                  color:
+                    contact.mobile && contact.mobile.mobile
+                      ? 'goldenrod'
+                      : 'grey',
+                }}
+                fontSize='small'
+              />
+            </IconButton>
+            <IconButton variant='outlined' onClick={deleteHandler}>
+              <DeleteForeverIcon color='secondary' fontSize='small' />
+            </IconButton>
+          </Grid>
+        </Grid>
       </Paper>
-    </Container>
+    </>
   )
 }
 

@@ -28,11 +28,6 @@ const App = ({ history }) => {
 
   const isMenuOpen = Boolean(anchorEl)
 
-  // React.useEffect(() => {
-  //   dispatch(UA.getDetails())
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [])
-
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
   }
@@ -87,11 +82,16 @@ const App = ({ history }) => {
 
   return (
     <div className={classes.grow}>
-      <AppBar className={classes.appbar} position='static' elevation={0}>
+      <AppBar
+        position='static'
+        color='transparent'
+        elevation='0'
+        style={{ marginBottom: 10 }}
+      >
         <Toolbar>
           <Sidebar />
           <Typography className={classes.title} variant='h6' noWrap>
-            FoneAPI Hangout
+            FoneAPI
           </Typography>
 
           <div className={classes.grow} />
@@ -107,7 +107,9 @@ const App = ({ history }) => {
                 startIcon={userInfo ? avatarIcon : <AccountCircle />}
               >
                 <Typography>
-                  {userDetails ? userDetails.name : userInfo && userInfo.name}
+                  {userDetails
+                    ? userDetails.name.trim().split(' ')[0]
+                    : userInfo && userInfo.name.trim().split(' ')[0]}
                 </Typography>
               </Button>
             </div>

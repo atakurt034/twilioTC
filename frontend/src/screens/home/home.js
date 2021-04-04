@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { IconButton, Grid } from '@material-ui/core'
+import { IconButton, Grid, Container } from '@material-ui/core'
 import PhoneIcon from '@material-ui/icons/Phone'
 import PeopleIcon from '@material-ui/icons/People'
 import ChatIcon from '@material-ui/icons/Chat'
@@ -63,8 +63,8 @@ export const Home = ({ socket, history }) => {
   }, [userDetails])
 
   return (
-    <>
-      <Grid container>
+    <div style={{ padding: 5 }}>
+      <Grid container justify='flex-start'>
         <Grid item xs={1} className={classes.sideIcons}>
           <IconButton
             className={classes.icon}
@@ -91,7 +91,7 @@ export const Home = ({ socket, history }) => {
             <SmsBadge count={count} />
           </IconButton>
         </Grid>
-        <Grid item xs={10} lg={4} className={classes.sidePanel}>
+        <Grid item xs={10} sm={6} lg={4} className={classes.sidePanel}>
           {panel === 'contacts' ? (
             <Contacts />
           ) : panel === 'chat' ? (
@@ -103,6 +103,6 @@ export const Home = ({ socket, history }) => {
           )}
         </Grid>
       </Grid>
-    </>
+    </div>
   )
 }
