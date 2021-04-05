@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core'
 export const useStyles = makeStyles((theme) => ({
   paper: {
     backgroundColor: '#eee',
-    height: '100%',
+    height: '440px',
   },
   cardActions: {
     display: 'flex',

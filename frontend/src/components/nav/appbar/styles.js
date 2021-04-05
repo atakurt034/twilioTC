@@ -21,11 +21,6 @@ export const useStyles = makeStyles((theme) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
   },
-
-  appbar: {
-    backgroundColor: 'transparent',
-    color: '#000',
-  },
 }))
 
 export const StyledBadge = withStyles((theme) => ({

@@ -35,6 +35,7 @@ export const Contacts = () => {
   const [loading, setLoading] = React.useState(false)
 
   const [success, setSuccess] = React.useState(false)
+  const [entered, setEntered] = React.useState(false)
   const invited = user ? true : false
 
   React.useEffect(() => {
@@ -88,6 +89,13 @@ export const Contacts = () => {
     </div>
   )
 
+  const keyUp = (event) => {
+    const { key, keyCode } = event
+    if (key === 'Enter' || keyCode === 'Enter' || keyCode === 13) {
+      setEntered(true)
+    }
+  }
+
   const add_true = (
     <div className={classes.addTrue}>
       <div className={classes.search}>
@@ -104,6 +112,7 @@ export const Contacts = () => {
           inputProps={{ 'aria-label': 'search' }}
           inputRef={searchRef}
           onChange={changeHandler}
+          onKeyUp={keyUp}
         />
       </div>
       <div>
@@ -117,6 +126,8 @@ export const Contacts = () => {
           setSuccess={setSuccess}
           addContact={setAddContact}
           setSearch={setSearch}
+          entered={entered}
+          setEntered={setEntered}
         />
       </div>
     </div>
@@ -127,55 +138,59 @@ export const Contacts = () => {
         {addContact ? add_true : add_false}
       </div>
       <Divider />
-      {userDetails &&
-        !addContact &&
-        userDetails.invites &&
-        userDetails.invites.map((invite) => {
-          return (
-            <div key={invite._id} className={classes.invites}>
-              <Typography variant='h6' style={{ padding: 3 }}>
-                {invite.user
-                  ? invite.user.email
-                  : invite.chatroom && invite.chatroom.name}
-              </Typography>
-              <Button variant='outlined' onClick={() => acceptHandler(invite)}>
-                Accept
-              </Button>
-            </div>
-          )
-        })}
-      {userDetails &&
-        !addContact &&
-        userDetails.contacts &&
-        userDetails.contacts.map((contact, index) => {
-          return <ContactList key={contact._id} contact={contact} />
-        })}
+      <div style={{ overflow: 'auto', maxHeight: '85%' }}>
+        {userDetails &&
+          !addContact &&
+          userDetails.invites.map((invite) => {
+            return (
+              <div key={invite._id} className={classes.invites}>
+                <Typography variant='h6' style={{ padding: 3 }}>
+                  {invite.user
+                    ? invite.user.email
+                    : invite.chatroom && invite.chatroom.name}
+                </Typography>
+                <Button
+                  variant='outlined'
+                  onClick={() => acceptHandler(invite)}
+                >
+                  Accept
+                </Button>
+              </div>
+            )
+          })}
+        {userDetails &&
+          !addContact &&
+          userDetails.contacts.map((contact, index) => {
+            return <ContactList key={contact._id} contact={contact} />
+          })}
 
-      {error ? (
-        error === 'added' ? (
-          addContact && (
-            <div>
-              contact already added <button onClick={backHandler}>Back</button>{' '}
-            </div>
+        {error ? (
+          error === 'added' ? (
+            addContact && (
+              <div>
+                contact already added{' '}
+                <button onClick={backHandler}>Back</button>{' '}
+              </div>
+            )
+          ) : (
+            addContact && (
+              <div>
+                No Results Found <button onClick={backHandler}>Back</button>{' '}
+              </div>
+            )
           )
-        ) : (
-          addContact && (
-            <div>
-              No Results Found <button onClick={backHandler}>Back</button>{' '}
-            </div>
+        ) : user ? (
+          invited && !invited.accept ? (
+            <UserList user={user[0]} backHandler={backHandler} />
+          ) : (
+            <UserList user={user[0]} backHandler={backHandler} />
           )
-        )
-      ) : user ? (
-        invited && !invited.accept ? (
-          <UserList user={user[0]} backHandler={backHandler} />
+        ) : loading ? (
+          'searching..'
         ) : (
-          <UserList user={user[0]} backHandler={backHandler} />
-        )
-      ) : loading ? (
-        'searching..'
-      ) : (
-        ''
-      )}
+          ''
+        )}
+      </div>
     </Paper>
   )
 }

@@ -1,4 +1,11 @@
-import { Button, Grid, IconButton, Paper, Typography } from '@material-ui/core'
+import {
+  Button,
+  Grid,
+  IconButton,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
 import React from 'react'
 
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
@@ -14,10 +21,9 @@ const List = ({ id, name, history, type }) => {
 
   const clickHandler = () => {
     if (type === 'Public') {
-      history.push(`/public/${id}?name=${name}`)
+      history.push(`/public/${id}?name=${name.split(' ')[0]}`)
     } else {
-      console.log(name)
-      history.push(`/chatroom/${id}`)
+      history.push(`/chatroom/${id}?name=${name.split(' ')[0]}`)
     }
   }
   const deleteHandler = async () => {
@@ -47,7 +53,15 @@ const List = ({ id, name, history, type }) => {
             startIcon={<ChatIcon fontSize='small' />}
             onClick={clickHandler}
           >
-            <Typography>{name}</Typography>
+            {name.length > 10 ? (
+              <Tooltip disableFocusListener title={name} placement='top'>
+                <Typography>
+                  {name.length > 10 ? name.slice(0, 10) + '...' : name}
+                </Typography>
+              </Tooltip>
+            ) : (
+              <Typography>{name}</Typography>
+            )}
           </Button>
         </Grid>
         <Grid item xs={4}>

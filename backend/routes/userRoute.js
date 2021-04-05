@@ -21,11 +21,14 @@ router.get('/sms', auth.loginRequired, user.getSms)
 router.post('/invites', auth.loginRequired, user.sendInvite)
 router.post('/uploads/avatar', auth.loginRequired, user.updateAvatar)
 
-router.get('/mobile/:id', auth.loginRequired, user.searchMobileNum)
 router
   .route('/:id')
   .get(auth.loginRequired, user.getUserDetails)
   .put(auth.loginRequired, user.updateProfile)
   .delete(auth.loginRequired, user.deleteContactOrGroup)
 
+router
+  .route('/mobile/:id')
+  .get(auth.loginRequired, user.searchMobileNum)
+  .post(auth.loginRequired, user.missedSeen)
 export default router

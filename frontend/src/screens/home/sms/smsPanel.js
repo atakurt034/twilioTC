@@ -1,8 +1,17 @@
 import React from 'react'
-import { Button, Card, Divider, Paper, Typography } from '@material-ui/core'
+import {
+  Button,
+  Card,
+  Divider,
+  IconButton,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
 
 import PhoneInput from 'react-phone-input-2'
 import PermPhoneMsgIcon from '@material-ui/icons/PermPhoneMsg'
+import TextsmsIcon from '@material-ui/icons/Textsms'
 
 import { useStyles } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
@@ -10,6 +19,7 @@ import { withRouter } from 'react-router-dom'
 
 import { UA } from '../../../actions/index'
 import { USER } from '../../../constants/index'
+import { LoadingButton } from '../../../components/loadingCallnText'
 
 const Text = ({ history }) => {
   const classes = useStyles()
@@ -83,106 +93,112 @@ const Text = ({ history }) => {
           <PhoneInput
             value={mobileNum}
             onChange={changeHandler}
-            placeholder='Search mobile number'
-            inputStyle={{ width: '88%' }}
+            placeholder='Input number'
+            inputStyle={{ width: '100%' }}
             containerStyle={{
-              margin: '2% 0 2% 1%',
+              margin: '1%',
             }}
+            onEnterKeyPress={submitHandler}
           />
-          <Button
-            variant='contained'
-            disabled={!mobileNum}
-            color='primary'
-            style={{ margin: 0, left: -20 }}
-            onClick={
-              mobileNum
-                ? searched
-                  ? backHandler
-                  : submitHandler
-                : submitHandler
-            }
-          >
-            {mobileNum ? (searched ? 'back' : 'search') : 'search'}
-          </Button>
+          <LoadingButton
+            backHandler={backHandler}
+            loading={loading}
+            mobile={mobile}
+            number={mobileNum}
+            searched={searched}
+            submitHandler={submitHandler}
+          />
         </div>
         <Divider />
-        {loading
-          ? 'loading...'
-          : error
-          ? error
-          : mobile &&
-            mobile.map((mobile) => {
-              return (
+        <div style={{ overflow: 'auto', maxHeight: '85%' }}>
+          {loading
+            ? 'loading...'
+            : error
+            ? error
+            : mobile &&
+              mobile.map((mobile) => {
+                return (
+                  <Paper
+                    key={mobile._id}
+                    elevation={12}
+                    style={{
+                      padding: 5,
+                      margin: 5,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {mobile.user && mobile.user.name.length > 8 ? (
+                      <Tooltip
+                        disableFocusListener
+                        title={mobile.user.name}
+                        placement='top'
+                      >
+                        <Typography variant='body1' component='p'>
+                          {mobile.user.name.slice(0, 8) + '..'}
+                        </Typography>
+                      </Tooltip>
+                    ) : (
+                      <Typography variant='body1' component='p'>
+                        {mobile.user.name}
+                      </Typography>
+                    )}
+
+                    <Typography variant='body1' component='p'>
+                      {country}
+                    </Typography>
+                    <IconButton
+                      style={{ color: 'green' }}
+                      onClick={() => textHandler(mobile.mobile)}
+                    >
+                      <TextsmsIcon />
+                    </IconButton>
+                  </Paper>
+                )
+              })}
+          {mobile
+            ? searched &&
+              mobile.length === 0 && (
                 <Paper
-                  key={mobile._id}
                   elevation={12}
                   style={{
-                    padding: 5,
-                    margin: 5,
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
+                    padding: 5,
                   }}
                 >
-                  <Typography variant='body2'>
-                    {mobile.user && mobile.user.name}{' '}
-                    {mobile.user && mobile.user.email}
-                  </Typography>
-                  <Typography variant='body2'>{country}</Typography>
-                  <Button
-                    startIcon={<PermPhoneMsgIcon />}
-                    color='primary'
-                    variant='contained'
-                    onClick={() => textHandler(mobile.mobile)}
+                  No user found continue to send a text?{' '}
+                  <IconButton
+                    style={{ color: 'green' }}
+                    onClick={() => textHandler(mobileNum)}
                   >
-                    Text
-                  </Button>
+                    <TextsmsIcon />
+                  </IconButton>
                 </Paper>
               )
-            })}
-        {mobile
-          ? searched &&
-            mobile.length === 0 && (
-              <Paper
-                elevation={12}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: 5,
-                }}
-              >
-                No user found continue to send a text?{' '}
-                <Button
-                  startIcon={<PermPhoneMsgIcon />}
-                  color='primary'
-                  variant='contained'
-                  onClick={() => textHandler(mobileNum)}
-                >
-                  Text
-                </Button>
-              </Paper>
-            )
-          : !searched &&
-            smsRooms.map((num) => {
-              return (
-                <Paper
-                  elevation={12}
-                  style={{ padding: 5, margin: 5 }}
-                  key={num._id}
-                >
-                  <Button
-                    fullWidth
-                    variant='outlined'
-                    color={count > 0 ? 'secondary' : 'default'}
-                    onClick={() => textHandler(num.mobile)}
+            : !searched &&
+              smsRooms.map((num) => {
+                return (
+                  <Paper
+                    elevation={12}
+                    style={{ padding: 5, margin: 5 }}
+                    key={num._id}
                   >
-                    {num.mobile} {num.user && num.user.name}{' '}
-                    {count > 0 ? `${count} - unread` : ''}
-                  </Button>
-                </Paper>
-              )
-            })}
+                    <Button
+                      fullWidth
+                      variant='outlined'
+                      color={count > 0 ? 'secondary' : 'default'}
+                      onClick={() => textHandler(num.mobile)}
+                    >
+                      {num.mobile} {num.user && num.user.name}{' '}
+                      {count > 0 ? `${count} - unread` : ''}
+                    </Button>
+                  </Paper>
+                )
+              })}
+        </div>
       </Card>
     </>
   )

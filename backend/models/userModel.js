@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'MobileNum',
     },
+    calls: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Call' }],
     smsrooms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Smsroom' }],
     privaterooms: [
       { type: mongoose.Schema.Types.ObjectId, ref: 'Privateroom' },

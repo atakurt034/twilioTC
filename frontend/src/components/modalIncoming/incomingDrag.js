@@ -52,32 +52,32 @@ export const Incoming = ({
       }}
     >
       <DialogTitle style={{ cursor: 'move' }} id='draggable-dialog-title'>
-        <Typography variant='h6'>Incoming call from {name && name}</Typography>
+        <Typography component='div'>
+          Incoming call from {name && name}
+        </Typography>
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          <div
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <CallIcon
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              color: 'green',
+              padding: 5,
+              fontSize: 40,
+              margin: '5px 15px 5px 0',
             }}
-          >
-            <CallIcon
-              style={{
-                color: 'green',
-                padding: 5,
-                fontSize: 40,
-                margin: '5px 15px 5px 0',
-              }}
-            />
-            <div className='snippet' data-title='.dot-pulse'>
-              <div className='stage'>
-                <div className='dot-pulse'></div>
-              </div>
+          />
+          <div className='snippet' data-title='.dot-pulse'>
+            <div className='stage'>
+              <div className='dot-pulse'></div>
             </div>
           </div>
-        </DialogContentText>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={accept} variant='contained' color='primary'>
@@ -127,7 +127,6 @@ export const Incoming = ({
       <Dialog
         open={typeof open === 'undefined' ? false : open}
         PaperComponent={PaperComponent}
-        aria-labelledby='draggable-dialog-title'
         style={{ width: '100%', padding: 10 }}
       >
         {answer ? answered : body}

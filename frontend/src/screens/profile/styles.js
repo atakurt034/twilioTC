@@ -3,12 +3,11 @@ import { makeStyles } from '@material-ui/core'
 export const useStyles = makeStyles((theme) => ({
   container: {
     maxWidth: theme.spacing(70),
-    padding: theme.spacing(4),
+    padding: theme.spacing(1),
     margin: 'auto',
   },
   paper: {
-    marginTop: 'auto',
-    padding: 20,
+    padding: 15,
   },
   avatar: {
     margin: 'auto',

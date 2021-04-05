@@ -102,10 +102,5 @@ io.on('connection', (socket) => {
   socket.on('leftRoom', pub.leftRoom(io, socket))
   socket.on('smsJoin', twi.smsJoin(io, socket))
   socket.on('login', twi.login(io, socket))
-
-  const listener = (event, ...args) => {
-    console.log(event, args)
-  }
-
-  socket.onAny(listener)
+  socket.on('missedCall', twi.missedCall(io, socket))
 })

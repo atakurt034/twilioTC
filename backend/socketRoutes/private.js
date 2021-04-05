@@ -1,9 +1,9 @@
 let users = {}
 
-export const privateJoin = (io, socket) => async ({ chatroomId }) => {
+export const privateJoin = (io, socket) => async ({ chatroomId, user }) => {
   users[socket.userId] = chatroomId
   socket.join(chatroomId)
-  io.to(chatroomId).emit('privateJoined', { chatroomId })
+  io.to(chatroomId).emit('privateJoined', { chatroomId, user })
 }
 
 export const privateCall = (io, socket) => async ({

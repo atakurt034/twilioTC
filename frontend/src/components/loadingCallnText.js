@@ -8,10 +8,6 @@ import Button from '@material-ui/core/Button'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import SearchIcon from '@material-ui/icons/Search'
 
-import { useDispatch } from 'react-redux'
-
-import { UA } from '../actions/index'
-import { USER } from '../constants/index'
 import { IconButton, useMediaQuery, useTheme } from '@material-ui/core'
 
 const useStyles = makeStyles((theme) => ({
@@ -40,19 +36,13 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const LoadingButton = ({
-  search,
   loading,
-  success,
-  addContact,
-  invited,
-  setSuccess,
-  user,
-  setSearch,
-  searchRef,
-  entered,
-  setEntered,
+  searched,
+  number,
+  submitHandler,
+  backHandler,
+  mobile,
 }) => {
-  const dispatch = useDispatch()
   const classes = useStyles()
   const theme = useTheme()
 
@@ -61,41 +51,19 @@ export const LoadingButton = ({
   const [isEmpty, setIsEmpty] = React.useState(true)
 
   const buttonClassname = clsx({
-    [classes.buttonSuccess]: success,
+    [classes.buttonSuccess]: mobile ? true : false,
   })
 
-  const handleButtonClick = () => {
-    if (!isEmpty) {
-      dispatch(UA.search({ email: search }))
-      setSearch('')
-      searchRef.current.value = ''
-    } else {
-      dispatch({ type: USER.SEARCH_RESET })
-      setSuccess(false)
-      addContact(false)
-    }
-  }
-
   React.useEffect(() => {
-    if (entered) {
-      handleButtonClick()
-    }
-    return () => {
-      setEntered(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entered])
-
-  React.useEffect(() => {
-    if (search.length > 0) {
+    if (number) {
       setIsEmpty(false)
     } else {
       setIsEmpty(true)
     }
-    if (!user && invited && !invited.accept) {
+    if (!searched) {
       setIsEmpty(true)
     }
-  }, [search, invited, addContact, setSuccess, user])
+  }, [searched, number])
 
   return (
     <div className={classes.root}>
@@ -105,20 +73,20 @@ export const LoadingButton = ({
             variant='contained'
             color='primary'
             className={buttonClassname}
-            disabled={loading}
-            onClick={handleButtonClick}
+            disabled={!number}
+            onClick={isEmpty ? submitHandler : backHandler}
           >
-            {!isEmpty ? <SearchIcon /> : <ArrowBackIcon />}
+            {isEmpty ? <SearchIcon /> : <ArrowBackIcon />}
           </IconButton>
         ) : (
           <Button
             variant='contained'
             color='primary'
             className={buttonClassname}
-            disabled={loading}
-            onClick={handleButtonClick}
+            disabled={!number}
+            onClick={isEmpty ? submitHandler : backHandler}
           >
-            {!isEmpty ? 'Search' : 'Back'}
+            {isEmpty ? 'Search' : 'Back'}
           </Button>
         )}
         {loading && (

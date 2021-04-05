@@ -45,7 +45,7 @@ export const UserList = ({ user, backHandler }) => {
           {user && user.name} {user && user.email}
         </Typography>
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={4} style={{ textAlign: 'left' }}>
         {user ? (
           <Button
             variant='outlined'
@@ -55,7 +55,9 @@ export const UserList = ({ user, backHandler }) => {
             {invite ? !invite.accept && 'pending' : 'invite'}
           </Button>
         ) : (
-          'user not found'
+          <div style={{ position: 'absolute', left: '20%' }}>
+            user not found
+          </div>
         )}
       </Grid>
     </Grid>

@@ -28,20 +28,6 @@ const App = ({ history }) => {
 
   const isMenuOpen = Boolean(anchorEl)
 
-  React.useEffect(() => {
-    if (userInfo) {
-      dispatch(UA.getDetails())
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userInfo])
-
-  React.useEffect(() => {
-    if (!userInfo) {
-      history.push('/login')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userInfo])
-
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
   }
@@ -71,9 +57,12 @@ const App = ({ history }) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={profileHandler}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={logout}>Logout</MenuItem>
+      <MenuItem style={{ minWidth: 100 }} onClick={profileHandler}>
+        Profile
+      </MenuItem>
+      <MenuItem style={{ minWidth: 100 }} onClick={logout}>
+        Logout
+      </MenuItem>
     </Menu>
   )
 
@@ -87,7 +76,7 @@ const App = ({ history }) => {
       variant={'standard'}
     >
       <Avatar
-        src={userDetails && userDetails.image}
+        src={userDetails ? userDetails.image : userInfo && userInfo.image}
         alt={userInfo && userInfo.name}
         className={classes.avatar}
       />
@@ -96,11 +85,16 @@ const App = ({ history }) => {
 
   return (
     <div className={classes.grow}>
-      <AppBar className={classes.appbar} position='static' elevation={0}>
+      <AppBar
+        position='static'
+        color='transparent'
+        elevation={0}
+        style={{ marginBottom: 10 }}
+      >
         <Toolbar>
           <Sidebar />
           <Typography className={classes.title} variant='h6' noWrap>
-            FoneAPI Hangout
+            FoneAPI
           </Typography>
 
           <div className={classes.grow} />
@@ -113,15 +107,13 @@ const App = ({ history }) => {
                 aria-haspopup='true'
                 onClick={handleProfileMenuOpen}
                 color='inherit'
-                startIcon={
-                  userDetails && userDetails.image ? (
-                    avatarIcon
-                  ) : (
-                    <AccountCircle />
-                  )
-                }
+                startIcon={userInfo ? avatarIcon : <AccountCircle />}
               >
-                <Typography>{userDetails && userDetails.name}</Typography>
+                <Typography>
+                  {userDetails
+                    ? userDetails.name.trim().split(' ')[0]
+                    : userInfo && userInfo.name.trim().split(' ')[0]}
+                </Typography>
               </Button>
             </div>
           )}

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const mobileNumSchema = mongoose.Schema(
+const mobileNumSchema = new mongoose.Schema(
   {
     mobile: {
       type: String,

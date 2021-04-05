@@ -18,21 +18,18 @@ export const App = () => {
   const connectionRef = React.useRef()
   const twilioRef = React.useRef()
   const dispatch = useDispatch()
-  let userId
-  let name
-  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = useSelector((state) => state.userLogin)
 
   const [open, setOpen] = React.useState(false)
   const [mute, setMute] = React.useState(false)
   const [answer, setAnswer] = React.useState(false)
+  const [incomingData, setIncomingData] = React.useState({})
 
-  if (userLogin.userInfo) {
-    userId = userLogin.userInfo._id
-    name = userLogin.userInfo.name
-  }
-
-  const socket = io('https://foneapi.herokuapp.com/', {
-    query: { userId, name },
+  const socket = io('http://192.168.254.111:5000', {
+    query: {
+      userId: userInfo && userInfo._id,
+      name: userInfo && userInfo.name,
+    },
   })
 
   React.useEffect(() => {
@@ -41,11 +38,17 @@ export const App = () => {
       dispatch(UA.getDetails())
     })
 
+    const button = document.querySelectorAll('h2 h6')
+
+    if (button) {
+      button.forEach((btn) => (btn.style.backgroundColor = 'red'))
+    }
+
     return () => {
       socket.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [document])
 
   React.useEffect(() => {
     const getToken = async () => {
@@ -62,14 +65,46 @@ export const App = () => {
           console.log('Connected')
         })
         Twilio.on('incoming', (con) => {
+          setIncomingData({
+            from: con.parameters.From,
+            to: userInfo.mobile && userInfo.mobile.mobile,
+          })
           connectionRef.current = con
           setOpen(true)
+          console.log(con)
         })
         Twilio.on('disconnect', (d) => {
           Twilio.disconnectAll()
-          console.log(d, 'disconnect')
           setAnswer(false)
           setOpen(false)
+          socket.emit('missedCall', {
+            from: d.parameters.From,
+            to: userInfo && userInfo.mobile.mobile,
+            type: 'disconnected',
+          })
+          console.log(d, ' disc')
+        })
+        Twilio.on('cancel', (d) => {
+          Twilio.disconnectAll()
+          setAnswer(false)
+          setOpen(false)
+          socket.emit('missedCall', {
+            from: d.parameters.From,
+            to: userInfo && userInfo.mobile.mobile,
+            type: 'canceled',
+          })
+          console.log(d, ' cancel')
+        })
+        Twilio.on('error', (d) => {
+          Twilio.disconnectAll()
+          setAnswer(false)
+          setOpen(false)
+          socket.emit('missedCall', {
+            from: d.parameters.From,
+            to: userInfo && userInfo.mobile.mobile,
+            type: 'error',
+          })
+          console.log(d, ' error')
         })
 
         twilioRef.current = Twilio
@@ -81,7 +116,9 @@ export const App = () => {
     return () => {
       setAnswer(false)
       setOpen(false)
+      setIncomingData({})
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const cancelHandler = () => {
@@ -99,11 +136,21 @@ export const App = () => {
   const accept = (params) => {
     connectionRef.current.accept()
     setAnswer(true)
+    socket.emit('missedCall', {
+      from: incomingData.from,
+      to: incomingData.to,
+      type: 'accepted',
+    })
   }
   const reject = (params) => {
     connectionRef.current.reject()
     setAnswer(false)
     setOpen(false)
+    socket.emit('missedCall', {
+      from: incomingData.from,
+      to: incomingData.to,
+      type: 'rejected',
+    })
   }
 
   return (
