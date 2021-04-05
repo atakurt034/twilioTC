@@ -84,9 +84,9 @@ export const LoadingButton = ({
             color='primary'
             className={buttonClassname}
             disabled={!number}
-            onClick={submitHandler}
+            onClick={isEmpty ? submitHandler : backHandler}
           >
-            {!isEmpty ? 'Search' : 'Back'}
+            {isEmpty ? 'Search' : 'Back'}
           </Button>
         )}
         {loading && (
