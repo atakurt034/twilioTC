@@ -65,10 +65,9 @@ router.get(
 
 router.get(
   '/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/' }),
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
   (req, res) => {
-    const redirect = req.session.redirectPath
-    res.redirect(`/login?redirect=${redirect}`)
+    res.redirect(`/`)
   }
 )
 
