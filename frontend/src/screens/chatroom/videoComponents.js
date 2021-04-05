@@ -315,7 +315,7 @@ export const PublicVideoControls = ({
 
   const body = (
     <Card style={{ minHeight: '50vh', minWidth: '30vw' }} elevation={0}>
-      <CardContent style={{ height: '30vh' }}>
+      <CardContent style={{ height: '60%' }}>
         <Paper
           variant='outlined'
           style={{
@@ -590,7 +590,7 @@ export const PrivateVideoControls = ({
 
   const body = (
     <Card style={{ minHeight: '50vh', minWidth: '30vw' }} elevation={0}>
-      <CardContent style={{ height: '30vh' }}>
+      <CardContent style={{ height: '70%' }}>
         <Paper
           variant='outlined'
           style={{
