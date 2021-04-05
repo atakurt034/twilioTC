@@ -64,4 +64,11 @@ export const useStyles = makeStyles((theme) => ({
   },
   muted: { color: 'red' },
   unmuted: { color: 'grey' },
+  bottomNav: {
+    [theme.breakpoints.down('sm')]: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      height: '100%',
+    },
+  },
 }))

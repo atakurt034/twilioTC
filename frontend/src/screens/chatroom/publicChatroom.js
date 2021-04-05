@@ -161,6 +161,7 @@ export const PublicChatroom = ({ match, location, socket, history }) => {
                 playsInline
                 height='100%'
                 width='100%'
+                controls
               />
             </div>
           </Grid>

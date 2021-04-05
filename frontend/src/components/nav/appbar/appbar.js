@@ -57,9 +57,12 @@ const App = ({ history }) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={profileHandler}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={logout}>Logout</MenuItem>
+      <MenuItem style={{ minWidth: 100 }} onClick={profileHandler}>
+        Profile
+      </MenuItem>
+      <MenuItem style={{ minWidth: 100 }} onClick={logout}>
+        Logout
+      </MenuItem>
     </Menu>
   )
 

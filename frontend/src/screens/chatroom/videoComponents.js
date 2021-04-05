@@ -444,6 +444,7 @@ export const Video = (props) => {
       ref={ref}
       width='100%'
       height='100%'
+      controls
     />
   )
 }
@@ -653,9 +654,13 @@ export const PrivateVideoControls = ({
 
   return (
     <>
-      <BottomNavigation onChange={switchHandler} showLabels>
+      <BottomNavigation
+        onChange={switchHandler}
+        showLabels
+        className={classes.bottomNav}
+      >
         <BottomNavigationAction
-          disabled={!unShared}
+          disabled={!unShared || !answered}
           value='share'
           label={unShared ? 'Share Screen' : 'Click "Stop Sharing" to Stop'}
           className={!unShared ? classess.muted : classess.unmuted}

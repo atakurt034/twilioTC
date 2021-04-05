@@ -236,11 +236,10 @@ export const Chatroom = ({ match, socket, history, location }) => {
                 style={{
                   width: '20%',
                   height: '20%',
-                  padding: 5,
                   zIndex: 10,
                   position: 'absolute',
-                  right: 10,
-                  bottom: 10,
+                  right: 30,
+                  bottom: 35,
                   border: '2px solid red',
                 }}
               >
@@ -252,14 +251,16 @@ export const Chatroom = ({ match, socket, history, location }) => {
                   width='100%'
                 />
               </div>
-              <video
-                style={{ zIndex: 0 }}
-                playsInline
-                autoPlay
-                ref={userVideoRef}
-                width='100%'
-                height='100%'
-              />
+              <div style={{ padding: 20 }}>
+                <video
+                  style={{ zIndex: 0 }}
+                  playsInline
+                  autoPlay
+                  ref={userVideoRef}
+                  width='100%'
+                  height='100%'
+                />
+              </div>
             </div>
           </div>
         </Grid>
