@@ -2,7 +2,7 @@ import express from 'express'
 import { config } from 'dotenv'
 import { error } from './middlewares/index.js'
 import { mongoConnect } from './database/mongo.js'
-import { createServer } from 'https'
+import { createServer } from 'http'
 import { Server } from 'socket.io'
 
 import userRoute from './routes/userRoute.js'

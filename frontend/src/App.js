@@ -25,7 +25,7 @@ export const App = () => {
   const [answer, setAnswer] = React.useState(false)
   const [incomingData, setIncomingData] = React.useState({})
 
-  const socket = io('http://192.168.254.111:5000', {
+  const socket = io('https://foneapi.herokuapp.com/', {
     query: {
       userId: userInfo && userInfo._id,
       name: userInfo && userInfo.name,
