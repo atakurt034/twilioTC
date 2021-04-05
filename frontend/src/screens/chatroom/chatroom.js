@@ -44,6 +44,7 @@ export const Chatroom = ({ match, socket, history, location }) => {
   const [callAnswered, setCallAnswered] = React.useState(false)
   const [calling, setCalling] = React.useState(false)
   const [caller, setCaller] = React.useState('')
+  const [unShared, setUnshared] = React.useState(true)
 
   const permission = new GetPermission(
     myMicFeed,
@@ -168,9 +169,11 @@ export const Chatroom = ({ match, socket, history, location }) => {
     navigator.mediaDevices.getDisplayMedia({ cursor: true }).then((stream) => {
       const track = stream.getTracks()[0]
       connectionRef.current.replaceTrack(current, track, currStream)
+      setUnshared(false)
       track.onended = () => {
         current.enabled = true
         connectionRef.current.replaceTrack(track, current, currStream)
+        setUnshared(true)
       }
     })
   }
@@ -278,10 +281,10 @@ export const Chatroom = ({ match, socket, history, location }) => {
             setMute={() => trackHandler(myMicFeed)}
             setOffScreen={() => trackHandler(myVideoFeed)}
             endCall={endCall}
+            shareScreen={shareScreen}
+            unShared={unShared}
           />
         </div>
-
-        <button onClick={shareScreen}>Share</button>
       </Grid>
     </Container>
   )

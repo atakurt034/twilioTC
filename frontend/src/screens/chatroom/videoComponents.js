@@ -8,6 +8,9 @@ import VideocamOffIcon from '@material-ui/icons/VideocamOff'
 import MicIcon from '@material-ui/icons/Mic'
 import VideocamIcon from '@material-ui/icons/Videocam'
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes'
+import ScreenShareIcon from '@material-ui/icons/ScreenShare'
+import StopScreenShareIcon from '@material-ui/icons/StopScreenShare'
+
 import { Skeletons } from '../../components/skeletons'
 import SendIcon from '@material-ui/icons/Send'
 
@@ -453,6 +456,8 @@ export const PrivateVideoControls = ({
   chatroomId,
   answered,
   endCall,
+  shareScreen,
+  unShared,
 }) => {
   const classess = useStyles()
   const [mute, setMute1] = React.useState(false)
@@ -483,6 +488,9 @@ export const PrivateVideoControls = ({
       case 'mute':
         setMute1((prev) => !prev)
         setMute()
+        break
+      case 'share':
+        shareScreen()
         break
 
       case 'chat':
@@ -646,6 +654,13 @@ export const PrivateVideoControls = ({
   return (
     <>
       <BottomNavigation onChange={switchHandler} showLabels>
+        <BottomNavigationAction
+          disabled={!unShared}
+          value='share'
+          label={unShared ? 'Share Screen' : 'Click "Stop Sharing" to Stop'}
+          className={!unShared ? classess.muted : classess.unmuted}
+          icon={unShared ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+        />
         <BottomNavigationAction
           disabled={!answered}
           value='end'
