@@ -23,6 +23,7 @@ const reducers = combineReducers({
   updateProfile: user.updateProfileReducer,
   searchMobile: user.searchMobileReducer,
   getGGFBLoginInfo: user.getFBandGoogleLoginReducer,
+  setMissedSeen: user.setMissedToSeenReducer,
   chatroomPrivateCreate: chatroom.privateCreateReducer,
   getPrivateMessage: chatroom.privateGetMessagesReducer,
   chatroomPublicCreate: chatroom.publicCreateReducer,

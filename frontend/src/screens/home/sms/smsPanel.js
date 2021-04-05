@@ -106,83 +106,85 @@ const Text = ({ history }) => {
           </Button>
         </div>
         <Divider />
-        {loading
-          ? 'loading...'
-          : error
-          ? error
-          : mobile &&
-            mobile.map((mobile) => {
-              return (
+        <div style={{ overflow: 'auto', maxHeight: '85%' }}>
+          {loading
+            ? 'loading...'
+            : error
+            ? error
+            : mobile &&
+              mobile.map((mobile) => {
+                return (
+                  <Paper
+                    key={mobile._id}
+                    elevation={12}
+                    style={{
+                      padding: 5,
+                      margin: 5,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Typography variant='body2'>
+                      {mobile.user && mobile.user.name}{' '}
+                      {mobile.user && mobile.user.email}
+                    </Typography>
+                    <Typography variant='body2'>{country}</Typography>
+                    <Button
+                      startIcon={<PermPhoneMsgIcon />}
+                      color='primary'
+                      variant='contained'
+                      onClick={() => textHandler(mobile.mobile)}
+                    >
+                      Text
+                    </Button>
+                  </Paper>
+                )
+              })}
+          {mobile
+            ? searched &&
+              mobile.length === 0 && (
                 <Paper
-                  key={mobile._id}
                   elevation={12}
                   style={{
-                    padding: 5,
-                    margin: 5,
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
+                    padding: 5,
                   }}
                 >
-                  <Typography variant='body2'>
-                    {mobile.user && mobile.user.name}{' '}
-                    {mobile.user && mobile.user.email}
-                  </Typography>
-                  <Typography variant='body2'>{country}</Typography>
+                  No user found continue to send a text?{' '}
                   <Button
                     startIcon={<PermPhoneMsgIcon />}
                     color='primary'
                     variant='contained'
-                    onClick={() => textHandler(mobile.mobile)}
+                    onClick={() => textHandler(mobileNum)}
                   >
                     Text
                   </Button>
                 </Paper>
               )
-            })}
-        {mobile
-          ? searched &&
-            mobile.length === 0 && (
-              <Paper
-                elevation={12}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: 5,
-                }}
-              >
-                No user found continue to send a text?{' '}
-                <Button
-                  startIcon={<PermPhoneMsgIcon />}
-                  color='primary'
-                  variant='contained'
-                  onClick={() => textHandler(mobileNum)}
-                >
-                  Text
-                </Button>
-              </Paper>
-            )
-          : !searched &&
-            smsRooms.map((num) => {
-              return (
-                <Paper
-                  elevation={12}
-                  style={{ padding: 5, margin: 5 }}
-                  key={num._id}
-                >
-                  <Button
-                    fullWidth
-                    variant='outlined'
-                    color={count > 0 ? 'secondary' : 'default'}
-                    onClick={() => textHandler(num.mobile)}
+            : !searched &&
+              smsRooms.map((num) => {
+                return (
+                  <Paper
+                    elevation={12}
+                    style={{ padding: 5, margin: 5 }}
+                    key={num._id}
                   >
-                    {num.mobile} {num.user && num.user.name}{' '}
-                    {count > 0 ? `${count} - unread` : ''}
-                  </Button>
-                </Paper>
-              )
-            })}
+                    <Button
+                      fullWidth
+                      variant='outlined'
+                      color={count > 0 ? 'secondary' : 'default'}
+                      onClick={() => textHandler(num.mobile)}
+                    >
+                      {num.mobile} {num.user && num.user.name}{' '}
+                      {count > 0 ? `${count} - unread` : ''}
+                    </Button>
+                  </Paper>
+                )
+              })}
+        </div>
       </Card>
     </>
   )

@@ -335,3 +335,36 @@ export const getGGFBLogin = () => async (dispatch) => {
     })
   }
 }
+
+export const setMissedToSeen = (callIds) => async (dispatch, getState) => {
+  try {
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    dispatch({ type: USER.SEEN_MISSED_REQUEST })
+
+    const { data } = await axios.post(
+      `/api/user/mobile/${userInfo._id}`,
+      { callIds },
+      config
+    )
+
+    dispatch({ type: USER.SEEN_MISSED_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: USER.SEEN_MISSED_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}

@@ -1,22 +1,17 @@
 import React from 'react'
 import {
-  Button,
   Card,
   Divider,
   IconButton,
   Paper,
   Tooltip,
   Typography,
-  useTheme,
-  useMediaQuery,
 } from '@material-ui/core'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/high-res.css'
 
 import { useStyles } from './styles'
 import PhoneIcon from '@material-ui/icons/Phone'
-import ArrowBackIcon from '@material-ui/icons/ArrowBack'
-import SearchIcon from '@material-ui/icons/Search'
 
 import { _Call } from './classHelper'
 import axios from 'axios'
@@ -34,11 +29,10 @@ export const Call = () => {
   const callRef = React.useRef()
   const dispatch = useDispatch()
 
-  const theme = useTheme()
-
-  const xs = useMediaQuery(theme.breakpoints.down('xs'))
-
   const { mobile, loading, error } = useSelector((state) => state.searchMobile)
+  const { userDetails, loading: loadingDetails } = useSelector(
+    (state) => state.userDetails
+  )
 
   const [number, setNumber] = React.useState()
   const [open, setOpen] = React.useState()
@@ -47,9 +41,16 @@ export const Call = () => {
 
   const [country, setCountry] = React.useState()
   const [searched, setSearched] = React.useState(false)
+  const [calls, setCalls] = React.useState([])
   // const [count, setCount] = React.useState(0)
 
   const newCall = new _Call(axios, Device, setOpen, number, setReady, callRef)
+
+  React.useEffect(() => {
+    if (userDetails) {
+      setCalls(userDetails.calls)
+    }
+  }, [userDetails])
 
   const changeHandler = (value, country) => {
     setNumber(value)
@@ -115,54 +116,54 @@ export const Call = () => {
           />
         </div>
         <Divider />
-        {loading
-          ? 'loading...'
-          : error
-          ? error
-          : mobile &&
-            mobile.map((mobile) => {
-              return (
-                <Paper
-                  key={mobile._id}
-                  elevation={12}
-                  style={{
-                    padding: 5,
-                    margin: 5,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  {mobile.user && mobile.user.name.length > 8 ? (
-                    <Tooltip
-                      disableFocusListener
-                      title={mobile.user.name}
-                      placement='top'
-                    >
-                      <Typography variant='body1' component='p'>
-                        {mobile.user.name.slice(0, 8) + '..'}
-                      </Typography>
-                    </Tooltip>
-                  ) : (
-                    <Typography variant='body1' component='p'>
-                      {mobile.user.name}
-                    </Typography>
-                  )}
-
-                  <Typography variant='body1' component='p'>
-                    {country}
-                  </Typography>
-                  <IconButton
-                    style={{ color: 'green' }}
-                    onClick={() => callHandler(mobile.mobile)}
+        <div style={{ padding: 3, overflow: 'auto', height: '85%' }}>
+          {loading
+            ? 'loading...'
+            : error
+            ? error
+            : mobile &&
+              mobile.map((mobile) => {
+                return (
+                  <Paper
+                    key={mobile._id}
+                    elevation={12}
+                    style={{
+                      padding: 5,
+                      margin: 5,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
                   >
-                    <PhoneIcon />
-                  </IconButton>
-                </Paper>
-              )
-            })}
-        {
-          mobile
+                    {mobile.user && mobile.user.name.length > 8 ? (
+                      <Tooltip
+                        disableFocusListener
+                        title={mobile.user.name}
+                        placement='top'
+                      >
+                        <Typography variant='body1' component='p'>
+                          {mobile.user.name.slice(0, 8) + '..'}
+                        </Typography>
+                      </Tooltip>
+                    ) : (
+                      <Typography variant='body1' component='p'>
+                        {mobile.user.name}
+                      </Typography>
+                    )}
+
+                    <Typography variant='body1' component='p'>
+                      {country}
+                    </Typography>
+                    <IconButton
+                      style={{ color: 'green' }}
+                      onClick={() => callHandler(mobile.mobile)}
+                    >
+                      <PhoneIcon />
+                    </IconButton>
+                  </Paper>
+                )
+              })}
+          {mobile
             ? searched &&
               mobile.length === 0 && (
                 <Paper
@@ -183,28 +184,24 @@ export const Call = () => {
                   </IconButton>
                 </Paper>
               )
-            : 'missed calls'
-          /* !searched &&
-            smsRooms.map((num) => {
-              return (
-                <Paper
-                  elevation={12}
-                  style={{ padding: 5, margin: 5 }}
-                  key={num._id}
-                >
-                  <Button
-                    fullWidth
-                    variant='outlined'
-                    color={count > 0 ? 'secondary' : 'default'}
-                    onClick={() => textHandler(num.mobile)}
+            : !loading &&
+              calls.map((call) => {
+                return (
+                  <Paper
+                    key={call._id}
+                    style={{ padding: 5, margin: '10px 8px' }}
+                    elevation={12}
+                    className={call.missed ? classes.missed : classes.seen}
                   >
-                    {num.mobile} {num.user && num.user.name}{' '}
-                    {count > 0 ? `${count} - unread` : ''}
-                  </Button>
-                </Paper>
-              )
-            }) */
-        }
+                    <Typography>status: {call.status}</Typography>
+                    <Typography>from: {call.from}</Typography>
+                    <Typography>
+                      date: {call.createdAt.toString().slice(0, 10)}
+                    </Typography>
+                  </Paper>
+                )
+              })}
+        </div>
       </Card>
       <CallModalDrag
         cancel={cancelHandler}

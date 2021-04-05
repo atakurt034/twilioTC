@@ -177,3 +177,18 @@ export const getFBandGoogleLoginReducer = (state = {}, action) => {
       return state
   }
 }
+
+export const setMissedToSeenReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER.SEEN_MISSED_REQUEST:
+      return { loading: true }
+    case USER.SEEN_MISSED_SUCCESS:
+      return { loading: false, info: action.payload }
+    case USER.SEEN_MISSED_FAIL:
+      return { loading: false, error: action.payload }
+    case USER.SEEN_MISSED_RESET:
+      return {}
+    default:
+      return state
+  }
+}

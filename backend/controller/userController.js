@@ -8,6 +8,7 @@ import fs from 'fs'
 import { User } from '../models/userModel.js'
 import { Chatroom } from '../models/chatroomModel.js'
 import { MobileNum } from '../models/mobileNum.js'
+import { Call } from '../models/callModel.js'
 let Sms = {}
 
 import { generateToken } from '../utils/generateToken.js'
@@ -96,6 +97,7 @@ export const getUserDetails = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(id)
       .select('-password')
+      .populate({ path: 'calls', model: 'Call' })
       .populate('mobile', 'mobile')
       .populate({
         path: 'contacts',
@@ -477,6 +479,28 @@ export const searchMobileNum = asyncHandler(async (req, res) => {
     )
 
     res.status(200).json(search)
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
+})
+
+/**
+ * route: /api/mobile/:id
+ * description: search mobile number
+ * access: Private
+ * method: POST
+ */
+export const missedSeen = asyncHandler(async (req, res) => {
+  try {
+    const { callIds } = req.body
+
+    const calls = await Call.updateMany(
+      { _id: { $in: callIds } },
+      { missed: false }
+    )
+
+    res.status(200).json(calls)
   } catch (error) {
     res.status(400)
     throw new Error(error)

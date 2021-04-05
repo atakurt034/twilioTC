@@ -1,15 +1,17 @@
 import React from 'react'
 
-import { IconButton, Grid, Container } from '@material-ui/core'
-import PhoneIcon from '@material-ui/icons/Phone'
+import { IconButton, Grid } from '@material-ui/core'
+
 import PeopleIcon from '@material-ui/icons/People'
 import ChatIcon from '@material-ui/icons/Chat'
 import { useStyles } from './styles.js'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { UA } from '../../actions/index'
+import { USER } from '../../constants/index'
 
 import { SmsBadge } from './badgedIcons/smsBadge'
+import { CallBadge } from './badgedIcons/callsBadge'
 
 import { Contacts } from './contact/contact'
 import { Chat } from './chat/chat'
@@ -28,6 +30,8 @@ export const Home = ({ socket, history }) => {
 
   const [panel, setPanel] = React.useState('contacts')
   const [count, setCount] = React.useState(0)
+  const [callCount, setCallCount] = React.useState(0)
+  const [callIds, setCallIds] = React.useState([])
 
   React.useEffect(() => {
     socket.on('room full', () => makeToast('error', 'room is full', 'error'))
@@ -52,14 +56,31 @@ export const Home = ({ socket, history }) => {
     dispatch(UA.getDetails())
   }
 
+  const callHandler = () => {
+    panelHandler('call')
+    if (callIds.length > 0) {
+      dispatch(UA.setMissedToSeen(callIds))
+      dispatch(UA.getDetails())
+    }
+  }
+
   React.useEffect(() => {
     const unreadCount = []
     if (userDetails) {
       userDetails.smsrooms.find((room) =>
         room.messages.map((msg) => msg.unread === true && unreadCount.push(msg))
       )
+      const missed = userDetails.calls.filter((call) => call.missed === true)
+      const missedIds = missed.map((call) => call._id)
+
       setCount(unreadCount.length)
+      setCallCount(missed.length)
+      setCallIds(missedIds)
     }
+    return () => {
+      dispatch({ type: USER.SEEN_MISSED_RESET })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails])
 
   return (
@@ -78,11 +99,8 @@ export const Home = ({ socket, history }) => {
           >
             <ChatIcon />
           </IconButton>
-          <IconButton
-            className={classes.icon}
-            onClick={() => panelHandler('call')}
-          >
-            <PhoneIcon />
+          <IconButton className={classes.icon} onClick={callHandler}>
+            <CallBadge count={callCount} callIds={callIds} />
           </IconButton>
           <IconButton
             className={classes.icon}

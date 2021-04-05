@@ -19,8 +19,6 @@ import { makeToast } from '../../../components/toast'
 const List = ({ id, name, history, type }) => {
   const dispatch = useDispatch()
 
-  const [focus, setFocus] = React.useState(false)
-
   const clickHandler = () => {
     if (type === 'Public') {
       history.push(`/public/${id}?name=${name}`)
@@ -54,8 +52,6 @@ const List = ({ id, name, history, type }) => {
           <Button
             startIcon={<ChatIcon fontSize='small' />}
             onClick={clickHandler}
-            onMouseEnter={() => setFocus(true)}
-            onMouseOut={() => setFocus(false)}
           >
             {name.length > 10 ? (
               <Tooltip disableFocusListener title={name} placement='top'>

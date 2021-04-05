@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const smsRoomSchema = mongoose.Schema(
+const smsRoomSchema = new mongoose.Schema(
   {
     mobileNumbers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MobileNum' }],
     mobiles: [{ type: String }],

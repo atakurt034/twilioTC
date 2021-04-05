@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const smsMessageSchema = mongoose.Schema(
+const smsMessageSchema = new mongoose.Schema(
   {
     status: {
       type: String,
