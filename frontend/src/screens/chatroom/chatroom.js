@@ -32,6 +32,8 @@ export const Chatroom = ({ match, socket, history, location }) => {
   const myVideoRef = React.useRef()
   const userVideoRef = React.useRef()
   const connectionRef = React.useRef()
+  const myStream = React.useRef()
+  const userSignal = React.useRef()
 
   const { userDetails, loading } = useSelector((state) => state.userDetails)
 
@@ -51,7 +53,7 @@ export const Chatroom = ({ match, socket, history, location }) => {
   )
   React.useEffect(() => {
     dispatch(UA.getDetails())
-    navigator.mediaDevices && permission.getStreams()
+    myStream.current = navigator.mediaDevices && permission.getStreams()
     return () => {
       permission.closeStreams()
       endCall()
@@ -99,6 +101,7 @@ export const Chatroom = ({ match, socket, history, location }) => {
       }
     })
     socket.on('privateCallAnswered', ({ signal }) => {
+      userSignal.current = signal
       peer.signal(signal)
       setCallAnswered(true)
       setCalling(false)
@@ -157,6 +160,20 @@ export const Chatroom = ({ match, socket, history, location }) => {
       })
     }
   }, [chatroomId, socket, userInfo, history])
+
+  const shareScreen = (params) => {
+    const currStream = connectionRef.current.streams[0]
+    const current = currStream.getVideoTracks()[0]
+    current.enabled = false
+    navigator.mediaDevices.getDisplayMedia({ cursor: true }).then((stream) => {
+      const track = stream.getTracks()[0]
+      connectionRef.current.replaceTrack(current, track, currStream)
+      track.onended = () => {
+        current.enabled = true
+        connectionRef.current.replaceTrack(track, current, currStream)
+      }
+    })
+  }
 
   return loading ? (
     <ModalLoader />
@@ -263,6 +280,8 @@ export const Chatroom = ({ match, socket, history, location }) => {
             endCall={endCall}
           />
         </div>
+
+        <button onClick={shareScreen}>Share</button>
       </Grid>
     </Container>
   )

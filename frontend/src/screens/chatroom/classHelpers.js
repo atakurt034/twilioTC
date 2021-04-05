@@ -72,7 +72,7 @@ export class GetPermission {
     }
     this.myVideoFeed.current = stream.getVideoTracks()[0]
     this.myMicFeed.current = stream.getAudioTracks()[0]
-    return this.streams
+    return stream
   }
 
   closeStreams = () => {
