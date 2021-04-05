@@ -177,7 +177,10 @@ export const Sms = ({ match, socket, history }) => {
 
   return (
     <Container maxWidth='sm'>
-      <Card className={classes.paper}>
+      <Card
+        className={classes.paper}
+        style={{ overflow: 'auto', height: '100%' }}
+      >
         <div className={classes.cardActions}>
           <IconButton style={{ padding: 5 }}>
             <AddCircleIcon style={{ color: 'green', fontSize: 40 }} />
@@ -198,7 +201,7 @@ export const Sms = ({ match, socket, history }) => {
         <Paper
           style={{
             padding: 10,
-            height: '40vh',
+            height: '35vh',
             margin: 10,
             overflow: 'auto',
           }}
@@ -253,7 +256,7 @@ export const Sms = ({ match, socket, history }) => {
             fullWidth
             label='Message'
             multiline
-            rows={5}
+            rows={2}
             style={{ backgroundColor: '#fff' }}
             name='message'
           />

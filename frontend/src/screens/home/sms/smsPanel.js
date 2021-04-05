@@ -1,8 +1,17 @@
 import React from 'react'
-import { Button, Card, Divider, Paper, Typography } from '@material-ui/core'
+import {
+  Button,
+  Card,
+  Divider,
+  IconButton,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
 
 import PhoneInput from 'react-phone-input-2'
 import PermPhoneMsgIcon from '@material-ui/icons/PermPhoneMsg'
+import TextsmsIcon from '@material-ui/icons/Textsms'
 
 import { useStyles } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
@@ -10,6 +19,7 @@ import { withRouter } from 'react-router-dom'
 
 import { UA } from '../../../actions/index'
 import { USER } from '../../../constants/index'
+import { LoadingButton } from '../../../components/loadingCallnText'
 
 const Text = ({ history }) => {
   const classes = useStyles()
@@ -83,27 +93,21 @@ const Text = ({ history }) => {
           <PhoneInput
             value={mobileNum}
             onChange={changeHandler}
-            placeholder='Search mobile number'
-            inputStyle={{ width: '88%' }}
+            placeholder='Input number'
+            inputStyle={{ width: '100%' }}
             containerStyle={{
-              margin: '2% 0 2% 1%',
+              margin: '1%',
             }}
+            onEnterKeyPress={submitHandler}
           />
-          <Button
-            variant='contained'
-            disabled={!mobileNum}
-            color='primary'
-            style={{ margin: 0, left: -20 }}
-            onClick={
-              mobileNum
-                ? searched
-                  ? backHandler
-                  : submitHandler
-                : submitHandler
-            }
-          >
-            {mobileNum ? (searched ? 'back' : 'search') : 'search'}
-          </Button>
+          <LoadingButton
+            backHandler={backHandler}
+            loading={loading}
+            mobile={mobile}
+            number={mobileNum}
+            searched={searched}
+            submitHandler={submitHandler}
+          />
         </div>
         <Divider />
         <div style={{ overflow: 'auto', maxHeight: '85%' }}>
@@ -125,19 +129,31 @@ const Text = ({ history }) => {
                       alignItems: 'center',
                     }}
                   >
-                    <Typography variant='body2'>
-                      {mobile.user && mobile.user.name}{' '}
-                      {mobile.user && mobile.user.email}
+                    {mobile.user && mobile.user.name.length > 8 ? (
+                      <Tooltip
+                        disableFocusListener
+                        title={mobile.user.name}
+                        placement='top'
+                      >
+                        <Typography variant='body1' component='p'>
+                          {mobile.user.name.slice(0, 8) + '..'}
+                        </Typography>
+                      </Tooltip>
+                    ) : (
+                      <Typography variant='body1' component='p'>
+                        {mobile.user.name}
+                      </Typography>
+                    )}
+
+                    <Typography variant='body1' component='p'>
+                      {country}
                     </Typography>
-                    <Typography variant='body2'>{country}</Typography>
-                    <Button
-                      startIcon={<PermPhoneMsgIcon />}
-                      color='primary'
-                      variant='contained'
+                    <IconButton
+                      style={{ color: 'green' }}
                       onClick={() => textHandler(mobile.mobile)}
                     >
-                      Text
-                    </Button>
+                      <TextsmsIcon />
+                    </IconButton>
                   </Paper>
                 )
               })}
@@ -154,14 +170,12 @@ const Text = ({ history }) => {
                   }}
                 >
                   No user found continue to send a text?{' '}
-                  <Button
-                    startIcon={<PermPhoneMsgIcon />}
-                    color='primary'
-                    variant='contained'
+                  <IconButton
+                    style={{ color: 'green' }}
                     onClick={() => textHandler(mobileNum)}
                   >
-                    Text
-                  </Button>
+                    <TextsmsIcon />
+                  </IconButton>
                 </Paper>
               )
             : !searched &&
