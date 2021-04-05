@@ -33,11 +33,6 @@ export const App = () => {
   })
 
   React.useEffect(() => {
-    const listener = (event, ...args) => {
-      console.log(event, args)
-    }
-
-    socket.onAny(listener)
     socket.emit('login')
     socket.on('refreshUserDetails', () => {
       dispatch(UA.getDetails())

@@ -51,7 +51,7 @@ export const CallUser = ({ callUser, userName, stream }) => {
       </Typography>
       <IconButton
         disabled={!stream}
-        style={{ border: '1px solid green', color: 'green' }}
+        style={{ border: '2px solid darkgreen', color: 'darkgreen' }}
         onClick={callUser}
       >
         <PhoneIcon />

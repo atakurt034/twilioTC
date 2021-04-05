@@ -21,9 +21,9 @@ const List = ({ id, name, history, type }) => {
 
   const clickHandler = () => {
     if (type === 'Public') {
-      history.push(`/public/${id}?name=${name}`)
+      history.push(`/public/${id}?name=${name.split(' ')[0]}`)
     } else {
-      history.push(`/chatroom/${id}?name=${name}`)
+      history.push(`/chatroom/${id}?name=${name.split(' ')[0]}`)
     }
   }
   const deleteHandler = async () => {

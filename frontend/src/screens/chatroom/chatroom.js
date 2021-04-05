@@ -116,8 +116,10 @@ export const Chatroom = ({ match, socket, history, location }) => {
       if (userVideoRef.current) {
         userVideoRef.current.srcObject = stream
       }
-      setCallAnswered(true)
-      setCalling(false)
+      setTimeout(() => {
+        setCallAnswered(true)
+        setCalling(false)
+      }, 2000)
     })
     peer.signal(callerSignal)
     connectionRef.current = peer
@@ -154,11 +156,6 @@ export const Chatroom = ({ match, socket, history, location }) => {
         }
       })
     }
-
-    const listener = (event, ...args) => {
-      console.log(event, args)
-    }
-    socket.onAny(listener)
   }, [chatroomId, socket, userInfo, history])
 
   return loading ? (
