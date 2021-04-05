@@ -148,7 +148,7 @@ export const Call = () => {
                       </Tooltip>
                     ) : (
                       <Typography variant='body1' component='p'>
-                        {mobile.user.name}
+                        {mobile.user && mobile.user.name}
                       </Typography>
                     )}
 
