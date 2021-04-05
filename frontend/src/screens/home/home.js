@@ -60,7 +60,6 @@ export const Home = ({ socket, history }) => {
     panelHandler('call')
     if (callIds.length > 0) {
       dispatch(UA.setMissedToSeen(callIds))
-      dispatch(UA.getDetails())
     }
   }
 

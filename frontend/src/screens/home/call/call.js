@@ -23,6 +23,7 @@ import { UA } from '../../../actions/index'
 import { USER } from '../../../constants/index'
 
 import { LoadingButton } from '../../../components/loadingCallnText'
+import { ModalLoader } from '../../../components/modalloader'
 
 export const Call = () => {
   const classes = useStyles()
@@ -48,7 +49,7 @@ export const Call = () => {
 
   React.useEffect(() => {
     if (userDetails) {
-      setCalls(userDetails.calls)
+      setCalls(userDetails.calls.reverse())
     }
   }, [userDetails])
 
@@ -163,44 +164,47 @@ export const Call = () => {
                   </Paper>
                 )
               })}
-          {mobile
-            ? searched &&
-              mobile.length === 0 && (
-                <Paper
-                  elevation={12}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: 5,
-                  }}
+          {mobile ? (
+            searched &&
+            mobile.length === 0 && (
+              <Paper
+                elevation={12}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 5,
+                }}
+              >
+                No user found continue to call this number?{' '}
+                <IconButton
+                  style={{ color: 'green' }}
+                  onClick={() => callHandler(number)}
                 >
-                  No user found continue to call this number?{' '}
-                  <IconButton
-                    style={{ color: 'green' }}
-                    onClick={() => callHandler(number)}
-                  >
-                    <PhoneIcon />
-                  </IconButton>
+                  <PhoneIcon />
+                </IconButton>
+              </Paper>
+            )
+          ) : loading || loadingDetails ? (
+            <ModalLoader />
+          ) : (
+            calls.map((call) => {
+              return (
+                <Paper
+                  key={call._id}
+                  style={{ padding: 5, margin: '10px 8px' }}
+                  elevation={12}
+                  className={call.missed ? classes.missed : classes.seen}
+                >
+                  <Typography>status: {call.status}</Typography>
+                  <Typography>from: {call.from}</Typography>
+                  <Typography>
+                    date: {call.createdAt.toString().slice(0, 10)}
+                  </Typography>
                 </Paper>
               )
-            : !loading &&
-              calls.map((call) => {
-                return (
-                  <Paper
-                    key={call._id}
-                    style={{ padding: 5, margin: '10px 8px' }}
-                    elevation={12}
-                    className={call.missed ? classes.missed : classes.seen}
-                  >
-                    <Typography>status: {call.status}</Typography>
-                    <Typography>from: {call.from}</Typography>
-                    <Typography>
-                      date: {call.createdAt.toString().slice(0, 10)}
-                    </Typography>
-                  </Paper>
-                )
-              })}
+            })
+          )}
         </div>
       </Card>
       <CallModalDrag
